@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Calidad Espex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .gold-gradient { background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen pb-20">
+
+    <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <img src="https://espex.cl/wp-content/uploads/2023/08/Logo-Espex-Blaco-y-verde-sin-texto.png" alt="Espex" class="h-10 object-contain">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Portal Colaborador</span>
+    </nav>
+
+    <div id="viewHome" class="max-w-4xl mx-auto p-6">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black text-gray-800 mb-2">La Excelencia se reconoce 🏆</h1>
+            <p class="text-gray-500">Conoce a los destacados con nota máxima</p>
+        </div>
+
+        <div id="wallOfFame" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            <div class="col-span-3 text-center py-10 text-gray-400">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Cargando estrellas...
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 my-8"></div>
+
+        <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-4 border-green-600">
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Tu Retroalimentación</h2>
+            <p class="text-xs text-gray-400 mb-6 uppercase">Ingreso Privado</p>
+            
+            <div class="relative mb-4">
+                <input type="text" id="codigoInput" placeholder="Ingresa tu Código (Ej: CC014)" 
+                    class="w-full pl-10 py-3 border-2 border-gray-100 rounded-xl text-center font-bold text-gray-700 focus:border-green-500 outline-none uppercase tracking-widest">
+                <i class="fas fa-fingerprint absolute left-4 top-4 text-gray-300"></i>
+            </div>
+            
+            <button onclick="login()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-200/50">
+                Consultar Mis Resultados
+            </button>
+        </div>
+    </div>
+
+    <div id="viewDashboard" class="hidden max-w-2xl mx-auto p-4 animate-fade-in">
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <p class="text-xs text-gray-400 font-bold uppercase">Bienvenido(a)</p>
+                <h2 class="text-2xl font-black text-gray-800" id="userName">-</h2>
+            </div>
+            <button onclick="location.reload()" class="text-xs text-red-500 font-bold hover:bg-red-50 px-3 py-1 rounded-full border border-red-100">Cerrar Sesión</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mb-8">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                <p class="text-[10px] text-gray-400 font-black uppercase">Promedio</p>
+                <p class="text-2xl font-black text-indigo-600" id="userAvg">-</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                <p class="text-[10px] text-gray-400 font-black uppercase">Total</p>
+                <p class="text-2xl font-black text-gray-700" id="userTotal">-</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                <p class="text-[10px] text-gray-400 font-black uppercase">Mejor Nota</p>
+                <p class="text-2xl font-black text-green-600" id="userMax">-</p>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-bold text-gray-400 uppercase mb-4 border-b pb-2">Historial de Auditorías</h3>
+        <div id="cardsContainer" class="space-y-4"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        //  CONFIGURACIÓN
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbwUzZq1FFjj1neUtq1MmiUCZxRLjNqI44Dn0wDQkyQfOHdXRhAWSwvpn-WpvPxJR-aY9A/exec"; 
+        
+        let DATOS_CACHE = [];
+
+        // 1. CARGA INICIAL
+        window.onload = async () => {
+            try {
+                // Usamos Proxy para evitar CORS
+                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
+                const resp = await fetch(proxy);
+                const data = await resp.json();
+                
+                if(Array.isArray(data)) {
+                    DATOS_CACHE = data;
+                    renderWallOfFame(data);
+                }
+            } catch (e) {
+                console.error("Error cargando datos", e);
+                document.getElementById('wallOfFame').innerHTML = "<p class='col-span-3 text-center text-red-400'>Error de conexión.</p>";
+            }
+        };
+
+        // 2. MURO DE LA FAMA
+        function renderWallOfFame(data) {
+            // Filtro: Notas 100% de los últimos registros
+            const top = data.filter(d => {
+                const nota = parseFloat(d.NOTA.toString().replace('%','').replace(',','.'));
+                return nota >= 100; 
+            }).reverse().slice(0, 3); // Top 3 más recientes
+
+            const wall = document.getElementById('wallOfFame');
+            wall.innerHTML = "";
+
+            if(top.length === 0) {
+                wall.innerHTML = "<div class='col-span-3 text-center text-gray-400 italic'>Aún no hay notas perfectas este mes.</div>";
+                return;
+            }
+
+            top.forEach(star => {
+                const card = `
+                    <div class="gold-gradient p-6 rounded-2xl shadow-lg transform hover:-translate-y-2 transition-all text-center border border-yellow-200">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-sm">🥇</div>
+                        <h3 class="font-bold text-yellow-900 truncate">${star.NOMBRE.split(' ')[0]} ${star.NOMBRE.split(' ')[2] || ''}</h3>
+                        <p class="text-xs text-yellow-700 font-bold uppercase tracking-wider mb-2">Nota Perfecta</p>
+                        <div class="text-3xl font-black text-yellow-800">${star.NOTA}</div>
+                        <p class="text-[10px] text-yellow-600 mt-2 opacity-75">${star.FECHA ? formatearFecha(star.FECHA) : ''}</p>
+                    </div>
+                `;
+                wall.innerHTML += card;
+            });
+        }
+
+        // 3. LOGIN Y PERFIL
+        function login() {
+            const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+            if(!codigo) return Swal.fire("Error", "Ingresa tu código", "warning");
+
+            const misDatos = DATOS_CACHE.filter(d => d.CODIGO === codigo);
+
+            if(misDatos.length === 0) {
+                Swal.fire("Sin datos", "No encontramos registros para el código " + codigo, "error");
+                return;
+            }
+
+            document.getElementById('viewHome').classList.add('hidden');
+            document.getElementById('viewDashboard').classList.remove('hidden');
+            renderPerfil(misDatos);
+        }
+
+        function renderPerfil(notas) {
+            notas.reverse(); // Más recientes primero
+            document.getElementById('userName').innerText = notas[0].NOMBRE;
+
+            // Cálculos
+            const notasNum = notas.map(n => parseFloat(n.NOTA.replace('%','').replace(',','.')) || 0);
+            const avg = (notasNum.reduce((a,b)=>a+b,0) / notasNum.length).toFixed(0);
+            const max = Math.max(...notasNum);
+
+            document.getElementById('userAvg').innerText = avg + "%";
+            document.getElementById('userTotal').innerText = notas.length;
+            document.getElementById('userMax').innerText = max + "%";
+            document.getElementById('userAvg').className = `text-2xl font-black ${avg>=85 ? 'text-green-600' : 'text-red-600'}`;
+
+            // Tarjetas
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = "";
+
+            notas.forEach(n => {
+                const valor = parseFloat(n.NOTA.replace('%','').replace(',','.')) || 0;
+                const aprobado = valor >= 80;
+                
+                const card = `
+                <div onclick='verDetalle(${JSON.stringify(n).replace(/'/g, "&#39;")})' class="bg-white p-5 rounded-xl shadow-sm border-l-4 ${aprobado ? 'border-green-500' : 'border-red-500'} cursor-pointer hover:bg-gray-50 transition">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="text-xs font-bold text-gray-700">${formatearFecha(n.FECHA)}</span>
+                            <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded ml-2 uppercase">${n.SEMANA}</span>
+                        </div>
+                        <span class="text-2xl font-black ${aprobado ? 'text-green-600' : 'text-red-600'}">${n.NOTA}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">
+                        <i class="fas fa-user-shield mr-1"></i>Sup: ${n.SUPERVISOR || 'General'}
+                    </p>
+                    <p class="text-sm text-gray-500 italic truncate border-t border-gray-100 pt-2">"${n.OBS.split('---')[0]}"</p>
+                </div>`;
+                container.innerHTML += card;
+            });
+        }
+
+        // 4. DETALLE POPUP (Con Audio y Errores Específicos)
+        function verDetalle(nota) {
+            let lista = "";
+            let hayErrores = false;
+            let botonAudio = "";
+
+            // A. Botón de Audio
+            if (nota.AUDIO && nota.AUDIO.length > 5) {
+                botonAudio = `
+                    <div class="mb-4 text-center">
+                        <a href="${nota.AUDIO}" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition transform hover:scale-105">
+                            <i class="fas fa-play-circle text-xl"></i> Descarga audio
+                        </a>
+                        <p class="text-[10px] text-gray-400 mt-2">Se abrirá en nueva pestaña</p>
+                    </div>
+                `;
+            } else {
+                botonAudio = `<div class="mb-4 text-center text-xs text-gray-400 italic"><i class="fas fa-microphone-slash"></i> Audio no adjunto</div>`;
+            }
+
+            // B. Lista de Errores con Descripción
+            if(nota.DETALLE) {
+                for (const [k, v] of Object.entries(nota.DETALLE)) {
+                    if (v === "NO") {
+                        hayErrores = true;
+                        
+                        // Buscamos la descripción específica en el comentario guardado
+                        let descError = "";
+                        // Regex busca: "• NombreItem: texto..."
+                        const safeKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escapar caracteres especiales
+                        const regex = new RegExp(`• ${safeKey}: (.*?)(?:\\n|$)`);
+                        const match = nota.OBS.match(regex);
+                        
+                        if(match) {
+                            descError = `<div class="text-xs text-red-500 font-medium mt-1 pl-3 border-l-2 border-red-300 bg-red-50 p-1 rounded-r">${match[1]}</div>`;
+                        }
+
+                        lista += `
+                        <li class="py-2 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700 font-bold text-sm">${k}</span>
+                                <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[10px] font-black">NO CUMPLE</span>
+                            </div>
+                            ${descError}
+                        </li>`;
+                    }
+                }
+            }
+
+            if (!hayErrores) lista = `<div class="bg-green-50 text-green-700 p-4 rounded text-center font-bold">¡Auditoría Impecable!</div>`;
+            else lista = `<ul class="mt-2 text-sm border border-gray-100 rounded-lg p-2">${lista}</ul>`;
+
+            Swal.fire({
+                title: `<div class="flex flex-col gap-1">
+                            <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Auditoría ${formatearFecha(nota.FECHA)}</span>
+                            <span class="text-sm text-gray-500 font-normal">Supervisor: ${nota.SUPERVISOR || '-'}</span>
+                        </div>`,
+                html: `
+                    <div class="mt-2">
+                        <div class="flex justify-center items-baseline gap-2 mb-4">
+                            <span class="text-5xl font-black ${parseFloat(nota.NOTA)>=80?'text-green-600':'text-red-600'}">${nota.NOTA}</span>
+                        </div>
+                        
+                        ${botonAudio}
+
+                        <div class="text-left bg-gray-50 p-3 rounded-lg border border-gray-200 mb-4">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-1">Feedback General:</h4>
+                            <p class="text-sm text-gray-600 italic">"${nota.OBS.split('---')[0]}"</p>
+                        </div>
+
+                        <div class="text-left">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Detalle de Quiebres:</h4>
+                            ${lista}
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                width: '480px',
+                customClass: { popup: 'rounded-2xl shadow-2xl' }
+            });
+        }
+
+        // Helper para fechas
+        function formatearFecha(fechaStr) {
+            if(!fechaStr) return "";
+            // Si viene ISO (2026-01-30) -> 30-01-2026
+            if(fechaStr.includes('-') && !fechaStr.includes('/')) {
+                const partes = fechaStr.split('T')[0].split('-'); 
+                if(partes.length === 3) return `${partes[2]}-${partes[1]}-${partes[0]}`;
+            }
+            return fechaStr; // Si ya viene bien, retornamos
+        }
+    </script>
+</body>
+</html>
