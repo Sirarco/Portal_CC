@@ -87,11 +87,12 @@
         
         let DATOS_CACHE = [];
 
-        // 1. CARGA INICIAL
+       // 1. CARGA INICIAL
         window.onload = async () => {
             try {
-                // Usamos Proxy para evitar CORS
-                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
+                // CAMBIO AQUÍ: Usamos un proxy alternativo (AllOrigins) porque corsproxy dio error 403
+                const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL);
+                
                 const resp = await fetch(proxy);
                 const data = await resp.json();
                 
@@ -101,7 +102,8 @@
                 }
             } catch (e) {
                 console.error("Error cargando datos", e);
-                document.getElementById('wallOfFame').innerHTML = "<p class='col-span-3 text-center text-red-400'>Error de conexión.</p>";
+                // Tip: Mostramos el error en pantalla para saber qué pasa
+                document.getElementById('wallOfFame').innerHTML = "<div class='col-span-3 text-center text-red-400 p-4'>Error de conexión: " + e.message + "<br><span class='text-xs text-gray-400'>Intenta recargar la página</span></div>";
             }
         };
 
@@ -287,4 +289,5 @@
         }
     </script>
 </body>
+
 </html>
