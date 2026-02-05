@@ -3,291 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Calidad Espex</title>
+    <title>Portal Calidad</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
     <style>
-        .animate-fade-in { animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .gold-gradient { background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%); }
+        body { background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tarjetas */
+        .card-gold { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-bottom: 4px solid #fcd34d; color: #92400e; }
+        .card-silver { background: linear-gradient(to bottom right, #f8fafc, #e2e8f0); border-bottom: 4px solid #cbd5e1; color: #475569; }
+        .card-bronze { background: linear-gradient(to bottom right, #fff7ed, #ffedd5); border-bottom: 4px solid #fdba74; color: #9a3412; }
+        
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* === JUEGO DE CARGA === */
+        #loadingScreen { transition: opacity 0.5s ease; user-select: none; }
+        .follower { 
+            position: fixed; font-size: 40px; pointer-events: none; z-index: 9999; 
+            transition: transform 0.1s linear; 
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+            will-change: top, left;
+        }
+        .walk-anim { animation: waddle 0.5s infinite alternate; }
+        @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
     </style>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen pb-20">
+<body class="min-h-screen flex flex-col">
 
-    <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <img src="https://espex.cl/wp-content/uploads/2023/08/Logo-Espex-Blaco-y-verde-sin-texto.png" alt="Espex" class="h-10 object-contain">
-        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Portal Colaborador</span>
+    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm border-b border-stone-100">
+        <span class="font-bold text-stone-400 tracking-widest text-xs uppercase">ESPEX</span>
+        <div class="flex flex-col items-center">
+            <span class="font-black text-2xl text-indigo-400 tracking-tighter">Portal de Calidad</span>
+            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Excelencia & Servicio</span>
+        </div>
+        <div class="text-right">
+            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">Hospital</span>
+            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">de La Florida</span>
+        </div>
     </nav>
 
-    <div id="viewHome" class="max-w-4xl mx-auto p-6">
+    <div id="viewLogin" class="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col relative">
         
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-black text-gray-800 mb-2">La Excelencia se reconoce 🏆</h1>
-            <p class="text-gray-500">Conoce a los destacados con nota máxima</p>
-        </div>
+        <div id="loadingScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#fdfbf7]">
+            <div id="fox" class="follower walk-anim">🦊</div>
+            <div id="rabbit" class="follower walk-anim hidden">🐰</div>
+            <div id="turtle" class="follower walk-anim hidden">🐢</div>
 
-        <div id="wallOfFame" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-            <div class="col-span-3 text-center py-10 text-gray-400">
-                <i class="fas fa-spinner fa-spin mr-2"></i> Cargando estrellas...
+            <div class="mt-48 text-center z-10 pointer-events-none">
+                <h2 class="text-2xl font-black text-indigo-400 mb-2">Cargando Portal...</h2>
+                <p class="text-stone-400 text-sm font-bold animate-pulse transition-all duration-500" id="loadingText">Conectando...</p>
+                <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Mueve el mouse para que te sigan)</p>
+            </div>
+
+            <div id="timeoutMsg" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-white p-8 rounded-3xl shadow-xl border border-rose-100 z-50">
+                <div class="text-4xl mb-4">😴</div>
+                <h3 class="text-xl font-bold text-rose-500 mb-2">El servidor se quedó dormido</h3>
+                <p class="text-xs text-stone-500 mb-6">Ha pasado mucho tiempo y los datos no llegan.<br>Por favor intenta nuevamente.</p>
+                <button onclick="location.reload()" class="bg-rose-500 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-200">
+                    <i class="fas fa-sync-alt mr-2"></i> Reintentar
+                </button>
             </div>
         </div>
 
-        <div class="border-t border-gray-200 my-8"></div>
-
-        <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-4 border-green-600">
-            <h2 class="text-xl font-bold text-gray-800 mb-1">Tu Retroalimentación</h2>
-            <p class="text-xs text-gray-400 mb-6 uppercase">Ingreso Privado</p>
-            
-            <div class="relative mb-4">
-                <input type="text" id="codigoInput" placeholder="Ingresa tu Código (Ej: CC014)" 
-                    class="w-full pl-10 py-3 border-2 border-gray-100 rounded-xl text-center font-bold text-gray-700 focus:border-green-500 outline-none uppercase tracking-widest">
-                <i class="fas fa-fingerprint absolute left-4 top-4 text-gray-300"></i>
+        <div id="loginContent" class="opacity-0 transition-opacity duration-1000">
+            <div class="text-center mb-10 mt-6">
+                <h1 class="text-3xl font-black text-stone-700 mb-2"><i class="fas fa-trophy text-yellow-400 mr-3"></i>Cuadro de Honor</h1>
+                <p class="text-stone-400 text-sm font-medium">Última semana de enero 2026</p>
             </div>
-            
-            <button onclick="login()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-200/50">
-                Consultar Mis Resultados
-            </button>
+
+            <div id="wallOfFame" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16"></div>
+
+            <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
+                <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-fingerprint"></i></div>
+                <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
+                <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código de ejecutivo para acceder.</p>
+                
+                <div class="relative mb-6 group">
+                    <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+                    <input type="text" id="codigoInput" placeholder="EJ: CC014" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
+                </div>
+                
+                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">
+                    VER MIS RESULTADOS
+                </button>
+            </div>
+
+            <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+                <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+                <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+            </div>
         </div>
     </div>
 
-    <div id="viewDashboard" class="hidden max-w-2xl mx-auto p-4 animate-fade-in">
-        <div class="flex justify-between items-end mb-6">
+    <div id="viewDashboard" class="hidden flex-1 max-w-7xl mx-auto w-full p-6 fade-in flex-col">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-4 bg-white p-8 rounded-[2rem] shadow-sm border border-stone-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><i class="fas fa-chart-pie text-9xl text-indigo-900"></i></div>
+            <div class="z-10">
+                <p class="text-xs text-stone-400 font-bold uppercase mb-1 tracking-wider">Bienvenido(a)</p>
+                <h2 class="text-4xl font-black text-stone-700 tracking-tight" id="userName">-</h2>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-[10px] bg-indigo-50 text-indigo-500 px-3 py-1 rounded-full font-black uppercase tracking-wider" id="userServ">-</span>
+                    <span class="text-[10px] bg-stone-100 text-stone-400 px-2 py-1 rounded-full font-bold uppercase" id="userCode">-</span>
+                </div>
+            </div>
+            <div class="text-right mt-6 md:mt-0 flex gap-3 items-center z-10">
+                <div class="relative">
+                    <select id="filtroMes" onchange="aplicarFiltro()" class="appearance-none bg-stone-50 border border-stone-200 text-stone-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-xs outline-none cursor-pointer hover:bg-stone-100 transition"><option value="TODOS">📅 Histórico Completo</option></select>
+                    <i class="fas fa-chevron-down absolute right-3 top-3 text-stone-400 text-xs pointer-events-none"></i>
+                </div>
+                <button onclick="location.reload()" class="bg-rose-50 text-rose-400 p-2.5 rounded-xl hover:bg-rose-100 transition shadow-sm" title="Salir"><i class="fas fa-power-off"></i></button>
+            </div>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 flex items-center gap-4 shadow-sm animate-pulse">
+            <div class="bg-blue-100 text-blue-500 p-2 rounded-full"><i class="fas fa-info-circle text-xl"></i></div>
             <div>
-                <p class="text-xs text-gray-400 font-bold uppercase">Bienvenido(a)</p>
-                <h2 class="text-2xl font-black text-gray-800" id="userName">-</h2>
-            </div>
-            <button onclick="location.reload()" class="text-xs text-red-500 font-bold hover:bg-red-50 px-3 py-1 rounded-full border border-red-100">Cerrar Sesión</button>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3 mb-8">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
-                <p class="text-[10px] text-gray-400 font-black uppercase">Promedio</p>
-                <p class="text-2xl font-black text-indigo-600" id="userAvg">-</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
-                <p class="text-[10px] text-gray-400 font-black uppercase">Total</p>
-                <p class="text-2xl font-black text-gray-700" id="userTotal">-</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
-                <p class="text-[10px] text-gray-400 font-black uppercase">Mejor Nota</p>
-                <p class="text-2xl font-black text-green-600" id="userMax">-</p>
+                <h4 class="font-bold text-blue-700 text-sm">Información Importante - Marcha Blanca</h4>
+                <p class="text-xs text-blue-600/80 mt-0.5 font-medium">Estamos en periodo de marcha blanca durante la primera quincena de febrero. Todas sus notas tendrán retroalimentación durante la semana.</p>
             </div>
         </div>
 
-        <h3 class="text-sm font-bold text-gray-400 uppercase mb-4 border-b pb-2">Historial de Auditorías</h3>
-        <div id="cardsContainer" class="space-y-4"></div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 text-center relative group hover:shadow-md transition">
+                <p class="text-[10px] text-emerald-600 font-black uppercase tracking-wide">Calidad Técnica (PENC)</p><p class="text-3xl font-black text-emerald-600 mt-2" id="kpiPenc">-</p><p class="text-[9px] text-emerald-400/80 font-medium mt-1">Sin ceros</p>
+            </div>
+            <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition">
+                <p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition">
+                <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p>
+            </div>
+            <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition">
+                <p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p>
+            </div>
+            <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100 text-center relative group hover:shadow-md transition">
+                <p class="text-[10px] text-rose-400 font-black uppercase tracking-wide">Nota Mínima</p><p class="text-3xl font-black text-rose-400 mt-2" id="kpiMin">-</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
+                <h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-orange-100 text-orange-500 p-1.5 rounded-lg"><i class="fas fa-lightbulb"></i></span>Oportunidades (PENC)</h3><ul id="listPenc" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
+                <h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center">
+                <h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
+        <div id="cardsContainer" class="space-y-3 mb-8"><p class="text-center text-stone-400 py-10 italic">Cargando historial...</p></div>
+
+        <div class="mt-auto pt-8 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+            <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+            <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+        </div>
     </div>
 
     <script>
-        // ==========================================
-        //  CONFIGURACIÓN
-        // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbwUzZq1FFjj1neUtq1MmiUCZxRLjNqI44Dn0wDQkyQfOHdXRhAWSwvpn-WpvPxJR-aY9A/exec"; 
-        
-        let DATOS_CACHE = [];
 
-       // 1. CARGA INICIAL
+        const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
+        const PAUTA_DEFS = {
+            "Validación Identidad": "Debes solicitar RUT y Nombre completo al inicio. Si es tercero, validar ambos.",
+            "Confidencialidad": "Resguarda datos sensibles. No entregues diagnósticos oncológicos o GES sin validar.",
+            "Normas de Conducta": "Mantén el respeto. No grites, no cortes la llamada, usa tono profesional.",
+            "Abandono": "No dejes al paciente en silencio (mudo) por tiempos excesivos sin avisar.",
+            "Registro": "Es obligatorio dejar la nota o glosa de la gestión en el CRM.",
+            "Script Inicio/Cierre": "Usa el saludo institucional completo y la despedida cordial según pauta.",
+            "Cortesía y Trato": "Usa siempre 'Usted', 'Por favor' y 'Gracias'. Evita el tuteo.",
+            "Sondeo": "Realiza las preguntas necesarias para entender realmente la solicitud.",
+            "Entrega Información": "La información entregada debe ser correcta, completa y veraz.",
+            "Manejo Tiempos": "Retoma el contacto cada 45 segundos. Justifica las esperas.",
+            "Aseguramiento": "Pregunta explícitamente: '¿Le queda alguna otra duda?' al final.",
+            "Personalización": "Llama al paciente por su nombre al menos 3 veces durante el llamado.",
+            "Lenguaje": "Modulación clara, volumen adecuado, sin muletillas (ehh, mmm).",
+            "Empatía": "Demuestra interés genuino, valida la emoción del paciente ('Lo entiendo...').",
+            "Tipificación": "Selecciona exactamente el motivo de llamado correcto en el sistema."
+        };
+
+        const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
+
+        let DATOS_CACHE = [];
+        let MIS_DATOS = [];
+        let chartInstance = null;
+
+        // ENTER PARA LOGIN
+        document.getElementById("codigoInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { event.preventDefault(); login(); }
+        });
+
+        // --- SISTEMA DE CARGA (GAME LOOP) ---
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let foxPos = {x: mouseX, y: mouseY}, rabbitPos = {x: mouseX, y: mouseY}, turtlePos = {x: mouseX, y: mouseY};
+        let animalsActive = {rabbit: false, turtle: false};
+        let gameLoopId;
+
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function lerp(start, end, factor) { return start + (end - start) * factor; }
+
+        function gameLoop() {
+            foxPos.x = lerp(foxPos.x, mouseX - 25, 0.1); foxPos.y = lerp(foxPos.y, mouseY - 25, 0.1);
+            const foxEl = document.getElementById('fox'); if(foxEl) { foxEl.style.left = foxPos.x + 'px'; foxEl.style.top = foxPos.y + 'px'; }
+
+            if (animalsActive.rabbit) {
+                const dist = Math.hypot(foxPos.x - rabbitPos.x, foxPos.y - rabbitPos.y);
+                if (dist > 60) { rabbitPos.x = lerp(rabbitPos.x, foxPos.x, 0.05); rabbitPos.y = lerp(rabbitPos.y, foxPos.y, 0.05); }
+                const rabEl = document.getElementById('rabbit'); if(rabEl) { rabEl.style.left = rabbitPos.x + 'px'; rabEl.style.top = rabbitPos.y + 'px'; }
+            }
+            if (animalsActive.turtle) {
+                const dist = Math.hypot(rabbitPos.x - turtlePos.x, rabbitPos.y - turtlePos.y);
+                if (dist > 60) { turtlePos.x = lerp(turtlePos.x, rabbitPos.x, 0.02); turtlePos.y = lerp(turtlePos.y, rabbitPos.y, 0.02); }
+                const turEl = document.getElementById('turtle'); if(turEl) { turEl.style.left = turtlePos.x + 'px'; turEl.style.top = turtlePos.y + 'px'; }
+            }
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
         window.onload = async () => {
+            gameLoop();
+            const rabbitTimer = setTimeout(() => { document.getElementById('rabbit').classList.remove('hidden'); animalsActive.rabbit = true; document.getElementById('loadingText').innerText = "El conejo se une a la búsqueda... 🐰"; }, 5000);
+            const turtleTimer = setTimeout(() => { document.getElementById('turtle').classList.remove('hidden'); animalsActive.turtle = true; document.getElementById('loadingText').innerText = "La tortuga viene con calma... 🐢"; }, 15000);
+            const timeoutTimer = setTimeout(() => { cancelAnimationFrame(gameLoopId); document.getElementById('loadingText').classList.add('hidden'); document.getElementById('timeoutMsg').classList.remove('hidden'); }, 45000);
+
             try {
-                // CAMBIO AQUÍ: Usamos un proxy alternativo (AllOrigins) porque corsproxy dio error 403
-                const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL);
-                
+                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
                 const resp = await fetch(proxy);
+                if (!resp.ok) throw new Error('Error red');
                 const data = await resp.json();
                 
                 if(Array.isArray(data)) {
                     DATOS_CACHE = data;
+                    clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); cancelAnimationFrame(gameLoopId);
                     renderWallOfFame(data);
-                }
-            } catch (e) {
-                console.error("Error cargando datos", e);
-                // Tip: Mostramos el error en pantalla para saber qué pasa
-                document.getElementById('wallOfFame').innerHTML = "<div class='col-span-3 text-center text-red-400 p-4'>Error de conexión: " + e.message + "<br><span class='text-xs text-gray-400'>Intenta recargar la página</span></div>";
-            }
+                    const loader = document.getElementById('loadingScreen');
+                    const content = document.getElementById('loginContent');
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.classList.add('hidden'); content.classList.remove('opacity-0'); }, 500);
+                } else { throw new Error("Datos inválidos"); }
+            } catch (e) { console.error(e); }
         };
 
-        // 2. MURO DE LA FAMA
+        // --- FUNCIONES ---
         function renderWallOfFame(data) {
-            // Filtro: Notas 100% de los últimos registros
+            const hoy = moment();
+            const semanaPasada = hoy.subtract(1, 'week').week(); 
+            const yearPasado = hoy.year();
             const top = data.filter(d => {
-                const nota = parseFloat(d.NOTA.toString().replace('%','').replace(',','.'));
-                return nota >= 100; 
-            }).reverse().slice(0, 3); // Top 3 más recientes
+                const nota = parseFloat(d.NOTA.replace('%','')) || 0;
+                const fecha = moment(d.FECHA_LLAMADA || d.FECHA);
+                return nota >= 85 && fecha.week() === semanaPasada && fecha.year() === yearPasado;
+            }).sort((a,b) => parseFloat(b.NOTA) - parseFloat(a.NOTA)).slice(0, 10);
 
             const wall = document.getElementById('wallOfFame');
             wall.innerHTML = "";
-
-            if(top.length === 0) {
-                wall.innerHTML = "<div class='col-span-3 text-center text-gray-400 italic'>Aún no hay notas perfectas este mes.</div>";
-                return;
-            }
+            if(top.length === 0) { wall.innerHTML = "<div class='col-span-full text-center text-stone-400 italic py-10 text-xs'>Aún no hay medallas cerradas de la semana pasada.</div>"; return; }
 
             top.forEach(star => {
-                const card = `
-                    <div class="gold-gradient p-6 rounded-2xl shadow-lg transform hover:-translate-y-2 transition-all text-center border border-yellow-200">
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-sm">🥇</div>
-                        <h3 class="font-bold text-yellow-900 truncate">${star.NOMBRE.split(' ')[0]} ${star.NOMBRE.split(' ')[2] || ''}</h3>
-                        <p class="text-xs text-yellow-700 font-bold uppercase tracking-wider mb-2">Nota Perfecta</p>
-                        <div class="text-3xl font-black text-yellow-800">${star.NOTA}</div>
-                        <p class="text-[10px] text-yellow-600 mt-2 opacity-75">${star.FECHA ? formatearFecha(star.FECHA) : ''}</p>
-                    </div>
-                `;
-                wall.innerHTML += card;
+                const nota = parseFloat(star.NOTA.replace('%',''));
+                let nameStr = star.NOMBRE || "Anónimo";
+                let parts = nameStr.trim().split(/\s+/);
+                let displayName = parts[0];
+                if(parts.length > 2) displayName += " " + parts[2];
+                else if(parts.length === 2) displayName += " " + parts[1];
+                let st = "card-bronze", ic = "🥉";
+                if(nota === 100) { st = "card-gold transform hover:scale-105"; ic = "🏆"; }
+                else if(nota >= 90) { st = "card-silver"; ic = "🥈"; }
+                wall.innerHTML += `<div class="${st} p-4 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center h-32 transition duration-300 hover:-translate-y-1 relative overflow-hidden group"><div class="text-3xl mb-1 drop-shadow-sm group-hover:scale-110 transition">${ic}</div><h3 class="font-black text-xs truncate w-full mt-2 px-1 capitalize text-slate-700">${displayName.toLowerCase()}</h3><div class="text-xl font-black mt-0.5 tracking-tight">${star.NOTA}</div></div>`;
             });
         }
 
-        // 3. LOGIN Y PERFIL
         function login() {
             const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
-            if(!codigo) return Swal.fire("Error", "Ingresa tu código", "warning");
+            if(!codigo) return Swal.fire("Atención", "Ingresa código", "warning");
+            MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
+            if(MIS_DATOS.length === 0) return Swal.fire("Error", "Código no encontrado o sin evaluaciones", "error");
 
-            const misDatos = DATOS_CACHE.filter(d => d.CODIGO === codigo);
-
-            if(misDatos.length === 0) {
-                Swal.fire("Sin datos", "No encontramos registros para el código " + codigo, "error");
-                return;
-            }
-
-            document.getElementById('viewHome').classList.add('hidden');
+            document.getElementById('viewLogin').classList.add('hidden');
             document.getElementById('viewDashboard').classList.remove('hidden');
-            renderPerfil(misDatos);
+            document.getElementById('userName').innerText = MIS_DATOS[0].NOMBRE;
+            document.getElementById('userServ').innerText = MIS_DATOS[0].SERVICIO || 'General';
+            document.getElementById('userCode').innerText = codigo;
+
+            llenarFiltros();
+            aplicarFiltro();
         }
 
-        function renderPerfil(notas) {
-            notas.reverse(); // Más recientes primero
-            document.getElementById('userName').innerText = notas[0].NOMBRE;
-
-            // Cálculos
-            const notasNum = notas.map(n => parseFloat(n.NOTA.replace('%','').replace(',','.')) || 0);
-            const avg = (notasNum.reduce((a,b)=>a+b,0) / notasNum.length).toFixed(0);
-            const max = Math.max(...notasNum);
-
-            document.getElementById('userAvg').innerText = avg + "%";
-            document.getElementById('userTotal').innerText = notas.length;
-            document.getElementById('userMax').innerText = max + "%";
-            document.getElementById('userAvg').className = `text-2xl font-black ${avg>=85 ? 'text-green-600' : 'text-red-600'}`;
-
-            // Tarjetas
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = "";
-
-            notas.forEach(n => {
-                const valor = parseFloat(n.NOTA.replace('%','').replace(',','.')) || 0;
-                const aprobado = valor >= 80;
-                
-                const card = `
-                <div onclick='verDetalle(${JSON.stringify(n).replace(/'/g, "&#39;")})' class="bg-white p-5 rounded-xl shadow-sm border-l-4 ${aprobado ? 'border-green-500' : 'border-red-500'} cursor-pointer hover:bg-gray-50 transition">
-                    <div class="flex justify-between items-center mb-2">
-                        <div>
-                            <span class="text-xs font-bold text-gray-700">${formatearFecha(n.FECHA)}</span>
-                            <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded ml-2 uppercase">${n.SEMANA}</span>
-                        </div>
-                        <span class="text-2xl font-black ${aprobado ? 'text-green-600' : 'text-red-600'}">${n.NOTA}</span>
-                    </div>
-                    <p class="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">
-                        <i class="fas fa-user-shield mr-1"></i>Sup: ${n.SUPERVISOR || 'General'}
-                    </p>
-                    <p class="text-sm text-gray-500 italic truncate border-t border-gray-100 pt-2">"${n.OBS.split('---')[0]}"</p>
-                </div>`;
-                container.innerHTML += card;
+        function llenarFiltros() {
+            const sel = document.getElementById('filtroMes');
+            sel.innerHTML = '<option value="TODOS">📅 Histórico Completo</option>';
+            const meses = new Set();
+            MIS_DATOS.forEach(d => { let fechaRef = d.FECHA_LLAMADA || d.FECHA; if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); });
+            Array.from(meses).sort().reverse().forEach(m => {
+                const [year, month] = m.split('-');
+                const mesNombre = MESES[month] || month;
+                sel.add(new Option(`📅 ${mesNombre} ${year}`, m));
+                const semanasEnMes = new Set();
+                MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(m)).forEach(d => semanasEnMes.add(d.SEMANA));
+                Array.from(semanasEnMes).sort().forEach(s => sel.add(new Option(`↳ ${s}`, `${m}|${s}`)));
             });
         }
 
-        // 4. DETALLE POPUP (Con Audio y Errores Específicos)
-        function verDetalle(nota) {
-            let lista = "";
-            let hayErrores = false;
-            let botonAudio = "";
-
-            // A. Botón de Audio
-            if (nota.AUDIO && nota.AUDIO.length > 5) {
-                botonAudio = `
-                    <div class="mb-4 text-center">
-                        <a href="${nota.AUDIO}" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition transform hover:scale-105">
-                            <i class="fas fa-play-circle text-xl"></i> Descarga audio
-                        </a>
-                        <p class="text-[10px] text-gray-400 mt-2">Se abrirá en nueva pestaña</p>
-                    </div>
-                `;
-            } else {
-                botonAudio = `<div class="mb-4 text-center text-xs text-gray-400 italic"><i class="fas fa-microphone-slash"></i> Audio no adjunto</div>`;
+        function aplicarFiltro() {
+            const val = document.getElementById('filtroMes').value;
+            let datos = MIS_DATOS;
+            if(val !== "TODOS") {
+                if(val.includes('|')) { const [mes, sem] = val.split('|'); datos = MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(mes) && d.SEMANA === sem); }
+                else { datos = MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(val)); }
             }
+            datos.sort((a,b) => new Date(b.FECHA_LLAMADA || b.FECHA) - new Date(a.FECHA_LLAMADA || a.FECHA));
+            renderKPIs(datos); renderTops(datos); renderChart(datos); renderList(datos);
+        }
 
-            // B. Lista de Errores con Descripción
-            if(nota.DETALLE) {
-                for (const [k, v] of Object.entries(nota.DETALLE)) {
-                    if (v === "NO") {
-                        hayErrores = true;
-                        
-                        // Buscamos la descripción específica en el comentario guardado
-                        let descError = "";
-                        // Regex busca: "• NombreItem: texto..."
-                        const safeKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escapar caracteres especiales
-                        const regex = new RegExp(`• ${safeKey}: (.*?)(?:\\n|$)`);
-                        const match = nota.OBS.match(regex);
-                        
-                        if(match) {
-                            descError = `<div class="text-xs text-red-500 font-medium mt-1 pl-3 border-l-2 border-red-300 bg-red-50 p-1 rounded-r">${match[1]}</div>`;
-                        }
+        function renderKPIs(data) {
+            const notas = data.map(d => parseFloat(d.NOTA.replace('%',''))||0);
+            const total = notas.length;
+            const promGen = total ? (notas.reduce((a,b)=>a+b,0)/total).toFixed(0) : 0;
+            const pencNotes = notas.filter(n => n > 0);
+            const promPenc = pencNotes.length ? (pencNotes.reduce((a,b)=>a+b,0)/pencNotes.length).toFixed(0) : 0;
+            const max = total ? Math.max(...notas) : 0;
+            const min = total ? Math.min(...notas) : 0;
+            document.getElementById('kpiTotal').innerText = total; document.getElementById('kpiGeneral').innerText = promGen + "%"; document.getElementById('kpiPenc').innerText = promPenc + "%"; document.getElementById('kpiMax').innerText = max + "%"; document.getElementById('kpiMin').innerText = min + "%";
+        }
 
-                        lista += `
-                        <li class="py-2 border-b border-gray-100">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-700 font-bold text-sm">${k}</span>
-                                <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[10px] font-black">NO CUMPLE</span>
+        function renderTops(data) {
+            let pecC = {}, pencC = {};
+            data.forEach(d => { if(d.DETALLE) { for(const [k,v] of Object.entries(d.DETALLE)) { if(v === 'NO') { const keyClean = Object.keys(PAUTA_DEFS).find(defKey => k.includes(defKey)) || k; const isPec = PEC_KEYS.some(pk => k.includes(pk)); if(isPec) pecC[keyClean] = (pecC[keyClean]||0)+1; else pencC[keyClean] = (pencC[keyClean]||0)+1; } } } });
+            fillList('listPec', pecC, 'text-rose-500 bg-rose-50'); fillList('listPenc', pencC, 'text-orange-500 bg-orange-50');
+        }
+
+        function fillList(id, obj, style) {
+            const ul = document.getElementById(id); ul.innerHTML = "";
+            const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,3);
+            if(sorted.length === 0) { ul.innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4 bg-stone-50 rounded-xl'>¡Excelente! Sin errores.</li>"; return; }
+            sorted.forEach(([k,v]) => { ul.innerHTML += `<li class="flex justify-between items-center text-xs text-stone-600 font-bold border-b border-stone-50 pb-2 last:border-0"><span class="truncate w-3/4">${k}</span><span class="${style} px-2 py-1 rounded-lg text-[10px] min-w-[24px] text-center">${v}</span></li>`; });
+        }
+
+        function renderList(data) {
+            const c = document.getElementById('cardsContainer'); c.innerHTML = "";
+            if(data.length === 0) { c.innerHTML = "<p class='text-center text-stone-400 py-10 bg-white rounded-3xl border border-stone-100'>No hay datos.</p>"; return; }
+            data.forEach(d => {
+                const n = parseFloat(d.NOTA.replace('%',''));
+                let border="border-indigo-200", text="text-indigo-600", icon="📋";
+                if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
+                const fechaMostrar = d.FECHA_LLAMADA || d.FECHA;
+                c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-stone-700 text-sm">${fechaMostrar}</span><span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span></div><p class="text-[10px] text-stone-400 font-bold uppercase group-hover:text-indigo-400 transition">Ver Detalle / Apelar</p></div><div class="text-right"><div class="text-3xl font-black ${text}">${d.NOTA}</div><div class="text-xs opacity-50">${icon}</div></div></div>`;
+            });
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('chartEvolucion').getContext('2d');
+            const sorted = [...data].reverse().slice(-10);
+            if(chartInstance) chartInstance.destroy();
+            let gradient = ctx.createLinearGradient(0, 0, 0, 200); gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)'); gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: sorted.map(d => (d.FECHA_LLAMADA || d.FECHA).substring(5)), datasets: [{ label: 'Nota', data: sorted.map(d => parseFloat(d.NOTA)), borderColor: '#6366f1', backgroundColor: gradient, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#6366f1', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { display: false } }, x: { grid: { display: false } } }, interaction: { intersect: false, mode: 'index' } } });
+        }
+
+        function verDetalle(d) {
+            let items = "";
+            if(d.DETALLE) {
+                for(let [k,v] of Object.entries(d.DETALLE)) {
+                    if(v === 'NO') {
+                        let safeK = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        let regex = new RegExp(`•\\s*${safeK}.*?:\\s*(.*?)(?:\\n|$)`, 'i');
+                        let match = d.OBS.match(regex);
+                        let desc = match && match[1].trim() ? match[1].trim() : "Revisar comentario general";
+                        let tooltipText = "Sin descripción disponible.";
+                        for(const defKey in PAUTA_DEFS) { if(k.includes(defKey)) { tooltipText = PAUTA_DEFS[defKey]; break; } }
+                        
+                        // DESCRIPCIÓN PAUTA INLINE (SOLUCIÓN VENTANA PEQUEÑA)
+                        items += `<li class="text-xs text-rose-500 mb-3 pl-3 border-l-2 border-rose-200">
+                            <div class="mb-0.5">
+                                <span class="font-bold text-rose-600 block">${k}</span>
+                                <span class="text-[9px] text-stone-400 font-normal italic block leading-tight">${tooltipText}</span>
                             </div>
-                            ${descError}
+                            <span class="italic text-stone-500 font-normal leading-relaxed">"${desc}"</span>
                         </li>`;
                     }
                 }
             }
-
-            if (!hayErrores) lista = `<div class="bg-green-50 text-green-700 p-4 rounded text-center font-bold">¡Auditoría Impecable!</div>`;
-            else lista = `<ul class="mt-2 text-sm border border-gray-100 rounded-lg p-2">${lista}</ul>`;
+            if(!items) items = "<li class='text-emerald-500 text-xs italic text-center py-4 bg-emerald-50 rounded-xl'>✨ ¡Felicitaciones! Auditoría limpia.</li>";
+            
+            const fechaAudit = d.FECHA_LLAMADA || d.FECHA;
+            const horaAudit = d.HORA || "--:--";
+            const noteClass = parseFloat(d.NOTA) >= 85 ? 'text-emerald-500' : (parseFloat(d.NOTA) === 0 ? 'text-rose-500' : 'text-amber-500');
 
             Swal.fire({
-                title: `<div class="flex flex-col gap-1">
-                            <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Auditoría ${formatearFecha(nota.FECHA)}</span>
-                            <span class="text-sm text-gray-500 font-normal">Supervisor: ${nota.SUPERVISOR || '-'}</span>
-                        </div>`,
                 html: `
-                    <div class="mt-2">
-                        <div class="flex justify-center items-baseline gap-2 mb-4">
-                            <span class="text-5xl font-black ${parseFloat(nota.NOTA)>=80?'text-green-600':'text-red-600'}">${nota.NOTA}</span>
+                    <div class="text-left">
+                        <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
+                            <div>
+                                <span class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-0.5">Detalle Atención</span>
+                                <span class="text-lg text-stone-700 font-bold">${fechaAudit} <span class="text-sm font-normal text-stone-400 ml-1">${horaAudit} hrs</span></span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-3xl font-black ${noteClass}">${d.NOTA}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between bg-stone-50 p-2 rounded-lg mb-4 text-[10px] text-stone-500 border border-stone-100">
+                            <div><strong>Sup:</strong> ${d.SUPERVISOR || '-'}</div>
+                            <div><strong>Sem:</strong> ${d.SEMANA || '-'}</div>
+                        </div>
+
+                        ${d.AUDIO ? 
+                            `<a href="${d.AUDIO}" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 mb-4 text-xs shadow-md shadow-blue-100">
+                                <i class="fas fa-play-circle text-sm"></i> Escuchar Grabación
+                            </a>
+                            <p class="text-[9px] text-stone-300 text-center -mt-3 mb-4 italic"><i class="fas fa-lock"></i> Requiere sesión activa en ClickUp</p>` 
+                            : ''
+                        }
+
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100 mb-6">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-2">Feedback del Auditor</p>
+                            <p class="text-sm text-stone-600 italic leading-relaxed">"${d.OBS.split('---')[0]}"</p>
                         </div>
                         
-                        ${botonAudio}
-
-                        <div class="text-left bg-gray-50 p-3 rounded-lg border border-gray-200 mb-4">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-1">Feedback General:</h4>
-                            <p class="text-sm text-gray-600 italic">"${nota.OBS.split('---')[0]}"</p>
+                        <div class="mb-6">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-3">Quiebres Detectados</p>
+                            <ul class="max-h-48 overflow-y-auto pr-2 custom-scrollbar">${items}</ul>
                         </div>
-
-                        <div class="text-left">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Detalle de Quiebres:</h4>
-                            ${lista}
-                        </div>
-                    </div>
-                `,
-                showConfirmButton: false,
-                showCloseButton: true,
-                width: '480px',
-                customClass: { popup: 'rounded-2xl shadow-2xl' }
+                        
+                        <button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-indigo-100 text-indigo-500 font-bold text-xs hover:bg-indigo-50 transition flex items-center justify-center gap-2">
+                            <i class="fas fa-gavel"></i> APELAR ESTA NOTA
+                        </button>
+                    </div>`,
+                showConfirmButton: false, showCloseButton: true, width: '500px', customClass: { popup: 'rounded-[2rem]' }
             });
         }
 
-        // Helper para fechas
-        function formatearFecha(fechaStr) {
-            if(!fechaStr) return "";
-            // Si viene ISO (2026-01-30) -> 30-01-2026
-            if(fechaStr.includes('-') && !fechaStr.includes('/')) {
-                const partes = fechaStr.split('T')[0].split('-'); 
-                if(partes.length === 3) return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        async function apelar(cod, fecha, nota) {
+            const { value: text } = await Swal.fire({ title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...', showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' } });
+            if (text) {
+                Swal.fire({ title: 'Enviando...', didOpen:()=>Swal.showLoading(), customClass:{popup:'rounded-2xl'} });
+                fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tipo:"APELACION", codigo:cod, fecha:fecha, nota:nota, argumento:text}) })
+                .then(()=>{ Swal.fire({icon:'success', title:'Enviado', text:'Solicitud registrada', customClass:{popup:'rounded-2xl'}, confirmButtonColor:'#10b981'}); });
             }
-            return fechaStr; // Si ya viene bien, retornamos
+        }
+async function cargarDatos() {
+            try {
+                // CAMBIO AQUI: Usamos corsproxy.io que es más estable para archivos locales
+                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
+                
+                const resp = await fetch(proxy);
+                if (!resp.ok) throw new Error('Error red');
+                const data = await resp.json();
+                
+                if(Array.isArray(data)) {
+                    DATOS_CACHE = data;
+                    
+                    // Limpiar Timers
+                    clearTimeout(rabbitTimer);
+                    clearTimeout(turtleTimer);
+                    clearTimeout(timeoutTimer);
+                    cancelAnimationFrame(gameLoopId); 
+
+                    renderWallOfFame(data);
+                    
+                    // Ocultar Loader
+                    const loader = document.getElementById('loadingScreen');
+                    const content = document.getElementById('loginContent');
+                    loader.style.opacity = '0';
+                    setTimeout(() => { 
+                        loader.classList.add('hidden'); 
+                        content.classList.remove('opacity-0'); 
+                    }, 500);
+                } else { throw new Error("Datos inválidos"); }
+            } catch (e) {
+                console.error(e);
+                // Si falla, mostramos el mensaje de error en pantalla
+                document.getElementById('loadingText').classList.add('hidden');
+                document.getElementById('timeoutMsg').classList.remove('hidden');
+            }
         }
     </script>
 </body>
-
 </html>
