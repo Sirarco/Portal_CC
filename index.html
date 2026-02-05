@@ -173,6 +173,8 @@
     </div>
 
     <script>
+        // ================= CONFIGURACIÓN =================
+        // Asegúrate de que esta URL sea la de tu Script "/exec"
         const API_URL = "https://script.google.com/macros/s/AKfycbwUzZq1FFjj1neUtq1MmiUCZxRLjNqI44Dn0wDQkyQfOHdXRhAWSwvpn-WpvPxJR-aY9A/exec"; 
 
         const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
@@ -210,6 +212,7 @@
         let foxPos = {x: mouseX, y: mouseY}, rabbitPos = {x: mouseX, y: mouseY}, turtlePos = {x: mouseX, y: mouseY};
         let animalsActive = {rabbit: false, turtle: false};
         let gameLoopId;
+        let rabbitTimer, turtleTimer, timeoutTimer; // Variables globales para poder limpiarlas
 
         document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
         function lerp(start, end, factor) { return start + (end - start) * factor; }
@@ -231,31 +234,81 @@
             gameLoopId = requestAnimationFrame(gameLoop);
         }
 
+        // --- INICIO DE LA PÁGINA ---
         window.onload = async () => {
+            // 1. Iniciar el juego visual
             gameLoop();
-            const rabbitTimer = setTimeout(() => { document.getElementById('rabbit').classList.remove('hidden'); animalsActive.rabbit = true; document.getElementById('loadingText').innerText = "El conejo se une a la búsqueda... 🐰"; }, 5000);
-            const turtleTimer = setTimeout(() => { document.getElementById('turtle').classList.remove('hidden'); animalsActive.turtle = true; document.getElementById('loadingText').innerText = "La tortuga viene con calma... 🐢"; }, 15000);
-            const timeoutTimer = setTimeout(() => { cancelAnimationFrame(gameLoopId); document.getElementById('loadingText').classList.add('hidden'); document.getElementById('timeoutMsg').classList.remove('hidden'); }, 45000);
+            
+            // 2. Programar aparición de animales
+            rabbitTimer = setTimeout(() => { 
+                document.getElementById('rabbit').classList.remove('hidden'); 
+                animalsActive.rabbit = true; 
+                const txt = document.getElementById('loadingText'); if(txt) txt.innerText = "El conejo se une a la búsqueda... 🐰"; 
+            }, 5000);
+            
+            turtleTimer = setTimeout(() => { 
+                document.getElementById('turtle').classList.remove('hidden'); 
+                animalsActive.turtle = true; 
+                const txt = document.getElementById('loadingText'); if(txt) txt.innerText = "La tortuga viene con calma... 🐢"; 
+            }, 15000);
+            
+            // 3. Programar mensaje de error por tiempo (45 seg)
+            timeoutTimer = setTimeout(() => { 
+                cancelAnimationFrame(gameLoopId); 
+                document.getElementById('loadingText').classList.add('hidden'); 
+                document.getElementById('timeoutMsg').classList.remove('hidden'); 
+            }, 45000);
 
+            // 4. LLAMAR A LA FUNCIÓN DE CARGA REAL
+            await cargarDatos();
+        };
+
+        // --- FUNCIÓN UNIFICADA DE CARGA ---
+        async function cargarDatos() {
             try {
-                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
+                // CAMBIO CLAVE: Usamos 'codetabs' en lugar de 'corsproxy' o 'allorigins'
+                // Este suele funcionar mejor para archivos locales
+                const proxy = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now());
+                
                 const resp = await fetch(proxy);
-                if (!resp.ok) throw new Error('Error red');
+                
+                if (!resp.ok) throw new Error('Error de red al conectar');
+                
                 const data = await resp.json();
                 
                 if(Array.isArray(data)) {
                     DATOS_CACHE = data;
-                    clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); cancelAnimationFrame(gameLoopId);
+                    
+                    // Detener temporizadores y animaciones
+                    clearTimeout(rabbitTimer); 
+                    clearTimeout(turtleTimer); 
+                    clearTimeout(timeoutTimer); 
+                    cancelAnimationFrame(gameLoopId);
+
+                    // Renderizar
                     renderWallOfFame(data);
+                    
+                    // Ocultar pantalla de carga y mostrar login
                     const loader = document.getElementById('loadingScreen');
                     const content = document.getElementById('loginContent');
                     loader.style.opacity = '0';
-                    setTimeout(() => { loader.classList.add('hidden'); content.classList.remove('opacity-0'); }, 500);
-                } else { throw new Error("Datos inválidos"); }
-            } catch (e) { console.error(e); }
-        };
+                    setTimeout(() => { 
+                        loader.classList.add('hidden'); 
+                        content.classList.remove('opacity-0'); 
+                    }, 500);
+                } else { 
+                    throw new Error("Datos recibidos no tienen formato válido"); 
+                }
+            } catch (e) {
+                console.error("Error cargando datos:", e);
+                // No ocultamos el mensaje de timeout si falla rápido, o lo forzamos
+                document.getElementById('loadingText').innerText = "Reintentando conexión...";
+                // Puedes descomentar la siguiente línea si quieres que muestre el error inmediatamente:
+                // document.getElementById('timeoutMsg').classList.remove('hidden');
+            }
+        }
 
-        // --- FUNCIONES ---
+        // --- FUNCIONES DE RENDERIZADO Y LÓGICA ---
         function renderWallOfFame(data) {
             const hoy = moment();
             const semanaPasada = hoy.subtract(1, 'week').week(); 
@@ -304,7 +357,10 @@
             const sel = document.getElementById('filtroMes');
             sel.innerHTML = '<option value="TODOS">📅 Histórico Completo</option>';
             const meses = new Set();
-            MIS_DATOS.forEach(d => { let fechaRef = d.FECHA_LLAMADA || d.FECHA; if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); });
+            MIS_DATOS.forEach(d => { 
+                let fechaRef = d.FECHA_LLAMADA || d.FECHA; 
+                if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); 
+            });
             Array.from(meses).sort().reverse().forEach(m => {
                 const [year, month] = m.split('-');
                 const mesNombre = MESES[month] || month;
@@ -371,7 +427,7 @@
         }
 
         function verDetalle(d) {
-            let items = "";
+            let items = "", counter = 0;
             if(d.DETALLE) {
                 for(let [k,v] of Object.entries(d.DETALLE)) {
                     if(v === 'NO') {
@@ -382,111 +438,33 @@
                         let tooltipText = "Sin descripción disponible.";
                         for(const defKey in PAUTA_DEFS) { if(k.includes(defKey)) { tooltipText = PAUTA_DEFS[defKey]; break; } }
                         
-                        // DESCRIPCIÓN PAUTA INLINE (SOLUCIÓN VENTANA PEQUEÑA)
-                        items += `<li class="text-xs text-rose-500 mb-3 pl-3 border-l-2 border-rose-200">
-                            <div class="mb-0.5">
-                                <span class="font-bold text-rose-600 block">${k}</span>
-                                <span class="text-[9px] text-stone-400 font-normal italic block leading-tight">${tooltipText}</span>
-                            </div>
-                            <span class="italic text-stone-500 font-normal leading-relaxed">"${desc}"</span>
-                        </li>`;
+                        let tooltipClass = counter === 0 ? "tooltip-down" : "tooltip-up";
+                        items += `<li class="text-xs text-rose-500 mb-3 pl-3 border-l-2 border-rose-200 group relative tooltip-wrap"><span class="font-bold block text-rose-600 mb-0.5 border-b border-dotted border-rose-300 w-fit">${k} <i class="fas fa-info-circle text-[9px] ml-1 opacity-50"></i></span><span class="tooltip-content ${tooltipClass}">${tooltipText}</span><span class="italic text-stone-500 font-normal leading-relaxed">"${desc}"</span></li>`;
+                        counter++;
                     }
                 }
             }
             if(!items) items = "<li class='text-emerald-500 text-xs italic text-center py-4 bg-emerald-50 rounded-xl'>✨ ¡Felicitaciones! Auditoría limpia.</li>";
-            
             const fechaAudit = d.FECHA_LLAMADA || d.FECHA;
-            const horaAudit = d.HORA || "--:--";
-            const noteClass = parseFloat(d.NOTA) >= 85 ? 'text-emerald-500' : (parseFloat(d.NOTA) === 0 ? 'text-rose-500' : 'text-amber-500');
-
             Swal.fire({
-                html: `
-                    <div class="text-left">
-                        <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
-                            <div>
-                                <span class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-0.5">Detalle Atención</span>
-                                <span class="text-lg text-stone-700 font-bold">${fechaAudit} <span class="text-sm font-normal text-stone-400 ml-1">${horaAudit} hrs</span></span>
-                            </div>
-                            <div class="text-right">
-                                <span class="block text-3xl font-black ${noteClass}">${d.NOTA}</span>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between bg-stone-50 p-2 rounded-lg mb-4 text-[10px] text-stone-500 border border-stone-100">
-                            <div><strong>Sup:</strong> ${d.SUPERVISOR || '-'}</div>
-                            <div><strong>Sem:</strong> ${d.SEMANA || '-'}</div>
-                        </div>
-
-                        ${d.AUDIO ? 
-                            `<a href="${d.AUDIO}" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 mb-4 text-xs shadow-md shadow-blue-100">
-                                <i class="fas fa-play-circle text-sm"></i> Escuchar Grabación
-                            </a>
-                            <p class="text-[9px] text-stone-300 text-center -mt-3 mb-4 italic"><i class="fas fa-lock"></i> Requiere sesión activa en ClickUp</p>` 
-                            : ''
-                        }
-
-                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100 mb-6">
-                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-2">Feedback del Auditor</p>
-                            <p class="text-sm text-stone-600 italic leading-relaxed">"${d.OBS.split('---')[0]}"</p>
-                        </div>
-                        
-                        <div class="mb-6">
-                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-3">Quiebres Detectados</p>
-                            <ul class="max-h-48 overflow-y-auto pr-2 custom-scrollbar">${items}</ul>
-                        </div>
-                        
-                        <button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-indigo-100 text-indigo-500 font-bold text-xs hover:bg-indigo-50 transition flex items-center justify-center gap-2">
-                            <i class="fas fa-gavel"></i> APELAR ESTA NOTA
-                        </button>
-                    </div>`,
+                title: `<div class="text-left"><span class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-1">Detalle Atención</span><span class="text-xl text-stone-700">${fechaAudit}</span></div>`,
+                html: `<div class="text-left mt-4"><div class="bg-stone-50 p-4 rounded-2xl border border-stone-100 mb-6"><p class="text-[10px] font-bold text-stone-400 uppercase mb-2">Feedback del Auditor</p><p class="text-sm text-stone-600 italic leading-relaxed">"${d.OBS.split('---')[0]}"</p></div><div class="mb-6"><p class="text-[10px] font-bold text-stone-400 uppercase mb-3">Quiebres (Pasa el mouse)</p><ul class="max-h-48 overflow-y-auto pr-2 custom-scrollbar">${items}</ul></div><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-indigo-100 text-indigo-500 font-bold text-xs hover:bg-indigo-50 transition flex items-center justify-center gap-2"><i class="fas fa-gavel"></i> APELAR ESTA NOTA</button></div>`,
                 showConfirmButton: false, showCloseButton: true, width: '500px', customClass: { popup: 'rounded-[2rem]' }
             });
         }
 
         async function apelar(cod, fecha, nota) {
-            const { value: text } = await Swal.fire({ title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...', showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' } });
+            const { value: text } = await Swal.fire({
+                title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...',
+                showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' }
+            });
             if (text) {
                 Swal.fire({ title: 'Enviando...', didOpen:()=>Swal.showLoading(), customClass:{popup:'rounded-2xl'} });
                 fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tipo:"APELACION", codigo:cod, fecha:fecha, nota:nota, argumento:text}) })
                 .then(()=>{ Swal.fire({icon:'success', title:'Enviado', text:'Solicitud registrada', customClass:{popup:'rounded-2xl'}, confirmButtonColor:'#10b981'}); });
             }
         }
-async function cargarDatos() {
-            try {
-                // CAMBIO AQUI: Usamos corsproxy.io que es más estable para archivos locales
-                const proxy = "https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now());
-                
-                const resp = await fetch(proxy);
-                if (!resp.ok) throw new Error('Error red');
-                const data = await resp.json();
-                
-                if(Array.isArray(data)) {
-                    DATOS_CACHE = data;
-                    
-                    // Limpiar Timers
-                    clearTimeout(rabbitTimer);
-                    clearTimeout(turtleTimer);
-                    clearTimeout(timeoutTimer);
-                    cancelAnimationFrame(gameLoopId); 
-
-                    renderWallOfFame(data);
-                    
-                    // Ocultar Loader
-                    const loader = document.getElementById('loadingScreen');
-                    const content = document.getElementById('loginContent');
-                    loader.style.opacity = '0';
-                    setTimeout(() => { 
-                        loader.classList.add('hidden'); 
-                        content.classList.remove('opacity-0'); 
-                    }, 500);
-                } else { throw new Error("Datos inválidos"); }
-            } catch (e) {
-                console.error(e);
-                // Si falla, mostramos el mensaje de error en pantalla
-                document.getElementById('loadingText').classList.add('hidden');
-                document.getElementById('timeoutMsg').classList.remove('hidden');
-            }
-        }
     </script>
 </body>
 </html>
+
