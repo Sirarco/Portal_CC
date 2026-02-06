@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Calidad</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,21 +12,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
     <style>
+        /* Estilos Base */
         body { background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
         .fade-in { animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Tarjetas */
+        /* Tarjetas de Ranking */
         .card-gold { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-bottom: 4px solid #fcd34d; color: #92400e; }
         .card-silver { background: linear-gradient(to bottom right, #f8fafc, #e2e8f0); border-bottom: 4px solid #cbd5e1; color: #475569; }
         .card-bronze { background: linear-gradient(to bottom right, #fff7ed, #ffedd5); border-bottom: 4px solid #fdba74; color: #9a3412; }
         
-        /* Scrollbars */
+        /* Scrollbars Personalizados */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* === JUEGO DE CARGA === */
+        /* Juego de Carga */
         #loadingScreen { transition: opacity 0.5s ease; user-select: none; }
         .follower { 
             position: fixed; font-size: 40px; pointer-events: none; z-index: 9999; 
@@ -35,6 +37,9 @@
         }
         .walk-anim { animation: waddle 0.5s infinite alternate; }
         @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+        /* Tooltip Nativo Simplificado (Solo cursor de ayuda) */
+        .indicator-tooltip { cursor: help; border-bottom: 1px dotted #94a3b8; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -61,7 +66,7 @@
             <div class="mt-48 text-center z-10 pointer-events-none">
                 <h2 class="text-2xl font-black text-indigo-400 mb-2">Cargando Portal...</h2>
                 <p class="text-stone-400 text-sm font-bold animate-pulse transition-all duration-500" id="loadingText">Conectando...</p>
-                <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Mueve el mouse para que te sigan)</p>
+                <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Toca la pantalla o mueve el mouse)</p>
             </div>
 
             <div id="timeoutMsg" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-white p-8 rounded-3xl shadow-xl border border-rose-100 z-50">
@@ -77,7 +82,7 @@
         <div id="loginContent" class="opacity-0 transition-opacity duration-1000">
             <div class="text-center mb-10 mt-6">
                 <h1 class="text-3xl font-black text-stone-700 mb-2"><i class="fas fa-trophy text-yellow-400 mr-3"></i>Cuadro de Honor</h1>
-                <p class="text-stone-400 text-sm font-medium">Última semana de enero 2026</p>
+                <p class="text-stone-400 text-sm font-medium">Top 10 Semanal</p>
             </div>
 
             <div id="wallOfFame" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16"></div>
@@ -125,42 +130,18 @@
             </div>
         </div>
 
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 flex items-center gap-4 shadow-sm animate-pulse">
-            <div class="bg-blue-100 text-blue-500 p-2 rounded-full"><i class="fas fa-info-circle text-xl"></i></div>
-            <div>
-                <h4 class="font-bold text-blue-700 text-sm">Información Importante - Marcha Blanca</h4>
-                <p class="text-xs text-blue-600/80 mt-0.5 font-medium">Estamos en periodo de marcha blanca durante la primera quincena de febrero. Todas sus notas tendrán retroalimentación durante la semana.</p>
-            </div>
-        </div>
-
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 text-center relative group hover:shadow-md transition">
-                <p class="text-[10px] text-emerald-600 font-black uppercase tracking-wide">Calidad Técnica (PENC)</p><p class="text-3xl font-black text-emerald-600 mt-2" id="kpiPenc">-</p><p class="text-[9px] text-emerald-400/80 font-medium mt-1">Sin ceros</p>
-            </div>
-            <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition">
-                <p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition">
-                <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p>
-            </div>
-            <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition">
-                <p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p>
-            </div>
-            <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100 text-center relative group hover:shadow-md transition">
-                <p class="text-[10px] text-rose-400 font-black uppercase tracking-wide">Nota Mínima</p><p class="text-3xl font-black text-rose-400 mt-2" id="kpiMin">-</p>
-            </div>
+            <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-emerald-600 font-black uppercase tracking-wide">Calidad Técnica (PENC)</p><p class="text-3xl font-black text-emerald-600 mt-2" id="kpiPenc">-</p><p class="text-[9px] text-emerald-400/80 font-medium mt-1">Sin ceros</p></div>
+            <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p></div>
+            <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p></div>
+            <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p></div>
+            <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-rose-400 font-black uppercase tracking-wide">Nota Mínima</p><p class="text-3xl font-black text-rose-400 mt-2" id="kpiMin">-</p></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
-                <h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-orange-100 text-orange-500 p-1.5 rounded-lg"><i class="fas fa-lightbulb"></i></span>Oportunidades (PENC)</h3><ul id="listPenc" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
-                <h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center">
-                <h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div>
-            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-orange-100 text-orange-500 p-1.5 rounded-lg"><i class="fas fa-lightbulb"></i></span>Oportunidades (PENC)</h3><ul id="listPenc" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center"><h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div></div>
         </div>
 
         <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
@@ -168,59 +149,64 @@
 
         <div class="mt-auto pt-8 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
             <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
-            <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
         </div>
     </div>
 
     <script>
         // ================= CONFIGURACIÓN =================
-        // Asegúrate de que esta URL sea la de tu Script "/exec"
-        const API_URL = "https://script.google.com/macros/s/AKfycbzGtnjzJeHSePkZ_0k_bt1hZcrYVjxIcV4_dekezLO815n7YPUlmCbt5QmvmwYcqyYheA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzs8tLZVq1B-JIiRpgm6Ifam0SQrwDm9NMkMCpz-3n1LiqKDtjQ3cE4gceJjmvYywZajA/exec"; 
 
         const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
-        const PAUTA_DEFS = {
-            "Validación Identidad": "Debes solicitar RUT y Nombre completo al inicio. Si es tercero, validar ambos.",
-            "Confidencialidad": "Resguarda datos sensibles. No entregues diagnósticos oncológicos o GES sin validar.",
-            "Normas de Conducta": "Mantén el respeto. No grites, no cortes la llamada, usa tono profesional.",
-            "Abandono": "No dejes al paciente en silencio (mudo) por tiempos excesivos sin avisar.",
-            "Registro": "Es obligatorio dejar la nota o glosa de la gestión en el CRM.",
-            "Script Inicio/Cierre": "Usa el saludo institucional completo y la despedida cordial según pauta.",
-            "Cortesía y Trato": "Usa siempre 'Usted', 'Por favor' y 'Gracias'. Evita el tuteo.",
-            "Sondeo": "Realiza las preguntas necesarias para entender realmente la solicitud.",
-            "Entrega Información": "La información entregada debe ser correcta, completa y veraz.",
-            "Manejo Tiempos": "Retoma el contacto cada 45 segundos. Justifica las esperas.",
-            "Aseguramiento": "Pregunta explícitamente: '¿Le queda alguna otra duda?' al final.",
-            "Personalización": "Llama al paciente por su nombre al menos 3 veces durante el llamado.",
-            "Lenguaje": "Modulación clara, volumen adecuado, sin muletillas (ehh, mmm).",
-            "Empatía": "Demuestra interés genuino, valida la emoción del paciente ('Lo entiendo...').",
-            "Tipificación": "Selecciona exactamente el motivo de llamado correcto en el sistema."
-        };
-
         const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
+
+        // DICCIONARIO PARA TOOLTIPS Y NOMBRES
+        const INDICADORES_INFO = {
+            "SEG_VALIDACION": { nombre: "Validación Identidad", desc: "Debe solicitar RUT y Nombre completo al inicio." },
+            "SEG_CONFIDENCIALIDAD": { nombre: "Confidencialidad", desc: "Resguarda datos sensibles. No entrega diagnósticos sin validar." },
+            "COND_NORMAS": { nombre: "Normas de Conducta", desc: "Mantiene el respeto, no grita, no corta la llamada." },
+            "OP_ABANDONO": { nombre: "Abandono", desc: "No deja al paciente en silencio por tiempos excesivos." },
+            "SIST_REGISTRO": { nombre: "Registro en CRM", desc: "Deja la nota o glosa de la gestión obligatoriamente." },
+            
+            "PROT_SCRIPT": { nombre: "Script Inicio/Cierre", desc: "Usa el saludo institucional y la despedida cordial." },
+            "PROT_CORTESIA": { nombre: "Cortesía y Trato", desc: "Usa 'Usted', 'Por favor' y 'Gracias'." },
+            "GEST_SONDEO": { nombre: "Sondeo", desc: "Realiza las preguntas para entender la solicitud." },
+            "GEST_INFORMACION": { nombre: "Entrega Información", desc: "Información correcta, completa y veraz." },
+            "GEST_TIEMPOS": { nombre: "Manejo Tiempos", desc: "Retoma el contacto cada 45 segundos." },
+            "GEST_ASEGURAMIENTO": { nombre: "Aseguramiento", desc: "Pregunta '¿Le queda alguna otra duda?' al final." },
+            
+            "HAB_PERSONALIZACION": { nombre: "Personalización", desc: "Llama al paciente por su nombre." },
+            "HAB_LENGUAJE": { nombre: "Lenguaje", desc: "Modulación clara, sin muletillas." },
+            "HAB_EMPATIA": { nombre: "Empatía", desc: "Demuestra interés y valida la emoción." },
+            "SIST_TIPIFICACION": { nombre: "Tipificación", desc: "Selecciona el motivo correcto en el sistema." }
+        };
+        // Helper para compatibilidad
+        const PAUTA_DEFS = {}; Object.values(INDICADORES_INFO).forEach(v => PAUTA_DEFS[v.nombre] = v.desc);
 
         let DATOS_CACHE = [];
         let MIS_DATOS = [];
         let chartInstance = null;
 
-        // ENTER PARA LOGIN
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") { event.preventDefault(); login(); }
         });
 
-        // --- SISTEMA DE CARGA (GAME LOOP) ---
-        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-        let foxPos = {x: mouseX, y: mouseY}, rabbitPos = {x: mouseX, y: mouseY}, turtlePos = {x: mouseX, y: mouseY};
+        // --- SISTEMA DE CARGA (GAME LOOP) CON SOPORTE TÁCTIL ---
+        let targetX = window.innerWidth / 2, targetY = window.innerHeight / 2;
+        let foxPos = {x: targetX, y: targetY}, rabbitPos = {x: targetX, y: targetY}, turtlePos = {x: targetX, y: targetY};
         let animalsActive = {rabbit: false, turtle: false};
         let gameLoopId;
-        let rabbitTimer, turtleTimer, timeoutTimer; // Variables globales para poder limpiarlas
+        let rabbitTimer, turtleTimer, timeoutTimer;
 
-        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        document.addEventListener('mousemove', (e) => { targetX = e.clientX; targetY = e.clientY; });
+        document.addEventListener('touchmove', (e) => { 
+            const touch = e.touches[0]; targetX = touch.clientX; targetY = touch.clientY; 
+        }, {passive: false});
+
         function lerp(start, end, factor) { return start + (end - start) * factor; }
 
         function gameLoop() {
-            foxPos.x = lerp(foxPos.x, mouseX - 25, 0.1); foxPos.y = lerp(foxPos.y, mouseY - 25, 0.1);
+            foxPos.x = lerp(foxPos.x, targetX - 25, 0.1); foxPos.y = lerp(foxPos.y, targetY - 25, 0.1);
             const foxEl = document.getElementById('fox'); if(foxEl) { foxEl.style.left = foxPos.x + 'px'; foxEl.style.top = foxPos.y + 'px'; }
-
             if (animalsActive.rabbit) {
                 const dist = Math.hypot(foxPos.x - rabbitPos.x, foxPos.y - rabbitPos.y);
                 if (dist > 60) { rabbitPos.x = lerp(rabbitPos.x, foxPos.x, 0.05); rabbitPos.y = lerp(rabbitPos.y, foxPos.y, 0.05); }
@@ -234,81 +220,48 @@
             gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        // --- INICIO DE LA PÁGINA ---
         window.onload = async () => {
-            // 1. Iniciar el juego visual
             gameLoop();
-            
-            // 2. Programar aparición de animales
-            rabbitTimer = setTimeout(() => { 
-                document.getElementById('rabbit').classList.remove('hidden'); 
-                animalsActive.rabbit = true; 
-                const txt = document.getElementById('loadingText'); if(txt) txt.innerText = "El conejo se une a la búsqueda... 🐰"; 
-            }, 5000);
-            
-            turtleTimer = setTimeout(() => { 
-                document.getElementById('turtle').classList.remove('hidden'); 
-                animalsActive.turtle = true; 
-                const txt = document.getElementById('loadingText'); if(txt) txt.innerText = "La tortuga viene con calma... 🐢"; 
-            }, 15000);
-            
-            // 3. Programar mensaje de error por tiempo (45 seg)
-            timeoutTimer = setTimeout(() => { 
-                cancelAnimationFrame(gameLoopId); 
-                document.getElementById('loadingText').classList.add('hidden'); 
-                document.getElementById('timeoutMsg').classList.remove('hidden'); 
-            }, 45000);
-
-            // 4. LLAMAR A LA FUNCIÓN DE CARGA REAL
+            rabbitTimer = setTimeout(() => { document.getElementById('rabbit').classList.remove('hidden'); animalsActive.rabbit = true; const t=document.getElementById('loadingText'); if(t)t.innerText="El conejo busca señal... 🐰"; }, 5000);
+            turtleTimer = setTimeout(() => { document.getElementById('turtle').classList.remove('hidden'); animalsActive.turtle = true; const t=document.getElementById('loadingText'); if(t)t.innerText="La tortuga descarga datos... 🐢"; }, 15000);
+            timeoutTimer = setTimeout(() => { cancelAnimationFrame(gameLoopId); document.getElementById('loadingText').classList.add('hidden'); document.getElementById('timeoutMsg').classList.remove('hidden'); }, 60000);
             await cargarDatos();
         };
 
-        // --- FUNCIÓN UNIFICADA DE CARGA ---
+        // --- CARGA DE DATOS ROBUSTA (DOBLE MOTOR) ---
         async function cargarDatos() {
-            try {
-                // CAMBIO CLAVE: Usamos 'codetabs' en lugar de 'corsproxy' o 'allorigins'
-                // Este suele funcionar mejor para archivos locales
-                const proxy = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now());
-                
-                const resp = await fetch(proxy);
-                
-                if (!resp.ok) throw new Error('Error de red al conectar');
-                
-                const data = await resp.json();
-                
-                if(Array.isArray(data)) {
-                    DATOS_CACHE = data;
-                    
-                    // Detener temporizadores y animaciones
-                    clearTimeout(rabbitTimer); 
-                    clearTimeout(turtleTimer); 
-                    clearTimeout(timeoutTimer); 
-                    cancelAnimationFrame(gameLoopId);
+            let data = await intentarFetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+            if (!data) {
+                console.warn("Fallo CodeTabs, intentando AllOrigins...");
+                data = await intentarFetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+            }
+            if (!data) {
+                console.warn("Fallo AllOrigins, intentando CorsProxy...");
+                data = await intentarFetch("https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+            }
 
-                    // Renderizar
-                    renderWallOfFame(data);
-                    
-                    // Ocultar pantalla de carga y mostrar login
-                    const loader = document.getElementById('loadingScreen');
-                    const content = document.getElementById('loginContent');
+            if(Array.isArray(data)) {
+                DATOS_CACHE = data;
+                clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); 
+                cancelAnimationFrame(gameLoopId);
+                renderWallOfFame(data);
+                const loader = document.getElementById('loadingScreen');
+                const content = document.getElementById('loginContent');
+                if(loader) {
                     loader.style.opacity = '0';
-                    setTimeout(() => { 
-                        loader.classList.add('hidden'); 
-                        content.classList.remove('opacity-0'); 
-                    }, 500);
-                } else { 
-                    throw new Error("Datos recibidos no tienen formato válido"); 
+                    setTimeout(() => { loader.classList.add('hidden'); content.classList.remove('opacity-0'); }, 500);
                 }
-            } catch (e) {
-                console.error("Error cargando datos:", e);
-                // No ocultamos el mensaje de timeout si falla rápido, o lo forzamos
-                document.getElementById('loadingText').innerText = "Reintentando conexión...";
-                // Puedes descomentar la siguiente línea si quieres que muestre el error inmediatamente:
-                // document.getElementById('timeoutMsg').classList.remove('hidden');
+            } else {
+                document.getElementById('loadingText').innerText = "Fallo de conexión total.";
+                document.getElementById('loadingText').classList.add('text-rose-500');
             }
         }
 
-        // --- FUNCIONES DE RENDERIZADO Y LÓGICA ---
+        async function intentarFetch(url) {
+            try { const resp = await fetch(url); if (!resp.ok) return null; const json = await resp.json(); return Array.isArray(json) ? json : null; } catch (e) { return null; }
+        }
+
+        // --- RENDERIZADO ---
         function renderWallOfFame(data) {
             const hoy = moment();
             const semanaPasada = hoy.subtract(1, 'week').week(); 
@@ -357,10 +310,7 @@
             const sel = document.getElementById('filtroMes');
             sel.innerHTML = '<option value="TODOS">📅 Histórico Completo</option>';
             const meses = new Set();
-            MIS_DATOS.forEach(d => { 
-                let fechaRef = d.FECHA_LLAMADA || d.FECHA; 
-                if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); 
-            });
+            MIS_DATOS.forEach(d => { let fechaRef = d.FECHA_LLAMADA || d.FECHA; if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); });
             Array.from(meses).sort().reverse().forEach(m => {
                 const [year, month] = m.split('-');
                 const mesNombre = MESES[month] || month;
@@ -426,38 +376,89 @@
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: sorted.map(d => (d.FECHA_LLAMADA || d.FECHA).substring(5)), datasets: [{ label: 'Nota', data: sorted.map(d => parseFloat(d.NOTA)), borderColor: '#6366f1', backgroundColor: gradient, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#6366f1', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { display: false } }, x: { grid: { display: false } } }, interaction: { intersect: false, mode: 'index' } } });
         }
 
+        // --- FUNCIÓN VER DETALLE MEJORADA (TOOLTIPS NATIVOS) ---
         function verDetalle(d) {
-            let items = "", counter = 0;
-            if(d.DETALLE) {
-                for(let [k,v] of Object.entries(d.DETALLE)) {
-                    if(v === 'NO') {
-                        let safeK = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        let regex = new RegExp(`•\\s*${safeK}.*?:\\s*(.*?)(?:\\n|$)`, 'i');
-                        let match = d.OBS.match(regex);
-                        let desc = match && match[1].trim() ? match[1].trim() : "Revisar comentario general";
-                        let tooltipText = "Sin descripción disponible.";
-                        for(const defKey in PAUTA_DEFS) { if(k.includes(defKey)) { tooltipText = PAUTA_DEFS[defKey]; break; } }
+            let itemsHtml = "";
+            let tieneQuiebres = false;
+
+            if (d.DETALLE) {
+                for (let [keyExcel, valor] of Object.entries(d.DETALLE)) {
+                    if (valor === 'NO') {
+                        tieneQuiebres = true;
+                        const info = INDICADORES_INFO[keyExcel] || { nombre: keyExcel, desc: "Sin descripción" };
                         
-                        let tooltipClass = counter === 0 ? "tooltip-down" : "tooltip-up";
-                        items += `<li class="text-xs text-rose-500 mb-3 pl-3 border-l-2 border-rose-200 group relative tooltip-wrap"><span class="font-bold block text-rose-600 mb-0.5 border-b border-dotted border-rose-300 w-fit">${k} <i class="fas fa-info-circle text-[9px] ml-1 opacity-50"></i></span><span class="tooltip-content ${tooltipClass}">${tooltipText}</span><span class="italic text-stone-500 font-normal leading-relaxed">"${desc}"</span></li>`;
-                        counter++;
+                        let safeName = info.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        let regex = new RegExp(`•\\s*${safeName}.*?:\\s*(.*?)(?:\\n|$)`, 'i');
+                        let match = d.OBS.match(regex);
+                        let comentarioEspecifico = match && match[1].trim() ? match[1].trim() : "Revisar observación general.";
+
+                        const esCritico = ["SEG", "COND", "OP", "SIST"].some(prefix => keyExcel.startsWith(prefix));
+                        const colorClass = esCritico ? "text-rose-600 border-rose-200 bg-rose-50" : "text-orange-600 border-orange-200 bg-orange-50";
+                        const badge = esCritico ? "PEC (Crítico)" : "PENC (Leve)";
+
+                        // USO DE TITLE NATIVO PARA EVITAR CORTES
+                        itemsHtml += `
+                        <li class="mb-3 pl-3 border-l-4 ${colorClass} rounded-r-lg p-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-xs indicator-tooltip" title="${info.desc}">
+                                    ${info.nombre} <i class="fas fa-info-circle text-[9px] opacity-50 ml-1"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase opacity-60">${badge}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 italic">"${comentarioEspecifico}"</p>
+                        </li>`;
                     }
                 }
             }
-            if(!items) items = "<li class='text-emerald-500 text-xs italic text-center py-4 bg-emerald-50 rounded-xl'>✨ ¡Felicitaciones! Auditoría limpia.</li>";
-            const fechaAudit = d.FECHA_LLAMADA || d.FECHA;
+
+            if (!itemsHtml) itemsHtml = "<div class='text-center py-6 text-emerald-500 bg-emerald-50 rounded-xl border border-emerald-100 italic text-xs'><i class='fas fa-check-circle text-2xl mb-2 block'></i>¡Felicitaciones!<br>Auditoría sin quiebres detectados.</div>";
+
+            let audioSection = "";
+            if (d.AUDIO_URL && d.AUDIO_URL.length > 5) {
+                audioSection = `
+                    <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 mb-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i class="fas fa-headphones"></i> Grabación</p>
+                        <audio controls src="${d.AUDIO_URL}" class="w-full h-8 mb-3 shadow-sm rounded-lg" preload="none"></audio>
+                        <div class="flex items-center justify-between">
+                            <a href="${d.AUDIO_URL}" target="_blank" class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 hover:underline"><i class="fas fa-external-link-alt mr-1"></i> Abrir / Descargar</a>
+                            <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-100"><i class="fas fa-lock mr-1"></i> Login ClickUp requerido</span>
+                        </div>
+                    </div>`;
+            } else {
+                audioSection = `
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex items-center gap-3 opacity-75">
+                        <div class="bg-gray-200 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-volume-mute"></i></div>
+                        <div><p class="text-xs font-bold text-gray-500">Audio no disponible</p><p class="text-[10px] text-gray-400">Si lo necesitas, contacta a tu supervisor.</p></div>
+                    </div>`;
+            }
+
+            const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---";
+            const horaCall = d.HORA_LLAMADA || d.HORA || "--:--";
+            const rutPac = d.RUT_PACIENTE || "No registrado";
+            const notaVal = parseFloat(d.NOTA.replace('%',''));
+            const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
+
             Swal.fire({
-                title: `<div class="text-left"><span class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-1">Detalle Atención</span><span class="text-xl text-stone-700">${fechaAudit}</span></div>`,
-                html: `<div class="text-left mt-4"><div class="bg-stone-50 p-4 rounded-2xl border border-stone-100 mb-6"><p class="text-[10px] font-bold text-stone-400 uppercase mb-2">Feedback del Auditor</p><p class="text-sm text-stone-600 italic leading-relaxed">"${d.OBS.split('---')[0]}"</p></div><div class="mb-6"><p class="text-[10px] font-bold text-stone-400 uppercase mb-3">Quiebres (Pasa el mouse)</p><ul class="max-h-48 overflow-y-auto pr-2 custom-scrollbar">${items}</ul></div><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-indigo-100 text-indigo-500 font-bold text-xs hover:bg-indigo-50 transition flex items-center justify-center gap-2"><i class="fas fa-gavel"></i> APELAR ESTA NOTA</button></div>`,
-                showConfirmButton: false, showCloseButton: true, width: '500px', customClass: { popup: 'rounded-[2rem]' }
+                title: `<div class="flex items-center gap-2 text-left"><div class="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-contract"></i></div><div><span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalle Atención</span><span class="block text-sm text-slate-700 font-bold">Evaluación de Calidad</span></div></div>`,
+                html: `
+                    <div class="text-left mt-2">
+                        <div class="grid grid-cols-2 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div>
+                            <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div>
+                        </div>
+                        ${audioSection}
+                        <div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div>
+                        <div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4><div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10">${d.OBS}</span></div></div>
+                        <div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div>
+                        <div class="mt-6 pt-4 border-t border-slate-100"><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div>
+                    </div>
+                `,
+                width: '550px', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-[2rem]' }
             });
         }
 
         async function apelar(cod, fecha, nota) {
-            const { value: text } = await Swal.fire({
-                title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...',
-                showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' }
-            });
+            const { value: text } = await Swal.fire({ title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...', showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' } });
             if (text) {
                 Swal.fire({ title: 'Enviando...', didOpen:()=>Swal.showLoading(), customClass:{popup:'rounded-2xl'} });
                 fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tipo:"APELACION", codigo:cod, fecha:fecha, nota:nota, argumento:text}) })
@@ -467,6 +468,3 @@
     </script>
 </body>
 </html>
-
-
-
