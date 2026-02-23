@@ -1,71 +1,604 @@
-<div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
-    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
-    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2">
-        <span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>
-        Calidad Tipificación
-    </h3>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Calidad</title>
     
-    <div class="text-center mb-8 mt-4 z-10">
-        <span class="text-7xl font-black text-emerald-500 tracking-tighter" id="efUtilidadPct">-</span>
-        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-2">Observaciones Útiles</p>
-    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-    <div class="space-y-4 mb-8 z-10">
-        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100">
-            <h4 class="text-[11px] font-black text-indigo-500 uppercase mb-2 flex items-center gap-2">
-                <i class="fas fa-info-circle"></i> ¿Cómo se calcula?
-            </h4>
-            <p class="text-[10px] text-stone-500 leading-relaxed">
-                Medimos la <strong>utilidad real</strong> de tus registros. Una buena glosa permite que cualquier compañero sepa qué pasó sin re-preguntar al usuario.
-            </p>
+    <style>
+        /* Estilos Base */
+        body { background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tarjetas de Ranking */
+        .card-gold { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-bottom: 4px solid #fcd34d; color: #92400e; }
+        .card-silver { background: linear-gradient(to bottom right, #f8fafc, #e2e8f0); border-bottom: 4px solid #cbd5e1; color: #475569; }
+        .card-bronze { background: linear-gradient(to bottom right, #fff7ed, #ffedd5); border-bottom: 4px solid #fdba74; color: #9a3412; }
+        
+        /* Scrollbars Personalizados */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Juego de Carga */
+        #loadingScreen { transition: opacity 0.5s ease; user-select: none; }
+        .follower { 
+            position: fixed; font-size: 40px; pointer-events: none; z-index: 9999; 
+            transition: transform 0.1s linear; 
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+            will-change: top, left;
+        }
+        .walk-anim { animation: waddle 0.5s infinite alternate; }
+        @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+        /* Tooltip Nativo Simplificado (Solo cursor de ayuda) */
+        .indicator-tooltip { cursor: help; border-bottom: 1px dotted #94a3b8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm border-b border-stone-100">
+        <span class="font-bold text-stone-400 tracking-widest text-xs uppercase">ESPEX</span>
+        <div class="flex flex-col items-center">
+            <span class="font-black text-2xl text-indigo-400 tracking-tighter">Portal de Calidad</span>
+            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Excelencia & Servicio</span>
+        </div>
+        <div class="text-right">
+            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">Hospital</span>
+            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">de La Florida</span>
+        </div>
+    </nav>
+
+    <div id="viewLogin" class="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col relative">
+        
+        <div id="loadingScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#fdfbf7]">
+            <div id="fox" class="follower walk-anim">🦊</div>
+            <div id="rabbit" class="follower walk-anim hidden">🐰</div>
+            <div id="turtle" class="follower walk-anim hidden">🐢</div>
+
+            <div class="mt-48 text-center z-10 pointer-events-none">
+                <h2 class="text-2xl font-black text-indigo-400 mb-2">Cargando Portal...</h2>
+                <p class="text-stone-400 text-sm font-bold animate-pulse transition-all duration-500" id="loadingText">Conectando...</p>
+                <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Toca la pantalla o mueve el mouse)</p>
+            </div>
+
+            <div id="timeoutMsg" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-white p-8 rounded-3xl shadow-xl border border-rose-100 z-50">
+                <div class="text-4xl mb-4">😴</div>
+                <h3 class="text-xl font-bold text-rose-500 mb-2">El servidor se quedó dormido</h3>
+                <p class="text-xs text-stone-500 mb-6">Ha pasado mucho tiempo y los datos no llegan.<br>Por favor intenta nuevamente.</p>
+                <button onclick="location.reload()" class="bg-rose-500 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-200">
+                    <i class="fas fa-sync-alt mr-2"></i> Reintentar
+                </button>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 text-[10px]">
-            <div class="p-3 border border-emerald-100 rounded-xl bg-emerald-50/30">
-                <span class="font-bold text-emerald-600 block mb-1">✅ GESTIÓN ÚTIL (100%)</span>
-                <ul class="list-disc ml-3 text-stone-500 space-y-1">
-                    <li><strong>Aportar Valor:</strong> Describe motivo y solución real.</li>
-                    <li><strong>Extensión:</strong> Mínimo 20 caracteres (4-5 palabras).</li>
-                </ul>
+        <div id="loginContent" class="opacity-0 transition-opacity duration-1000">
+            <div class="text-center mb-10 mt-6">
+                <h1 class="text-3xl font-black text-stone-700 mb-2"><i class="fas fa-trophy text-yellow-400 mr-3"></i>Cuadro de Honor</h1>
+                <p class="text-stone-400 text-sm font-medium">Top 10 Semanal</p>
             </div>
+
+            <div id="wallOfFame" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16"></div>
+
+            <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
+                <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-fingerprint"></i></div>
+                <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
+                <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código de ejecutivo para acceder.</p>
+                
+                <div class="relative mb-6 group">
+                    <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+                    <input type="text" id="codigoInput" placeholder="EJ: CC014" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
+                </div>
+                
+                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">
+                    VER MIS RESULTADOS
+                </button>
+            </div>
+
+            <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+                <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+                <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewDashboard" class="hidden flex-1 max-w-7xl mx-auto w-full p-6 fade-in flex-col">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-4 bg-white p-8 rounded-[2rem] shadow-sm border border-stone-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><i class="fas fa-chart-pie text-9xl text-indigo-900"></i></div>
+            <div class="z-10">
+                <p class="text-xs text-stone-400 font-bold uppercase mb-1 tracking-wider">Bienvenido(a)</p>
+                <h2 class="text-4xl font-black text-stone-700 tracking-tight" id="userName">-</h2>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-[10px] bg-indigo-50 text-indigo-500 px-3 py-1 rounded-full font-black uppercase tracking-wider" id="userServ">-</span>
+                    <span class="text-[10px] bg-stone-100 text-stone-400 px-2 py-1 rounded-full font-bold uppercase" id="userCode">-</span>
+                </div>
+            </div>
+            <div class="text-right mt-6 md:mt-0 flex gap-3 items-center z-10">
+                <div class="relative">
+                    <select id="filtroMes" onchange="aplicarFiltro()" class="appearance-none bg-stone-50 border border-stone-200 text-stone-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-xs outline-none cursor-pointer hover:bg-stone-100 transition"><option value="TODOS">📅 Histórico Completo</option></select>
+                    <i class="fas fa-chevron-down absolute right-3 top-3 text-stone-400 text-xs pointer-events-none"></i>
+                </div>
+                <button onclick="location.reload()" class="bg-rose-50 text-rose-400 p-2.5 rounded-xl hover:bg-rose-100 transition shadow-sm" title="Salir"><i class="fas fa-power-off"></i></button>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-md mx-auto backdrop-blur-sm">
+            <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100">🎯 Calidad Técnica</button>
+            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent">⚡ Eficiencia y Tipificación</button>
+        </div>
+
+        <div id="tabAuditorias" class="fade-in block">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-emerald-600 font-black uppercase tracking-wide">Calidad Técnica (PENC)</p><p class="text-3xl font-black text-emerald-600 mt-2" id="kpiPenc">-</p><p class="text-[9px] text-emerald-400/80 font-medium mt-1">Sin ceros</p></div>
+                <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p></div>
+                <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p></div>
+                <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p></div>
+                <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-rose-400 font-black uppercase tracking-wide">Nota Mínima</p><p class="text-3xl font-black text-rose-400 mt-2" id="kpiMin">-</p></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-orange-100 text-orange-500 p-1.5 rounded-lg"><i class="fas fa-lightbulb"></i></span>Oportunidades (PENC)</h3><ul id="listPenc" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center"><h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div></div>
+            </div>
+
+            <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
+            <div id="cardsContainer" class="space-y-3 mb-8"><p class="text-center text-stone-400 py-10 italic">Cargando historial...</p></div>
+        </div>
+
+        <div id="tabEficiencia" class="fade-in hidden mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">👻</div>
+                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-ghost"></i></span>Registros Vacíos (7 Días)</h3>
+                    
+                    <div class="text-center mb-6 z-10">
+                        <span class="text-6xl font-black text-rose-500 tracking-tighter" id="efVacioTotal">-</span>
+                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Total Generados</p>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs bg-stone-50 p-3 rounded-2xl mb-6 z-10 border border-stone-100">
+                        <div class="text-center w-1/2"><span class="block text-[9px] text-stone-400 font-bold uppercase tracking-wider">Mínimo Equipo</span><span class="block font-black text-emerald-500 text-xl" id="efVacioMin">-</span></div>
+                        <div class="text-center w-1/2 border-l border-stone-200"><span class="block text-[9px] text-stone-400 font-bold uppercase tracking-wider">Máximo Equipo</span><span class="block font-black text-rose-400 text-xl" id="efVacioMax">-</span></div>
+                    </div>
+
+                    <ul id="listVaciosDias" class="space-y-2 mt-auto z-10">
+                        <li class="text-center text-stone-300 text-xs italic">Cargando días...</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
+                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>Calidad Tipificación</h3>
+                    
+                    <div class="text-center mb-8 mt-4 z-10">
+                        <span class="text-7xl font-black text-emerald-500 tracking-tighter" id="efUtilidadPct">-</span>
+                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-2">Observaciones Útiles</p>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs bg-emerald-50/50 p-5 rounded-2xl z-10 mt-auto border border-emerald-50">
+                        <div class="text-center w-1/2"><span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Útiles</span><span class="block font-black text-emerald-600 text-2xl" id="efUtilidadUtiles">-</span></div>
+                        <div class="text-center w-1/2 border-l border-emerald-100/50"><span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Total Obs</span><span class="block font-black text-stone-500 text-2xl" id="efUtilidadTotal">-</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mt-auto pt-8 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+            <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+            <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // ================= CONFIGURACIÓN =================
+        // LA NUEVA URL QUE ME PASASTE:
+        const API_URL = "https://script.google.com/macros/s/AKfycbzEnzOn8TVN8xAX7do3tk1N2g3bD0lKh9EF5eh6T_I2yHFiPdeKDrM4RTwjG8f2uIzDJQ/exec"; 
+			
+
+        const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
+        const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
+
+        // DICCIONARIO PARA TOOLTIPS Y NOMBRES
+        const INDICADORES_INFO = {
+            "SEG_VALIDACION": { nombre: "Validación Identidad", desc: "Debe solicitar RUT y Nombre completo al inicio." },
+            "SEG_CONFIDENCIALIDAD": { nombre: "Confidencialidad", desc: "Resguarda datos sensibles. No entrega diagnósticos sin validar." },
+            "COND_NORMAS": { nombre: "Normas de Conducta", desc: "Mantiene el respeto, no grita, no corta la llamada." },
+            "OP_ABANDONO": { nombre: "Abandono", desc: "No deja al paciente en silencio por tiempos excesivos." },
+            "SIST_REGISTRO": { nombre: "Registro en CRM", desc: "Deja la nota o glosa de la gestión obligatoriamente." },
             
-            <div class="p-3 border border-rose-100 rounded-xl bg-rose-50/30">
-                <span class="font-bold text-rose-600 block mb-1">⚠️ BAJAN PORCENTAJE</span>
-                <ul class="list-disc ml-3 text-stone-500 space-y-1">
-                    <li>Campos vacíos o texto insuficiente ("ok", "listo").</li>
-                    <li>Redundancia (escribir lo mismo que la tipificación).</li>
-                    <li>Información duplicada (solo pegar el nombre).</li>
-                </ul>
-            </div>
-        </div>
+            "PROT_SCRIPT": { nombre: "Script Inicio/Cierre", desc: "Usa el saludo institucional y la despedida cordial." },
+            "PROT_CORTESIA": { nombre: "Cortesía y Trato", desc: "Usa 'Usted', 'Por favor' y 'Gracias'." },
+            "GEST_SONDEO": { nombre: "Sondeo", desc: "Realiza las preguntas para entender la solicitud." },
+            "GEST_INFORMACION": { nombre: "Entrega Información", desc: "Información correcta, completa y veraz." },
+            "GEST_TIEMPOS": { nombre: "Manejo Tiempos", desc: "Retoma el contacto cada 45 segundos." },
+            "GEST_ASEGURAMIENTO": { nombre: "Aseguramiento", desc: "Pregunta '¿Le queda alguna otra duda?' al final." },
+            
+            "HAB_PERSONALIZACION": { nombre: "Personalización", desc: "Llama al paciente por su nombre." },
+            "HAB_LENGUAJE": { nombre: "Lenguaje", desc: "Modulación clara, sin muletillas." },
+            "HAB_EMPATIA": { nombre: "Empatía", desc: "Demuestra interés y valida la emoción." },
+            "SIST_TIPIFICACION": { nombre: "Tipificación", desc: "Selecciona el motivo correcto en el sistema." }
+        };
+        const PAUTA_DEFS = {}; Object.values(INDICADORES_INFO).forEach(v => PAUTA_DEFS[v.nombre] = v.desc);
 
-        <div class="bg-indigo-50/30 p-3 rounded-xl border border-indigo-100">
-            <p class="text-[9px] font-bold text-indigo-400 uppercase mb-2">Niveles de Desempeño (KPI)</p>
-            <div class="flex justify-between items-center gap-1">
-                <div class="text-center flex-1"><span class="block font-black text-emerald-500">90-100%</span><span class="text-[8px] text-stone-400">Experto</span></div>
-                <div class="text-center flex-1 border-x border-indigo-100"><span class="block font-black text-amber-500">70-89%</span><span class="text-[8px] text-stone-400">En Proceso</span></div>
-                <div class="text-center flex-1"><span class="block font-black text-rose-500">< 70%</span><span class="text-[8px] text-stone-400">Crítico</span></div>
-            </div>
-        </div>
+        // GLOBALES ACTUALIZADAS
+        let DATOS_CACHE = [];
+        let MIS_DATOS = [];
+        let DATOS_VACIOS_GLOBAL = [];   // NUEVO
+        let DATOS_UTILIDAD_GLOBAL = []; // NUEVO
+        let chartInstance = null;
 
-        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-stone-200">
-            <p class="text-[9px] font-bold text-stone-400 uppercase mb-2"><i class="fas fa-check-double mr-1"></i> Ejemplos de Glosa Útil</p>
-            <ul class="space-y-2 text-[9px] italic text-stone-500">
-                <li class="bg-stone-50 p-1.5 rounded">• CONSULTA PARA VERIFICAR CITA DE TRAUMATOLOGÍA. SE CONFIRMA CITA.</li>
-                <li class="bg-stone-50 p-1.5 rounded">• PACIENTE SOLICITA INFORMACION DE REQUERIMIENTO NRO: 182713 (CIRUGIA DE MAMAS) (RENOVACION DE RECETA).</li>
-                <li class="bg-stone-50 p-1.5 rounded">• EMPAGLIFLOZINA 10 MG / SIN STOCK SEGUN REPORTE DEL 12/02/2026.</li>
-            </ul>
-        </div>
-    </div>
+        document.getElementById("codigoInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { event.preventDefault(); login(); }
+        });
 
-    <div class="flex justify-between items-center text-xs bg-emerald-50/50 p-5 rounded-2xl z-10 mt-auto border border-emerald-50">
-        <div class="text-center w-1/2">
-            <span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Útiles</span>
-            <span class="block font-black text-emerald-600 text-2xl" id="efUtilidadUtiles">-</span>
-        </div>
-        <div class="text-center w-1/2 border-l border-emerald-100/50">
-            <span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Total Obs</span>
-            <span class="block font-black text-stone-500 text-2xl" id="efUtilidadTotal">-</span>
-        </div>
-    </div>
-</div>
+        // --- SISTEMA DE CARGA (GAME LOOP) CON SOPORTE TÁCTIL ---
+        let targetX = window.innerWidth / 2, targetY = window.innerHeight / 2;
+        let foxPos = {x: targetX, y: targetY}, rabbitPos = {x: targetX, y: targetY}, turtlePos = {x: targetX, y: targetY};
+        let animalsActive = {rabbit: false, turtle: false};
+        let gameLoopId;
+        let rabbitTimer, turtleTimer, timeoutTimer;
+
+        document.addEventListener('mousemove', (e) => { targetX = e.clientX; targetY = e.clientY; });
+        document.addEventListener('touchmove', (e) => { 
+            const touch = e.touches[0]; targetX = touch.clientX; targetY = touch.clientY; 
+        }, {passive: false});
+
+        function lerp(start, end, factor) { return start + (end - start) * factor; }
+
+        function gameLoop() {
+            foxPos.x = lerp(foxPos.x, targetX - 25, 0.1); foxPos.y = lerp(foxPos.y, targetY - 25, 0.1);
+            const foxEl = document.getElementById('fox'); if(foxEl) { foxEl.style.left = foxPos.x + 'px'; foxEl.style.top = foxPos.y + 'px'; }
+            if (animalsActive.rabbit) {
+                const dist = Math.hypot(foxPos.x - rabbitPos.x, foxPos.y - rabbitPos.y);
+                if (dist > 60) { rabbitPos.x = lerp(rabbitPos.x, foxPos.x, 0.05); rabbitPos.y = lerp(rabbitPos.y, foxPos.y, 0.05); }
+                const rabEl = document.getElementById('rabbit'); if(rabEl) { rabEl.style.left = rabbitPos.x + 'px'; rabEl.style.top = rabbitPos.y + 'px'; }
+            }
+            if (animalsActive.turtle) {
+                const dist = Math.hypot(rabbitPos.x - turtlePos.x, rabbitPos.y - turtlePos.y);
+                if (dist > 60) { turtlePos.x = lerp(turtlePos.x, rabbitPos.x, 0.02); turtlePos.y = lerp(turtlePos.y, rabbitPos.y, 0.02); }
+                const turEl = document.getElementById('turtle'); if(turEl) { turEl.style.left = turtlePos.x + 'px'; turEl.style.top = turtlePos.y + 'px'; }
+            }
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = async () => {
+            gameLoop();
+            rabbitTimer = setTimeout(() => { document.getElementById('rabbit').classList.remove('hidden'); animalsActive.rabbit = true; const t=document.getElementById('loadingText'); if(t)t.innerText="El conejo busca señal... 🐰"; }, 5000);
+            turtleTimer = setTimeout(() => { document.getElementById('turtle').classList.remove('hidden'); animalsActive.turtle = true; const t=document.getElementById('loadingText'); if(t)t.innerText="La tortuga descarga datos... 🐢"; }, 15000);
+            timeoutTimer = setTimeout(() => { cancelAnimationFrame(gameLoopId); document.getElementById('loadingText').classList.add('hidden'); document.getElementById('timeoutMsg').classList.remove('hidden'); }, 60000);
+            await cargarDatos();
+        };
+
+        // --- CARGA DE DATOS ROBUSTA ---
+        async function cargarDatos() {
+            let data = await intentarFetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+            if (!data) data = await intentarFetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+            if (!data) data = await intentarFetch("https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now()));
+
+            if (data && data.auditorias) {
+                // Nuevo formato JSON estructurado
+                DATOS_CACHE = data.auditorias;
+                DATOS_VACIOS_GLOBAL = data.vacios || [];
+                DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
+                terminarCarga();
+            } else if (Array.isArray(data)) {
+                // Formato antiguo por si tarda en refrescar
+                DATOS_CACHE = data;
+                terminarCarga();
+            } else {
+                document.getElementById('loadingText').innerText = "Fallo de conexión total.";
+                document.getElementById('loadingText').classList.add('text-rose-500');
+            }
+        }
+
+        function terminarCarga() {
+            clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); 
+            cancelAnimationFrame(gameLoopId);
+            renderWallOfFame(DATOS_CACHE);
+            const loader = document.getElementById('loadingScreen');
+            const content = document.getElementById('loginContent');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.classList.add('hidden'); content.classList.remove('opacity-0'); }, 500);
+            }
+        }
+
+        async function intentarFetch(url) {
+            try { const resp = await fetch(url); if (!resp.ok) return null; const json = await resp.json(); return json; } catch (e) { return null; }
+        }
+
+        // --- RENDERIZADO ---
+        function renderWallOfFame(data) {
+            const hoy = moment();
+            const semanaPasada = hoy.subtract(1, 'week').week(); 
+            const yearPasado = hoy.year();
+            const top = data.filter(d => {
+                const nota = parseFloat(d.NOTA.replace('%','')) || 0;
+                const fecha = moment(d.FECHA_LLAMADA || d.FECHA);
+                return nota >= 85 && fecha.week() === semanaPasada && fecha.year() === yearPasado;
+            }).sort((a,b) => parseFloat(b.NOTA) - parseFloat(a.NOTA)).slice(0, 10);
+
+            const wall = document.getElementById('wallOfFame');
+            wall.innerHTML = "";
+            if(top.length === 0) { wall.innerHTML = "<div class='col-span-full text-center text-stone-400 italic py-10 text-xs'>Aún no hay medallas cerradas de la semana pasada.</div>"; return; }
+
+            top.forEach(star => {
+                const nota = parseFloat(star.NOTA.replace('%',''));
+                let nameStr = star.NOMBRE || "Anónimo";
+                let parts = nameStr.trim().split(/\s+/);
+                let displayName = parts[0];
+                if(parts.length > 2) displayName += " " + parts[2];
+                else if(parts.length === 2) displayName += " " + parts[1];
+                let st = "card-bronze", ic = "🥉";
+                if(nota === 100) { st = "card-gold transform hover:scale-105"; ic = "🏆"; }
+                else if(nota >= 90) { st = "card-silver"; ic = "🥈"; }
+                wall.innerHTML += `<div class="${st} p-4 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center h-32 transition duration-300 hover:-translate-y-1 relative overflow-hidden group"><div class="text-3xl mb-1 drop-shadow-sm group-hover:scale-110 transition">${ic}</div><h3 class="font-black text-xs truncate w-full mt-2 px-1 capitalize text-slate-700">${displayName.toLowerCase()}</h3><div class="text-xl font-black mt-0.5 tracking-tight">${star.NOTA}</div></div>`;
+            });
+        }
+
+        function login() {
+            const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+            if(!codigo) return Swal.fire("Atención", "Ingresa código", "warning");
+            MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
+            if(MIS_DATOS.length === 0) return Swal.fire("Error", "Código no encontrado o sin evaluaciones", "error");
+
+            document.getElementById('viewLogin').classList.add('hidden');
+            document.getElementById('viewDashboard').classList.remove('hidden');
+            document.getElementById('userName').innerText = MIS_DATOS[0].NOMBRE;
+            document.getElementById('userServ').innerText = MIS_DATOS[0].SERVICIO || 'General';
+            document.getElementById('userCode').innerText = codigo;
+
+            llenarFiltros();
+            aplicarFiltro();
+            
+            // Renderiza la nueva pestaña
+            renderEficiencia(codigo); 
+        }
+
+        function llenarFiltros() {
+            const sel = document.getElementById('filtroMes');
+            sel.innerHTML = '<option value="TODOS">📅 Histórico Completo</option>';
+            const meses = new Set();
+            MIS_DATOS.forEach(d => { let fechaRef = d.FECHA_LLAMADA || d.FECHA; if(fechaRef && fechaRef.length >= 7) meses.add(fechaRef.substring(0,7)); });
+            Array.from(meses).sort().reverse().forEach(m => {
+                const [year, month] = m.split('-');
+                const mesNombre = MESES[month] || month;
+                sel.add(new Option(`📅 ${mesNombre} ${year}`, m));
+                const semanasEnMes = new Set();
+                MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(m)).forEach(d => semanasEnMes.add(d.SEMANA));
+                Array.from(semanasEnMes).sort().forEach(s => sel.add(new Option(`↳ ${s}`, `${m}|${s}`)));
+            });
+        }
+
+        function aplicarFiltro() {
+            const val = document.getElementById('filtroMes').value;
+            let datos = MIS_DATOS;
+            if(val !== "TODOS") {
+                if(val.includes('|')) { const [mes, sem] = val.split('|'); datos = MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(mes) && d.SEMANA === sem); }
+                else { datos = MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(val)); }
+            }
+            datos.sort((a,b) => new Date(b.FECHA_LLAMADA || b.FECHA) - new Date(a.FECHA_LLAMADA || a.FECHA));
+            renderKPIs(datos); renderTops(datos); renderChart(datos); renderList(datos);
+        }
+
+        function renderKPIs(data) {
+            const notas = data.map(d => parseFloat(d.NOTA.replace('%',''))||0);
+            const total = notas.length;
+            const promGen = total ? (notas.reduce((a,b)=>a+b,0)/total).toFixed(0) : 0;
+            const pencNotes = notas.filter(n => n > 0);
+            const promPenc = pencNotes.length ? (pencNotes.reduce((a,b)=>a+b,0)/pencNotes.length).toFixed(0) : 0;
+            const max = total ? Math.max(...notas) : 0;
+            const min = total ? Math.min(...notas) : 0;
+            document.getElementById('kpiTotal').innerText = total; document.getElementById('kpiGeneral').innerText = promGen + "%"; document.getElementById('kpiPenc').innerText = promPenc + "%"; document.getElementById('kpiMax').innerText = max + "%"; document.getElementById('kpiMin').innerText = min + "%";
+        }
+
+        function renderTops(data) {
+            let pecC = {}, pencC = {};
+            data.forEach(d => { if(d.DETALLE) { for(const [k,v] of Object.entries(d.DETALLE)) { if(v === 'NO') { const keyClean = Object.keys(PAUTA_DEFS).find(defKey => k.includes(defKey)) || k; const isPec = PEC_KEYS.some(pk => k.includes(pk)); if(isPec) pecC[keyClean] = (pecC[keyClean]||0)+1; else pencC[keyClean] = (pencC[keyClean]||0)+1; } } } });
+            fillList('listPec', pecC, 'text-rose-500 bg-rose-50'); fillList('listPenc', pencC, 'text-orange-500 bg-orange-50');
+        }
+
+        function fillList(id, obj, style) {
+            const ul = document.getElementById(id); ul.innerHTML = "";
+            const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,3);
+            if(sorted.length === 0) { ul.innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4 bg-stone-50 rounded-xl'>¡Excelente! Sin errores.</li>"; return; }
+            sorted.forEach(([k,v]) => { ul.innerHTML += `<li class="flex justify-between items-center text-xs text-stone-600 font-bold border-b border-stone-50 pb-2 last:border-0"><span class="truncate w-3/4">${k}</span><span class="${style} px-2 py-1 rounded-lg text-[10px] min-w-[24px] text-center">${v}</span></li>`; });
+        }
+
+        function renderList(data) {
+            const c = document.getElementById('cardsContainer'); c.innerHTML = "";
+            if(data.length === 0) { c.innerHTML = "<p class='text-center text-stone-400 py-10 bg-white rounded-3xl border border-stone-100'>No hay datos.</p>"; return; }
+            data.forEach(d => {
+                const n = parseFloat(d.NOTA.replace('%',''));
+                let border="border-indigo-200", text="text-indigo-600", icon="📋";
+                if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
+                const fechaMostrar = d.FECHA_LLAMADA || d.FECHA;
+                c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-stone-700 text-sm">${fechaMostrar}</span><span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span></div><p class="text-[10px] text-stone-400 font-bold uppercase group-hover:text-indigo-400 transition">Ver Detalle / Apelar</p></div><div class="text-right"><div class="text-3xl font-black ${text}">${d.NOTA}</div><div class="text-xs opacity-50">${icon}</div></div></div>`;
+            });
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('chartEvolucion').getContext('2d');
+            const sorted = [...data].reverse().slice(-10);
+            if(chartInstance) chartInstance.destroy();
+            let gradient = ctx.createLinearGradient(0, 0, 0, 200); gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)'); gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: sorted.map(d => (d.FECHA_LLAMADA || d.FECHA).substring(5)), datasets: [{ label: 'Nota', data: sorted.map(d => parseFloat(d.NOTA)), borderColor: '#6366f1', backgroundColor: gradient, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#6366f1', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { display: false } }, x: { grid: { display: false } } }, interaction: { intersect: false, mode: 'index' } } });
+        }
+
+        function verDetalle(d) {
+            let itemsHtml = "";
+            let tieneQuiebres = false;
+
+            if (d.DETALLE) {
+                for (let [keyExcel, valor] of Object.entries(d.DETALLE)) {
+                    if (valor === 'NO') {
+                        tieneQuiebres = true;
+                        const info = INDICADORES_INFO[keyExcel] || { nombre: keyExcel, desc: "Sin descripción" };
+                        
+                        let safeName = info.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        let regex = new RegExp(`•\\s*${safeName}.*?:\\s*(.*?)(?:\\n|$)`, 'i');
+                        let match = d.OBS.match(regex);
+                        let comentarioEspecifico = match && match[1].trim() ? match[1].trim() : "Revisar observación general.";
+
+                        const esCritico = ["SEG", "COND", "OP", "SIST"].some(prefix => keyExcel.startsWith(prefix));
+                        const colorClass = esCritico ? "text-rose-600 border-rose-200 bg-rose-50" : "text-orange-600 border-orange-200 bg-orange-50";
+                        const badge = esCritico ? "PEC (Crítico)" : "PENC (Leve)";
+
+                        itemsHtml += `
+                        <li class="mb-3 pl-3 border-l-4 ${colorClass} rounded-r-lg p-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-xs indicator-tooltip" title="${info.desc}">
+                                    ${info.nombre} <i class="fas fa-info-circle text-[9px] opacity-50 ml-1"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase opacity-60">${badge}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 italic">"${comentarioEspecifico}"</p>
+                        </li>`;
+                    }
+                }
+            }
+
+            if (!itemsHtml) itemsHtml = "<div class='text-center py-6 text-emerald-500 bg-emerald-50 rounded-xl border border-emerald-100 italic text-xs'><i class='fas fa-check-circle text-2xl mb-2 block'></i>¡Felicitaciones!<br>Auditoría sin quiebres detectados.</div>";
+
+            let audioSection = "";
+            if (d.AUDIO_URL && d.AUDIO_URL.length > 5) {
+                audioSection = `
+                    <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 mb-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i class="fas fa-headphones"></i> Grabación</p>
+                        <audio controls src="${d.AUDIO_URL}" class="w-full h-8 mb-3 shadow-sm rounded-lg" preload="none"></audio>
+                        <div class="flex items-center justify-between">
+                            <a href="${d.AUDIO_URL}" target="_blank" class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 hover:underline"><i class="fas fa-external-link-alt mr-1"></i> Abrir / Descargar</a>
+                            <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-100"><i class="fas fa-lock mr-1"></i> Login ClickUp requerido</span>
+                        </div>
+                    </div>`;
+            } else {
+                audioSection = `
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex items-center gap-3 opacity-75">
+                        <div class="bg-gray-200 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-volume-mute"></i></div>
+                        <div><p class="text-xs font-bold text-gray-500">Audio no disponible</p><p class="text-[10px] text-gray-400">Si lo necesitas, contacta a tu supervisor.</p></div>
+                    </div>`;
+            }
+
+            const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---";
+            const horaCall = d.HORA_LLAMADA || d.HORA || "--:--";
+            const rutPac = d.RUT_PACIENTE || "No registrado";
+            const notaVal = parseFloat(d.NOTA.replace('%',''));
+            const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
+
+            Swal.fire({
+                title: `<div class="flex items-center gap-2 text-left"><div class="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-contract"></i></div><div><span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalle Atención</span><span class="block text-sm text-slate-700 font-bold">Evaluación de Calidad</span></div></div>`,
+                html: `
+                    <div class="text-left mt-2">
+                        <div class="grid grid-cols-2 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div>
+                            <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div>
+                        </div>
+                        ${audioSection}
+                        <div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div>
+                        <div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4><div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10">${d.OBS}</span></div></div>
+                        <div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div>
+                        <div class="mt-6 pt-4 border-t border-slate-100"><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div>
+                    </div>
+                `,
+                width: '550px', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-[2rem]' }
+            });
+        }
+
+        async function apelar(cod, fecha, nota) {
+            const { value: text } = await Swal.fire({ title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...', showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' } });
+            if (text) {
+                Swal.fire({ title: 'Enviando...', didOpen:()=>Swal.showLoading(), customClass:{popup:'rounded-2xl'} });
+                fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tipo:"APELACION", codigo:cod, fecha:fecha, nota:nota, argumento:text}) })
+                .then(()=>{ Swal.fire({icon:'success', title:'Enviado', text:'Solicitud registrada', customClass:{popup:'rounded-2xl'}, confirmButtonColor:'#10b981'}); });
+            }
+        }
+
+        // --- NUEVA LÓGICA DE PESTAÑAS Y EFICIENCIA ---
+        function switchTab(tab) {
+             const t1 = document.getElementById('tabAuditorias');
+             const t2 = document.getElementById('tabEficiencia');
+             const b1 = document.getElementById('btnTab1');
+             const b2 = document.getElementById('btnTab2');
+
+             if(tab === 1) {
+                 t1.classList.remove('hidden'); t2.classList.add('hidden');
+                 b1.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100";
+                 b2.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent";
+             } else {
+                 t2.classList.remove('hidden'); t1.classList.add('hidden');
+                 b2.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100";
+                 b1.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent";
+             }
+        }
+
+        function renderEficiencia(codigo) {
+            // 1. Procesar Registros Vacíos
+            const misVaciosRow = DATOS_VACIOS_GLOBAL.find(d => d.ID === codigo);
+            
+            let maxVacios = 0;
+            let minVacios = 99999;
+            
+            DATOS_VACIOS_GLOBAL.forEach(d => {
+                const tot = parseInt(d.Total) || 0;
+                if(tot > maxVacios) maxVacios = tot;
+                if(tot < minVacios) minVacios = tot;
+            });
+            if(minVacios === 99999) minVacios = 0;
+
+            if(misVaciosRow) {
+                document.getElementById('efVacioTotal').innerText = misVaciosRow.Total || "0";
+                document.getElementById('efVacioMin').innerText = minVacios;
+                document.getElementById('efVacioMax').innerText = maxVacios;
+
+                const listEl = document.getElementById('listVaciosDias');
+                listEl.innerHTML = "";
+                // Obtener las columnas de fechas automáticamente
+                const keys = Object.keys(misVaciosRow).filter(k => k !== 'ID' && k !== 'Agente' && k !== 'Total');
+                
+                if(keys.length === 0) {
+                    listEl.innerHTML = "<li class='text-center text-stone-300 text-xs italic'>Sin datos recientes.</li>";
+                } else {
+                    keys.slice(-7).forEach(k => {
+                       const val = parseInt(misVaciosRow[k]) || 0;
+                       const isBad = val > 0;
+                       listEl.innerHTML += `
+                       <li class="flex justify-between items-center text-xs font-bold bg-stone-50 p-2.5 rounded-xl">
+                           <span class="text-stone-500">${k}</span>
+                           <span class="${isBad ? 'text-rose-600 bg-rose-100' : 'text-stone-400 bg-stone-200'} px-2.5 py-1 rounded-lg min-w-[30px] text-center">${val}</span>
+                       </li>`;
+                    });
+                }
+            } else {
+                document.getElementById('efVacioTotal').innerText = "-";
+                document.getElementById('listVaciosDias').innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4'>No hay registros operativos para este código.</li>";
+            }
+
+            // 2. Procesar Utilidad de Observaciones
+            const miUtilidadRow = DATOS_UTILIDAD_GLOBAL.find(d => d.ID === codigo);
+            if(miUtilidadRow) {
+                let pct = String(miUtilidadRow.Calidad);
+                if(!pct.includes('%')) pct += '%';
+                
+                document.getElementById('efUtilidadPct').innerText = pct;
+                document.getElementById('efUtilidadUtiles').innerText = miUtilidadRow.Utiles || 0;
+                document.getElementById('efUtilidadTotal').innerText = miUtilidadRow.Total || 0;
+            } else {
+                 document.getElementById('efUtilidadPct').innerText = "-";
+                 document.getElementById('efUtilidadUtiles').innerText = "-";
+                 document.getElementById('efUtilidadTotal').innerText = "-";
+            }
+        }
+    </script>
+</body>
+</html>
