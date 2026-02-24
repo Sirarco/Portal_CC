@@ -26,6 +26,8 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
 
         /* Juego de Carga */
         #loadingScreen { transition: opacity 0.5s ease; user-select: none; }
@@ -130,9 +132,10 @@
             </div>
         </div>
 
-        <div class="flex gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-md mx-auto backdrop-blur-sm">
-            <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100">🎯 Calidad Técnica</button>
-            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent">⚡ Eficiencia y Tipificación</button>
+        <div class="flex flex-wrap md:flex-nowrap gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-xl mx-auto backdrop-blur-sm">
+            <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]">🎯 Calidad Técnica</button>
+            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">⚡ Eficiencia</button>
+            <button id="btnTab3" onclick="switchTab(3)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📊 KPIs Operativos</button>
         </div>
 
         <div id="tabAuditorias" class="fade-in block">
@@ -180,9 +183,61 @@
                     <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
                     <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>Calidad Tipificación</h3>
                     
-                    <div class="text-center mb-8 mt-4 z-10">
+                    <div class="text-center mb-6 mt-2 z-10">
                         <span class="text-7xl font-black text-emerald-500 tracking-tighter" id="efUtilidadPct">-</span>
                         <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-2">Observaciones Útiles</p>
+                    </div>
+
+                    <div class="space-y-3 mb-6 z-10 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100">
+                            <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
+                                <strong>Objetivo:</strong> Medir la utilidad real de la información que registras después de cada llamada. Una buena glosa permite que, si el paciente vuelve a llamar, cualquier compañero sepa exactamente qué pasó sin tener que preguntarle todo de nuevo.
+                            </p>
+                        </div>
+                        <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-50">
+                            <h4 class="text-[10px] font-bold text-indigo-500 mb-1"><i class="fas fa-shield-alt mr-1"></i> 1. Llamadas Excluidas (No afectan)</h4>
+                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
+                                <li>Llamadas no contestadas, números equivocados o buzón de voz.</li>
+                                <li>Llamadas cortadas por el sistema o abandonadas antes de hablar.</li>
+                                <li>Llamadas gestionadas por IVR o IA.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-50">
+                            <h4 class="text-[10px] font-bold text-emerald-600 mb-1">✅ 2. Gestión Útil (100% Calidad)</h4>
+                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
+                                <li><strong>Aportar Valor:</strong> Describe motivo real y solución (Ej: "Paciente solicita cambio de hora para traumatología por motivos laborales, se reagenda para el 15/03").</li>
+                                <li><strong>Extensión adecuada:</strong> Al menos 20 caracteres (4-5 palabras).</li>
+                            </ul>
+                        </div>
+                        <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-50">
+                            <h4 class="text-[10px] font-bold text-rose-500 mb-1">⚠️ 3. Bajan tu porcentaje</h4>
+                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
+                                <li><strong>Campos Vacíos:</strong> No escribir nada.</li>
+                                <li><strong>Redundancia:</strong> Escribir lo mismo que la tipificación (Ej: Tipificación: Cruce de datos; Obs: cruce de datos).</li>
+                                <li><strong>Duplicidad:</strong> Solo pegar el nombre del paciente.</li>
+                                <li><strong>Texto insuficiente:</strong> Palabras sueltas ("ok", "listo", "se gestiona").</li>
+                            </ul>
+                        </div>
+                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100 text-center">
+                            <h4 class="text-[10px] font-bold text-stone-500 mb-1"><i class="fas fa-calculator mr-1"></i> 4. Fórmula de Éxito</h4>
+                            <p class="text-[10px] font-black text-indigo-400 font-mono">( Glosas Útiles / Total Llamadas Atendidas ) x 100</p>
+                        </div>
+                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100">
+                            <h4 class="text-[10px] font-bold text-stone-500 mb-2">📊 5. Niveles de Desempeño</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-emerald-100 text-emerald-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">90-100%</span><span class="text-stone-500"><strong>Experto:</strong> Información clara, profesional y ayuda al equipo.</span></div>
+                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-amber-100 text-amber-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">70-89%</span><span class="text-stone-500"><strong>En Proceso:</strong> Gestionas bien, pero olvidas detalles o eres muy breve.</span></div>
+                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-rose-100 text-rose-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">< 70%</span><span class="text-stone-500"><strong>Crítico:</strong> Necesitas mejorar la descripción para no perder información.</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-stone-200">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-2"><i class="fas fa-check-double mr-1"></i> Ejemplos Reales (Útiles)</p>
+                            <ul class="space-y-1.5 text-[9px] font-mono text-indigo-500/80">
+                                <li class="bg-indigo-50/50 p-1.5 rounded">"CONSULTA PARA VERIFICAR CITA DE TRAUMATOLOGÍA. SE CONFIRMA CITA."</li>
+                                <li class="bg-indigo-50/50 p-1.5 rounded">"PACIENTE SOLICITA INFORMACION DE REQUERIMIENTO NRO: 182713 (CIRUGIA DE MAMAS) (RENOVACION DE RECETA)"</li>
+                                <li class="bg-indigo-50/50 p-1.5 rounded">"EMPAGLIFLOZINA 10 MG / SIN STOCK SEGUN REPORTE DEL 12/02/2026"</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="flex justify-between items-center text-xs bg-emerald-50/50 p-5 rounded-2xl z-10 mt-auto border border-emerald-50">
@@ -190,7 +245,38 @@
                         <div class="text-center w-1/2 border-l border-emerald-100/50"><span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Total Obs</span><span class="block font-black text-stone-500 text-2xl" id="efUtilidadTotal">-</span></div>
                     </div>
                 </div>
+            </div>
+        </div>
 
+        <div id="tabKpis" class="fade-in hidden mb-8">
+            <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-chart-line text-indigo-400"></i> Resumen de Operación</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-white p-5 rounded-2xl border-b-4 border-indigo-400 text-center relative group hover:shadow-md transition">
+                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Productividad</p>
+                    <p class="text-4xl font-black text-indigo-500 mt-2" id="kpiProductividad">-</p>
+                    <div class="absolute top-2 right-2 text-indigo-100 group-hover:text-indigo-200 transition"><i class="fas fa-tasks"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-b-4 border-emerald-400 text-center relative group hover:shadow-md transition">
+                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Adherencia</p>
+                    <p class="text-4xl font-black text-emerald-500 mt-2" id="kpiAdherencia">-</p>
+                    <div class="absolute top-2 right-2 text-emerald-100 group-hover:text-emerald-200 transition"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-b-4 border-amber-400 text-center relative group hover:shadow-md transition">
+                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Ocupación</p>
+                    <p class="text-4xl font-black text-amber-500 mt-2" id="kpiOcupacion">-</p>
+                    <div class="absolute top-2 right-2 text-amber-100 group-hover:text-amber-200 transition"><i class="fas fa-headset"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-b-4 border-sky-400 text-center relative group hover:shadow-md transition">
+                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">TMO</p>
+                    <p class="text-4xl font-black text-sky-500 mt-2" id="kpiTmo">-</p>
+                    <div class="absolute top-2 right-2 text-sky-100 group-hover:text-sky-200 transition"><i class="fas fa-stopwatch"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border-b-4 border-rose-400 text-center relative group hover:shadow-md transition">
+                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">IDLE</p>
+                    <p class="text-4xl font-black text-rose-500 mt-2" id="kpiIdle">-</p>
+                    <div class="absolute top-2 right-2 text-rose-100 group-hover:text-rose-200 transition"><i class="fas fa-pause-circle"></i></div>
+                </div>
             </div>
         </div>
 
@@ -202,14 +288,11 @@
 
     <script>
         // ================= CONFIGURACIÓN =================
-        // LA NUEVA URL QUE ME PASASTE:
         const API_URL = "https://script.google.com/macros/s/AKfycbzEnzOn8TVN8xAX7do3tk1N2g3bD0lKh9EF5eh6T_I2yHFiPdeKDrM4RTwjG8f2uIzDJQ/exec"; 
-			
 
         const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
         const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
 
-        // DICCIONARIO PARA TOOLTIPS Y NOMBRES
         const INDICADORES_INFO = {
             "SEG_VALIDACION": { nombre: "Validación Identidad", desc: "Debe solicitar RUT y Nombre completo al inicio." },
             "SEG_CONFIDENCIALIDAD": { nombre: "Confidencialidad", desc: "Resguarda datos sensibles. No entrega diagnósticos sin validar." },
@@ -231,11 +314,11 @@
         };
         const PAUTA_DEFS = {}; Object.values(INDICADORES_INFO).forEach(v => PAUTA_DEFS[v.nombre] = v.desc);
 
-        // GLOBALES ACTUALIZADAS
         let DATOS_CACHE = [];
         let MIS_DATOS = [];
-        let DATOS_VACIOS_GLOBAL = [];   // NUEVO
-        let DATOS_UTILIDAD_GLOBAL = []; // NUEVO
+        let DATOS_VACIOS_GLOBAL = [];
+        let DATOS_UTILIDAD_GLOBAL = [];
+        let DATOS_KPI_GLOBAL = []; // NUEVA VARIABLE PARA LOS KPIS
         let chartInstance = null;
 
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
@@ -287,13 +370,12 @@
             if (!data) data = await intentarFetch("https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now()));
 
             if (data && data.auditorias) {
-                // Nuevo formato JSON estructurado
                 DATOS_CACHE = data.auditorias;
                 DATOS_VACIOS_GLOBAL = data.vacios || [];
                 DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
+                DATOS_KPI_GLOBAL = data.kpis || []; // LECTURA DE LA TERCERA PESTAÑA
                 terminarCarga();
             } else if (Array.isArray(data)) {
-                // Formato antiguo por si tarda en refrescar
                 DATOS_CACHE = data;
                 terminarCarga();
             } else {
@@ -362,8 +444,8 @@
             llenarFiltros();
             aplicarFiltro();
             
-            // Renderiza la nueva pestaña
             renderEficiencia(codigo); 
+            renderKpis(codigo); // LLAMADA A LA NUEVA PESTAÑA
         }
 
         function llenarFiltros() {
@@ -524,28 +606,37 @@
             }
         }
 
-        // --- NUEVA LÓGICA DE PESTAÑAS Y EFICIENCIA ---
+        // --- SISTEMA DE PESTAÑAS (TRES TABS) ---
         function switchTab(tab) {
              const t1 = document.getElementById('tabAuditorias');
              const t2 = document.getElementById('tabEficiencia');
+             const t3 = document.getElementById('tabKpis');
+             
              const b1 = document.getElementById('btnTab1');
              const b2 = document.getElementById('btnTab2');
+             const b3 = document.getElementById('btnTab3');
 
-             if(tab === 1) {
-                 t1.classList.remove('hidden'); t2.classList.add('hidden');
-                 b1.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100";
-                 b2.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent";
-             } else {
-                 t2.classList.remove('hidden'); t1.classList.add('hidden');
-                 b2.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100";
-                 b1.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent";
-             }
+             const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
+             const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
+
+             // Ocultar todas
+             t1.classList.add('hidden'); 
+             t2.classList.add('hidden'); 
+             t3.classList.add('hidden');
+             
+             b1.className = inactiveClass; 
+             b2.className = inactiveClass; 
+             b3.className = inactiveClass;
+
+             // Mostrar la seleccionada
+             if(tab === 1) { t1.classList.remove('hidden'); b1.className = activeClass; }
+             if(tab === 2) { t2.classList.remove('hidden'); b2.className = activeClass; }
+             if(tab === 3) { t3.classList.remove('hidden'); b3.className = activeClass; }
         }
 
+        // --- RENDER DE PESTAÑAS DE EFICIENCIA Y KPI ---
         function renderEficiencia(codigo) {
-            // 1. Procesar Registros Vacíos
             const misVaciosRow = DATOS_VACIOS_GLOBAL.find(d => d.ID === codigo);
-            
             let maxVacios = 0;
             let minVacios = 99999;
             
@@ -563,7 +654,6 @@
 
                 const listEl = document.getElementById('listVaciosDias');
                 listEl.innerHTML = "";
-                // Obtener las columnas de fechas automáticamente
                 const keys = Object.keys(misVaciosRow).filter(k => k !== 'ID' && k !== 'Agente' && k !== 'Total');
                 
                 if(keys.length === 0) {
@@ -584,7 +674,6 @@
                 document.getElementById('listVaciosDias').innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4'>No hay registros operativos para este código.</li>";
             }
 
-            // 2. Procesar Utilidad de Observaciones
             const miUtilidadRow = DATOS_UTILIDAD_GLOBAL.find(d => d.ID === codigo);
             if(miUtilidadRow) {
                 let pct = String(miUtilidadRow.Calidad);
@@ -597,6 +686,24 @@
                  document.getElementById('efUtilidadPct').innerText = "-";
                  document.getElementById('efUtilidadUtiles').innerText = "-";
                  document.getElementById('efUtilidadTotal').innerText = "-";
+            }
+        }
+
+        // NUEVO: FUNCION PARA LOS KPIS
+        function renderKpis(codigo) {
+            const miKpi = DATOS_KPI_GLOBAL.find(d => d.ID === codigo);
+            if(miKpi) {
+                document.getElementById('kpiProductividad').innerText = miKpi.Productividad || "-";
+                document.getElementById('kpiAdherencia').innerText = miKpi.Adherencia || "-";
+                document.getElementById('kpiOcupacion').innerText = miKpi.Ocupación || "-";
+                document.getElementById('kpiTmo').innerText = miKpi.TMO || "-";
+                document.getElementById('kpiIdle').innerText = miKpi.IDLE || "-";
+            } else {
+                document.getElementById('kpiProductividad').innerText = "-";
+                document.getElementById('kpiAdherencia').innerText = "-";
+                document.getElementById('kpiOcupacion').innerText = "-";
+                document.getElementById('kpiTmo').innerText = "-";
+                document.getElementById('kpiIdle').innerText = "-";
             }
         }
     </script>
