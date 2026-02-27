@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Calidad</title>
     
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -318,7 +320,7 @@
         let MIS_DATOS = [];
         let DATOS_VACIOS_GLOBAL = [];
         let DATOS_UTILIDAD_GLOBAL = [];
-        let DATOS_KPI_GLOBAL = []; // NUEVA VARIABLE PARA LOS KPIS
+        let DATOS_KPI_GLOBAL = [];
         let chartInstance = null;
 
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
@@ -373,7 +375,7 @@
                 DATOS_CACHE = data.auditorias;
                 DATOS_VACIOS_GLOBAL = data.vacios || [];
                 DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
-                DATOS_KPI_GLOBAL = data.kpis || []; // LECTURA DE LA TERCERA PESTAÑA
+                DATOS_KPI_GLOBAL = data.kpis || []; 
                 terminarCarga();
             } else if (Array.isArray(data)) {
                 DATOS_CACHE = data;
@@ -419,9 +421,10 @@
                 const nota = parseFloat(star.NOTA.replace('%',''));
                 let nameStr = star.NOMBRE || "Anónimo";
                 let parts = nameStr.trim().split(/\s+/);
+                
+                // NUEVA LÓGICA: Solo el primer nombre
                 let displayName = parts[0];
-                if(parts.length > 2) displayName += " " + parts[2];
-                else if(parts.length === 2) displayName += " " + parts[1];
+                
                 let st = "card-bronze", ic = "🥉";
                 if(nota === 100) { st = "card-gold transform hover:scale-105"; ic = "🏆"; }
                 else if(nota >= 90) { st = "card-silver"; ic = "🥈"; }
@@ -445,7 +448,10 @@
             aplicarFiltro();
             
             renderEficiencia(codigo); 
-            renderKpis(codigo); // LLAMADA A LA NUEVA PESTAÑA
+            renderKpis(codigo); 
+
+            // NUEVA LÓGICA: Scroll al inicio al iniciar sesión
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function llenarFiltros() {
@@ -506,7 +512,22 @@
                 let border="border-indigo-200", text="text-indigo-600", icon="📋";
                 if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
                 const fechaMostrar = d.FECHA_LLAMADA || d.FECHA;
-                c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-stone-700 text-sm">${fechaMostrar}</span><span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span></div><p class="text-[10px] text-stone-400 font-bold uppercase group-hover:text-indigo-400 transition">Ver Detalle / Apelar</p></div><div class="text-right"><div class="text-3xl font-black ${text}">${d.NOTA}</div><div class="text-xs opacity-50">${icon}</div></div></div>`;
+                
+                // NUEVA LÓGICA: Auditor en la tarjeta del historial
+                c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group">
+                    <div class="flex-1">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="font-bold text-stone-700 text-sm">${fechaMostrar}</span>
+                            <span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span>
+                            <span class="text-[9px] bg-indigo-50 text-indigo-400 px-2 py-0.5 rounded uppercase font-bold tracking-wider" title="Auditor(a)"><i class="fas fa-user-check"></i> ${d.AUDITOR_REAL || 'Auditor'}</span>
+                        </div>
+                        <p class="text-[10px] text-stone-400 font-bold uppercase group-hover:text-indigo-400 transition">Ver Detalle / Apelar</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-black ${text}">${d.NOTA}</div>
+                        <div class="text-xs opacity-50">${icon}</div>
+                    </div>
+                </div>`;
             });
         }
 
@@ -582,9 +603,10 @@
                 title: `<div class="flex items-center gap-2 text-left"><div class="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-contract"></i></div><div><span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalle Atención</span><span class="block text-sm text-slate-700 font-bold">Evaluación de Calidad</span></div></div>`,
                 html: `
                     <div class="text-left mt-2">
-                        <div class="grid grid-cols-2 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="grid grid-cols-3 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
                             <div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div>
                             <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div>
+                            <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">Auditor</span><span class="block text-xs font-bold text-slate-700 truncate" title="${d.AUDITOR_REAL || '-'}"><i class="fas fa-user-check mr-1 text-indigo-400"></i> ${d.AUDITOR_REAL || '-'}</span></div>
                         </div>
                         ${audioSection}
                         <div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div>
@@ -619,7 +641,6 @@
              const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
              const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
 
-             // Ocultar todas
              t1.classList.add('hidden'); 
              t2.classList.add('hidden'); 
              t3.classList.add('hidden');
@@ -628,7 +649,6 @@
              b2.className = inactiveClass; 
              b3.className = inactiveClass;
 
-             // Mostrar la seleccionada
              if(tab === 1) { t1.classList.remove('hidden'); b1.className = activeClass; }
              if(tab === 2) { t2.classList.remove('hidden'); b2.className = activeClass; }
              if(tab === 3) { t3.classList.remove('hidden'); b3.className = activeClass; }
@@ -689,7 +709,6 @@
             }
         }
 
-        // NUEVO: FUNCION PARA LOS KPIS
         function renderKpis(codigo) {
             const miKpi = DATOS_KPI_GLOBAL.find(d => d.ID === codigo);
             if(miKpi) {
