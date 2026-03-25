@@ -14,35 +14,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
     <style>
-        /* Estilos Base */
         body { background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
         .fade-in { animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Tarjetas de Ranking */
         .card-gold { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-bottom: 4px solid #fcd34d; color: #92400e; }
         .card-silver { background: linear-gradient(to bottom right, #f8fafc, #e2e8f0); border-bottom: 4px solid #cbd5e1; color: #475569; }
         .card-bronze { background: linear-gradient(to bottom right, #fff7ed, #ffedd5); border-bottom: 4px solid #fdba74; color: #9a3412; }
-        
-        /* Scrollbars Personalizados */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
-
-        /* Juego de Carga */
         #loadingScreen { transition: opacity 0.5s ease; user-select: none; }
-        .follower { 
-            position: fixed; font-size: 40px; pointer-events: none; z-index: 9999; 
-            transition: transform 0.1s linear; 
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
-            will-change: top, left;
-        }
+        .follower { position: fixed; font-size: 40px; pointer-events: none; z-index: 9999; transition: transform 0.1s linear; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); will-change: top, left; }
         .walk-anim { animation: waddle 0.5s infinite alternate; }
         @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
-
-        /* Tooltip Nativo Simplificado (Solo cursor de ayuda) */
         .indicator-tooltip { cursor: help; border-bottom: 1px dotted #94a3b8; }
     </style>
 </head>
@@ -61,25 +47,20 @@
     </nav>
 
     <div id="viewLogin" class="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col relative">
-        
         <div id="loadingScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#fdfbf7]">
             <div id="fox" class="follower walk-anim">🦊</div>
             <div id="rabbit" class="follower walk-anim hidden">🐰</div>
             <div id="turtle" class="follower walk-anim hidden">🐢</div>
-
             <div class="mt-48 text-center z-10 pointer-events-none">
                 <h2 class="text-2xl font-black text-indigo-400 mb-2">Cargando Portal...</h2>
                 <p class="text-stone-400 text-sm font-bold animate-pulse transition-all duration-500" id="loadingText">Conectando...</p>
                 <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Toca la pantalla o mueve el mouse)</p>
             </div>
-
             <div id="timeoutMsg" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-white p-8 rounded-3xl shadow-xl border border-rose-100 z-50">
                 <div class="text-4xl mb-4">😴</div>
                 <h3 class="text-xl font-bold text-rose-500 mb-2">El servidor se quedó dormido</h3>
                 <p class="text-xs text-stone-500 mb-6">Ha pasado mucho tiempo y los datos no llegan.<br>Por favor intenta nuevamente.</p>
-                <button onclick="location.reload()" class="bg-rose-500 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-200">
-                    <i class="fas fa-sync-alt mr-2"></i> Reintentar
-                </button>
+                <button onclick="location.reload()" class="bg-rose-500 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-200"><i class="fas fa-sync-alt mr-2"></i> Reintentar</button>
             </div>
         </div>
 
@@ -88,7 +69,6 @@
                 <h1 class="text-3xl font-black text-stone-700 mb-2"><i class="fas fa-trophy text-yellow-400 mr-3"></i>Cuadro de Honor</h1>
                 <p class="text-stone-400 text-sm font-medium">Top 10 Semanal</p>
             </div>
-
             <div id="wallOfFame" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16"></div>
 
             <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden">
@@ -96,15 +76,11 @@
                 <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-fingerprint"></i></div>
                 <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
                 <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código de ejecutivo para acceder.</p>
-                
                 <div class="relative mb-6 group">
                     <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
                     <input type="text" id="codigoInput" placeholder="EJ: CC014" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
                 </div>
-                
-                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">
-                    VER MIS RESULTADOS
-                </button>
+                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">VER MIS RESULTADOS</button>
             </div>
 
             <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
@@ -115,6 +91,7 @@
     </div>
 
     <div id="viewDashboard" class="hidden flex-1 max-w-7xl mx-auto w-full p-6 fade-in flex-col">
+        
         <div class="flex flex-col md:flex-row justify-between items-end mb-4 bg-white p-8 rounded-[2rem] shadow-sm border border-stone-100 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><i class="fas fa-chart-pie text-9xl text-indigo-900"></i></div>
             <div class="z-10">
@@ -134,15 +111,16 @@
             </div>
         </div>
 
+        <div id="novedadesContainer" class="mb-6 space-y-3 z-10"></div>
+
         <div class="flex flex-wrap md:flex-nowrap gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-xl mx-auto backdrop-blur-sm">
             <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]">🎯 Calidad Técnica</button>
-            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">⚡ Eficiencia</button>
-            <button id="btnTab3" onclick="switchTab(3)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📊 KPIs Operativos</button>
+            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">⚡ Otras Auditorías</button>
+            <button id="btnTab3" onclick="switchTab(3)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📚 Centro de Apoyo</button>
         </div>
 
         <div id="tabAuditorias" class="fade-in block">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-emerald-600 font-black uppercase tracking-wide">Calidad Técnica (PENC)</p><p class="text-3xl font-black text-emerald-600 mt-2" id="kpiPenc">-</p><p class="text-[9px] text-emerald-400/80 font-medium mt-1">Sin ceros</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p></div>
                 <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p></div>
                 <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p></div>
@@ -160,124 +138,89 @@
         </div>
 
         <div id="tabEficiencia" class="fade-in hidden mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
-                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">👻</div>
-                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-ghost"></i></span>Registros Vacíos (7 Días)</h3>
+                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
+                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>Calidad del campo de observaciones</h3>
                     
-                    <div class="text-center mb-6 z-10">
-                        <span class="text-6xl font-black text-rose-500 tracking-tighter" id="efVacioTotal">-</span>
-                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Total Generados</p>
-                    </div>
+                    <div class="space-y-4 z-10 mb-auto">
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100">
+                            <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
+                                <strong>Análisis de Glosas:</strong> Evaluamos la utilidad real de lo que registras. Una gestión "Óptima" aporta valor y explica el motivo real (Mínimo 20 caracteres). Se excluyen llamadas IVR o abandonos.
+                            </p>
+                        </div>
 
-                    <div class="flex justify-between items-center text-xs bg-stone-50 p-3 rounded-2xl mb-6 z-10 border border-stone-100">
-                        <div class="text-center w-1/2"><span class="block text-[9px] text-stone-400 font-bold uppercase tracking-wider">Mínimo Equipo</span><span class="block font-black text-emerald-500 text-xl" id="efVacioMin">-</span></div>
-                        <div class="text-center w-1/2 border-l border-stone-200"><span class="block text-[9px] text-stone-400 font-bold uppercase tracking-wider">Máximo Equipo</span><span class="block font-black text-rose-400 text-xl" id="efVacioMax">-</span></div>
+                        <div class="bg-white border-2 border-stone-100 rounded-2xl p-4">
+                            <p class="text-[9px] font-bold text-stone-400 uppercase mb-4 text-center">Tus Métricas vs Metas</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                                <div class="bg-indigo-50 p-3 rounded-xl flex flex-col justify-center border border-indigo-100/50">
+                                    <p class="text-[9px] uppercase font-bold text-indigo-400 mb-1">En Rango</p>
+                                    <p class="text-2xl font-black text-indigo-600" id="efRango">-</p>
+                                </div>
+                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Meta: Mayor a 85%">
+                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Óptimas</p>
+                                    <p class="text-2xl font-black text-stone-700" id="efOptimas">-</p>
+                                </div>
+                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Límite: Menor a 10%">
+                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Poco Útiles</p>
+                                    <p class="text-2xl font-black text-stone-700" id="efPocoUtiles">-</p>
+                                </div>
+                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Límite: Menor a 5%">
+                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Vacías</p>
+                                    <p class="text-2xl font-black text-stone-700" id="efVacias">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 mt-2">
+                            <h4 class="text-[10px] font-bold text-emerald-600 mb-1"><i class="fas fa-check-double mr-1"></i> Ejemplo Óptimo</h4>
+                            <p class="text-[10px] italic text-stone-600">"Paciente solicita hora cardio, no hay agenda, se deriva a lista de espera"</p>
+                        </div>
                     </div>
-
-                    <ul id="listVaciosDias" class="space-y-2 mt-auto z-10">
-                        <li class="text-center text-stone-300 text-xs italic">Cargando días...</li>
-                    </ul>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
-                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
-                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>Calidad Tipificación</h3>
+                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">🔍</div>
+                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-sky-100 text-sky-500 p-1.5 rounded-lg"><i class="fas fa-search-plus"></i></span>Registro de Casos y Llamadas</h3>
                     
-                    <div class="text-center mb-6 mt-2 z-10">
-                        <span class="text-7xl font-black text-emerald-500 tracking-tighter" id="efUtilidadPct">-</span>
-                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-2">Observaciones Útiles</p>
+                    <div class="z-10 bg-stone-50 p-3 rounded-xl border border-stone-100 mb-4">
+                        <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
+                            En esta sección encontrarás auditorías complementarias sobre el manejo de Casos, Llamadas Cortas, Largas u otras gestiones especiales.
+                        </p>
                     </div>
 
-                    <div class="space-y-3 mb-6 z-10 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100">
-                            <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
-                                <strong>Objetivo:</strong> Medir la utilidad real de la información que registras después de cada llamada. Una buena glosa permite que, si el paciente vuelve a llamar, cualquier compañero sepa exactamente qué pasó sin tener que preguntarle todo de nuevo.
-                            </p>
-                        </div>
-                        <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-50">
-                            <h4 class="text-[10px] font-bold text-indigo-500 mb-1"><i class="fas fa-shield-alt mr-1"></i> 1. Llamadas Excluidas (No afectan)</h4>
-                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
-                                <li>Llamadas no contestadas, números equivocados o buzón de voz.</li>
-                                <li>Llamadas cortadas por el sistema o abandonadas antes de hablar.</li>
-                                <li>Llamadas gestionadas por IVR o IA.</li>
-                            </ul>
-                        </div>
-                        <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-50">
-                            <h4 class="text-[10px] font-bold text-emerald-600 mb-1">✅ 2. Gestión Útil (100% Calidad)</h4>
-                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
-                                <li><strong>Aportar Valor:</strong> Describe motivo real y solución (Ej: "Paciente solicita cambio de hora para traumatología por motivos laborales, se reagenda para el 15/03").</li>
-                                <li><strong>Extensión adecuada:</strong> Al menos 20 caracteres (4-5 palabras).</li>
-                            </ul>
-                        </div>
-                        <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-50">
-                            <h4 class="text-[10px] font-bold text-rose-500 mb-1">⚠️ 3. Bajan tu porcentaje</h4>
-                            <ul class="list-disc ml-4 text-[9px] text-stone-500 space-y-0.5">
-                                <li><strong>Campos Vacíos:</strong> No escribir nada.</li>
-                                <li><strong>Redundancia:</strong> Escribir lo mismo que la tipificación (Ej: Tipificación: Cruce de datos; Obs: cruce de datos).</li>
-                                <li><strong>Duplicidad:</strong> Solo pegar el nombre del paciente.</li>
-                                <li><strong>Texto insuficiente:</strong> Palabras sueltas ("ok", "listo", "se gestiona").</li>
-                            </ul>
-                        </div>
-                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100 text-center">
-                            <h4 class="text-[10px] font-bold text-stone-500 mb-1"><i class="fas fa-calculator mr-1"></i> 4. Fórmula de Éxito</h4>
-                            <p class="text-[10px] font-black text-indigo-400 font-mono">( Glosas Útiles / Total Llamadas Atendidas ) x 100</p>
-                        </div>
-                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-100">
-                            <h4 class="text-[10px] font-bold text-stone-500 mb-2">📊 5. Niveles de Desempeño</h4>
-                            <div class="space-y-2">
-                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-emerald-100 text-emerald-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">90-100%</span><span class="text-stone-500"><strong>Experto:</strong> Información clara, profesional y ayuda al equipo.</span></div>
-                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-amber-100 text-amber-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">70-89%</span><span class="text-stone-500"><strong>En Proceso:</strong> Gestionas bien, pero olvidas detalles o eres muy breve.</span></div>
-                                <div class="flex items-start gap-2 text-[9px]"><span class="bg-rose-100 text-rose-600 font-black px-1.5 py-0.5 rounded min-w-[50px] text-center">< 70%</span><span class="text-stone-500"><strong>Crítico:</strong> Necesitas mejorar la descripción para no perder información.</span></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-stone-200">
-                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-2"><i class="fas fa-check-double mr-1"></i> Ejemplos Reales (Útiles)</p>
-                            <ul class="space-y-1.5 text-[9px] font-mono text-indigo-500/80">
-                                <li class="bg-indigo-50/50 p-1.5 rounded">"CONSULTA PARA VERIFICAR CITA DE TRAUMATOLOGÍA. SE CONFIRMA CITA."</li>
-                                <li class="bg-indigo-50/50 p-1.5 rounded">"PACIENTE SOLICITA INFORMACION DE REQUERIMIENTO NRO: 182713 (CIRUGIA DE MAMAS) (RENOVACION DE RECETA)"</li>
-                                <li class="bg-indigo-50/50 p-1.5 rounded">"EMPAGLIFLOZINA 10 MG / SIN STOCK SEGUN REPORTE DEL 12/02/2026"</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center text-xs bg-emerald-50/50 p-5 rounded-2xl z-10 mt-auto border border-emerald-50">
-                        <div class="text-center w-1/2"><span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Útiles</span><span class="block font-black text-emerald-600 text-2xl" id="efUtilidadUtiles">-</span></div>
-                        <div class="text-center w-1/2 border-l border-emerald-100/50"><span class="block text-[10px] text-emerald-600/60 font-black uppercase tracking-wider mb-1">Total Obs</span><span class="block font-black text-stone-500 text-2xl" id="efUtilidadTotal">-</span></div>
+                    <div id="otrasAuditoriasContainer" class="space-y-3 z-10 overflow-y-auto max-h-[350px] custom-scrollbar pr-2">
+                        <p class="text-center text-stone-300 text-xs italic py-6">Cargando registros...</p>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <div id="tabKpis" class="fade-in hidden mb-8">
-            <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-chart-line text-indigo-400"></i> Resumen de Operación</h3>
+        <div id="tabCentroApoyo" class="fade-in hidden mb-8">
+            <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-toolbox text-indigo-400"></i> Herramientas y Capacitación</h3>
             
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="bg-white p-5 rounded-2xl border-b-4 border-indigo-400 text-center relative group hover:shadow-md transition">
-                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Productividad</p>
-                    <p class="text-4xl font-black text-indigo-500 mt-2" id="kpiProductividad">-</p>
-                    <div class="absolute top-2 right-2 text-indigo-100 group-hover:text-indigo-200 transition"><i class="fas fa-tasks"></i></div>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
+                    <h4 class="text-xs font-bold text-stone-400 uppercase mb-4"><i class="fas fa-link mr-1"></i> Material Disponible</h4>
+                    <div id="herramientasContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <p class="text-center text-stone-300 text-xs italic mt-4 col-span-full">No hay material cargado por ahora.</p>
+                    </div>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border-b-4 border-emerald-400 text-center relative group hover:shadow-md transition">
-                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Adherencia</p>
-                    <p class="text-4xl font-black text-emerald-500 mt-2" id="kpiAdherencia">-</p>
-                    <div class="absolute top-2 right-2 text-emerald-100 group-hover:text-emerald-200 transition"><i class="fas fa-clock"></i></div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border-b-4 border-amber-400 text-center relative group hover:shadow-md transition">
-                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Ocupación</p>
-                    <p class="text-4xl font-black text-amber-500 mt-2" id="kpiOcupacion">-</p>
-                    <div class="absolute top-2 right-2 text-amber-100 group-hover:text-amber-200 transition"><i class="fas fa-headset"></i></div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border-b-4 border-sky-400 text-center relative group hover:shadow-md transition">
-                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">TMO</p>
-                    <p class="text-4xl font-black text-sky-500 mt-2" id="kpiTmo">-</p>
-                    <div class="absolute top-2 right-2 text-sky-100 group-hover:text-sky-200 transition"><i class="fas fa-stopwatch"></i></div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border-b-4 border-rose-400 text-center relative group hover:shadow-md transition">
-                    <p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">IDLE</p>
-                    <p class="text-4xl font-black text-rose-500 mt-2" id="kpiIdle">-</p>
-                    <div class="absolute top-2 right-2 text-rose-100 group-hover:text-rose-200 transition"><i class="fas fa-pause-circle"></i></div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase"><i class="fas fa-clipboard-check mr-1"></i> Resumen de Pauta (Criterios)</h4>
+                        <div class="w-full md:w-1/3 relative">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-stone-300"></i>
+                            <input type="text" id="buscarPauta" onkeyup="filtrarPauta()" placeholder="Buscar criterio (ej. RUT, empatía)..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 text-[10px] focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition bg-stone-50">
+                        </div>
+                    </div>
+                    
+                    <div id="pautaContainer" class="space-y-4 flex-1 overflow-y-auto max-h-[600px] custom-scrollbar pr-2">
+                        <p class="text-center text-stone-300 text-xs italic mt-4">Cargando pauta...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -292,7 +235,6 @@
         // ================= CONFIGURACIÓN =================
         const API_URL = "https://script.google.com/macros/s/AKfycbzEnzOn8TVN8xAX7do3tk1N2g3bD0lKh9EF5eh6T_I2yHFiPdeKDrM4RTwjG8f2uIzDJQ/exec"; 
 
-        const PEC_KEYS = ["Validación Identidad", "Confidencialidad", "Normas", "Abandono", "Registro"];
         const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
 
         const INDICADORES_INFO = {
@@ -320,25 +262,23 @@
         let MIS_DATOS = [];
         let DATOS_VACIOS_GLOBAL = [];
         let DATOS_UTILIDAD_GLOBAL = [];
-        let DATOS_KPI_GLOBAL = [];
+        let DATOS_APOYO_GLOBAL = [];
+        let DATOS_PAUTA_GLOBAL = [];
+        let DATOS_OTRAS_GLOBAL = []; // NUEVO: Para Otras Auditorías
         let chartInstance = null;
 
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") { event.preventDefault(); login(); }
         });
 
-        // --- SISTEMA DE CARGA (GAME LOOP) CON SOPORTE TÁCTIL ---
+        // --- SISTEMA DE CARGA (GAME LOOP) ---
         let targetX = window.innerWidth / 2, targetY = window.innerHeight / 2;
         let foxPos = {x: targetX, y: targetY}, rabbitPos = {x: targetX, y: targetY}, turtlePos = {x: targetX, y: targetY};
         let animalsActive = {rabbit: false, turtle: false};
-        let gameLoopId;
-        let rabbitTimer, turtleTimer, timeoutTimer;
+        let gameLoopId, rabbitTimer, turtleTimer, timeoutTimer;
 
         document.addEventListener('mousemove', (e) => { targetX = e.clientX; targetY = e.clientY; });
-        document.addEventListener('touchmove', (e) => { 
-            const touch = e.touches[0]; targetX = touch.clientX; targetY = touch.clientY; 
-        }, {passive: false});
-
+        document.addEventListener('touchmove', (e) => { const touch = e.touches[0]; targetX = touch.clientX; targetY = touch.clientY; }, {passive: false});
         function lerp(start, end, factor) { return start + (end - start) * factor; }
 
         function gameLoop() {
@@ -365,7 +305,6 @@
             await cargarDatos();
         };
 
-        // --- CARGA DE DATOS ROBUSTA ---
         async function cargarDatos() {
             let data = await intentarFetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
             if (!data) data = await intentarFetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
@@ -375,7 +314,9 @@
                 DATOS_CACHE = data.auditorias;
                 DATOS_VACIOS_GLOBAL = data.vacios || [];
                 DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
-                DATOS_KPI_GLOBAL = data.kpis || []; 
+                DATOS_APOYO_GLOBAL = data.centro_apoyo || []; 
+                DATOS_PAUTA_GLOBAL = data.pauta || [];
+                DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; // Se carga la nueva hoja
                 terminarCarga();
             } else if (Array.isArray(data)) {
                 DATOS_CACHE = data;
@@ -402,7 +343,6 @@
             try { const resp = await fetch(url); if (!resp.ok) return null; const json = await resp.json(); return json; } catch (e) { return null; }
         }
 
-        // --- RENDERIZADO ---
         function renderWallOfFame(data) {
             const hoy = moment();
             const semanaPasada = hoy.subtract(1, 'week').week(); 
@@ -419,12 +359,7 @@
 
             top.forEach(star => {
                 const nota = parseFloat(star.NOTA.replace('%',''));
-                let nameStr = star.NOMBRE || "Anónimo";
-                let parts = nameStr.trim().split(/\s+/);
-                
-                // NUEVA LÓGICA: Solo el primer nombre
-                let displayName = parts[0];
-                
+                let displayName = (star.NOMBRE || "Anónimo").trim().split(/\s+/)[0];
                 let st = "card-bronze", ic = "🥉";
                 if(nota === 100) { st = "card-gold transform hover:scale-105"; ic = "🏆"; }
                 else if(nota >= 90) { st = "card-silver"; ic = "🥈"; }
@@ -447,10 +382,11 @@
             llenarFiltros();
             aplicarFiltro();
             
+            renderNovedades();
+            renderCentroApoyo();
             renderEficiencia(codigo); 
-            renderKpis(codigo); 
 
-            // NUEVA LÓGICA: Scroll al inicio al iniciar sesión
+            switchTab(1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -484,24 +420,43 @@
             const notas = data.map(d => parseFloat(d.NOTA.replace('%',''))||0);
             const total = notas.length;
             const promGen = total ? (notas.reduce((a,b)=>a+b,0)/total).toFixed(0) : 0;
-            const pencNotes = notas.filter(n => n > 0);
-            const promPenc = pencNotes.length ? (pencNotes.reduce((a,b)=>a+b,0)/pencNotes.length).toFixed(0) : 0;
             const max = total ? Math.max(...notas) : 0;
             const min = total ? Math.min(...notas) : 0;
-            document.getElementById('kpiTotal').innerText = total; document.getElementById('kpiGeneral').innerText = promGen + "%"; document.getElementById('kpiPenc').innerText = promPenc + "%"; document.getElementById('kpiMax').innerText = max + "%"; document.getElementById('kpiMin').innerText = min + "%";
+            document.getElementById('kpiTotal').innerText = total; 
+            document.getElementById('kpiGeneral').innerText = promGen + "%"; 
+            document.getElementById('kpiMax').innerText = max + "%"; 
+            document.getElementById('kpiMin').innerText = min + "%";
         }
 
         function renderTops(data) {
             let pecC = {}, pencC = {};
-            data.forEach(d => { if(d.DETALLE) { for(const [k,v] of Object.entries(d.DETALLE)) { if(v === 'NO') { const keyClean = Object.keys(PAUTA_DEFS).find(defKey => k.includes(defKey)) || k; const isPec = PEC_KEYS.some(pk => k.includes(pk)); if(isPec) pecC[keyClean] = (pecC[keyClean]||0)+1; else pencC[keyClean] = (pencC[keyClean]||0)+1; } } } });
-            fillList('listPec', pecC, 'text-rose-500 bg-rose-50'); fillList('listPenc', pencC, 'text-orange-500 bg-orange-50');
+            data.forEach(d => { 
+                if(d.DETALLE) { 
+                    for(const [k,v] of Object.entries(d.DETALLE)) { 
+                        if(v === 'NO') { 
+                            const info = INDICADORES_INFO[k];
+                            const nombreReal = info ? info.nombre : k; 
+                            const isPec = k.startsWith('SEG_') || k.startsWith('COND_') || k.startsWith('OP_') || k.startsWith('SIST_');
+                            
+                            if(isPec) pecC[nombreReal] = (pecC[nombreReal]||0)+1; 
+                            else pencC[nombreReal] = (pencC[nombreReal]||0)+1; 
+                        } 
+                    } 
+                } 
+            });
+            fillList('listPec', pecC, 'text-rose-500 bg-rose-50'); 
+            fillList('listPenc', pencC, 'text-orange-500 bg-orange-50');
         }
 
+        // --- BUGFIX: Se agrega la descripción debajo del indicador ---
         function fillList(id, obj, style) {
             const ul = document.getElementById(id); ul.innerHTML = "";
             const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,3);
             if(sorted.length === 0) { ul.innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4 bg-stone-50 rounded-xl'>¡Excelente! Sin errores.</li>"; return; }
-            sorted.forEach(([k,v]) => { ul.innerHTML += `<li class="flex justify-between items-center text-xs text-stone-600 font-bold border-b border-stone-50 pb-2 last:border-0"><span class="truncate w-3/4">${k}</span><span class="${style} px-2 py-1 rounded-lg text-[10px] min-w-[24px] text-center">${v}</span></li>`; });
+            sorted.forEach(([k,v]) => { 
+                const desc = PAUTA_DEFS[k] ? `<span class="block text-[8px] text-stone-400 font-normal mt-0.5 leading-tight whitespace-normal">${PAUTA_DEFS[k]}</span>` : '';
+                ul.innerHTML += `<li class="flex justify-between items-start text-xs text-stone-600 font-bold border-b border-stone-50 pb-2 last:border-0"><div class="w-3/4 pr-2"><span class="block truncate">${k}</span>${desc}</div><span class="${style} px-2 py-1 rounded-lg text-[10px] min-w-[24px] text-center">${v}</span></li>`; 
+            });
         }
 
         function renderList(data) {
@@ -511,22 +466,25 @@
                 const n = parseFloat(d.NOTA.replace('%',''));
                 let border="border-indigo-200", text="text-indigo-600", icon="📋";
                 if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
-                const fechaMostrar = d.FECHA_LLAMADA || d.FECHA;
                 
-                // NUEVA LÓGICA: Auditor en la tarjeta del historial
+                // --- BUGFIX: Formato dd-mmmm-aaaa ---
+                let fRaw = d.FECHA_LLAMADA || d.FECHA || "";
+                let fechaFormat = fRaw;
+                if(fRaw.includes('-')) {
+                    let p = fRaw.split('-');
+                    if(p.length === 3) fechaFormat = `${p[2]}-${(MESES[p[1]] ? MESES[p[1]].toLowerCase() : p[1])}-${p[0]}`;
+                }
+
                 c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group">
                     <div class="flex-1">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <span class="font-bold text-stone-700 text-sm">${fechaMostrar}</span>
+                            <span class="font-bold text-stone-700 text-sm">${fechaFormat}</span>
                             <span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span>
                             <span class="text-[9px] bg-indigo-50 text-indigo-400 px-2 py-0.5 rounded uppercase font-bold tracking-wider" title="Auditor(a)"><i class="fas fa-user-check"></i> ${d.AUDITOR_REAL || 'Auditor'}</span>
                         </div>
                         <p class="text-[10px] text-stone-400 font-bold uppercase group-hover:text-indigo-400 transition">Ver Detalle / Apelar</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-3xl font-black ${text}">${d.NOTA}</div>
-                        <div class="text-xs opacity-50">${icon}</div>
-                    </div>
+                    <div class="text-right"><div class="text-3xl font-black ${text}">${d.NOTA}</div><div class="text-xs opacity-50">${icon}</div></div>
                 </div>`;
             });
         }
@@ -542,79 +500,36 @@
         function verDetalle(d) {
             let itemsHtml = "";
             let tieneQuiebres = false;
-
             if (d.DETALLE) {
                 for (let [keyExcel, valor] of Object.entries(d.DETALLE)) {
                     if (valor === 'NO') {
                         tieneQuiebres = true;
                         const info = INDICADORES_INFO[keyExcel] || { nombre: keyExcel, desc: "Sin descripción" };
-                        
                         let safeName = info.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                         let regex = new RegExp(`•\\s*${safeName}.*?:\\s*(.*?)(?:\\n|$)`, 'i');
                         let match = d.OBS.match(regex);
                         let comentarioEspecifico = match && match[1].trim() ? match[1].trim() : "Revisar observación general.";
-
                         const esCritico = ["SEG", "COND", "OP", "SIST"].some(prefix => keyExcel.startsWith(prefix));
                         const colorClass = esCritico ? "text-rose-600 border-rose-200 bg-rose-50" : "text-orange-600 border-orange-200 bg-orange-50";
                         const badge = esCritico ? "PEC (Crítico)" : "PENC (Leve)";
-
-                        itemsHtml += `
-                        <li class="mb-3 pl-3 border-l-4 ${colorClass} rounded-r-lg p-2">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-xs indicator-tooltip" title="${info.desc}">
-                                    ${info.nombre} <i class="fas fa-info-circle text-[9px] opacity-50 ml-1"></i>
-                                </span>
-                                <span class="text-[9px] font-black uppercase opacity-60">${badge}</span>
-                            </div>
-                            <p class="text-xs text-slate-600 italic">"${comentarioEspecifico}"</p>
-                        </li>`;
+                        itemsHtml += `<li class="mb-3 pl-3 border-l-4 ${colorClass} rounded-r-lg p-2"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs indicator-tooltip" title="${info.desc}">${info.nombre} <i class="fas fa-info-circle text-[9px] opacity-50 ml-1"></i></span><span class="text-[9px] font-black uppercase opacity-60">${badge}</span></div><p class="text-xs text-slate-600 italic">"${comentarioEspecifico}"</p></li>`;
                     }
                 }
             }
-
             if (!itemsHtml) itemsHtml = "<div class='text-center py-6 text-emerald-500 bg-emerald-50 rounded-xl border border-emerald-100 italic text-xs'><i class='fas fa-check-circle text-2xl mb-2 block'></i>¡Felicitaciones!<br>Auditoría sin quiebres detectados.</div>";
 
             let audioSection = "";
             if (d.AUDIO_URL && d.AUDIO_URL.length > 5) {
-                audioSection = `
-                    <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 mb-4">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i class="fas fa-headphones"></i> Grabación</p>
-                        <audio controls src="${d.AUDIO_URL}" class="w-full h-8 mb-3 shadow-sm rounded-lg" preload="none"></audio>
-                        <div class="flex items-center justify-between">
-                            <a href="${d.AUDIO_URL}" target="_blank" class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 hover:underline"><i class="fas fa-external-link-alt mr-1"></i> Abrir / Descargar</a>
-                            <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-100"><i class="fas fa-lock mr-1"></i> Login ClickUp requerido</span>
-                        </div>
-                    </div>`;
+                audioSection = `<div class="bg-slate-100 p-3 rounded-xl border border-slate-200 mb-4"><p class="text-[10px] font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i class="fas fa-headphones"></i> Grabación</p><audio controls src="${d.AUDIO_URL}" class="w-full h-8 mb-3 shadow-sm rounded-lg" preload="none"></audio><div class="flex items-center justify-between"><a href="${d.AUDIO_URL}" target="_blank" class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 hover:underline"><i class="fas fa-external-link-alt mr-1"></i> Abrir / Descargar</a><span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-100"><i class="fas fa-lock mr-1"></i> Login ClickUp requerido</span></div></div>`;
             } else {
-                audioSection = `
-                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex items-center gap-3 opacity-75">
-                        <div class="bg-gray-200 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-volume-mute"></i></div>
-                        <div><p class="text-xs font-bold text-gray-500">Audio no disponible</p><p class="text-[10px] text-gray-400">Si lo necesitas, contacta a tu supervisor.</p></div>
-                    </div>`;
+                audioSection = `<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex items-center gap-3 opacity-75"><div class="bg-gray-200 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-volume-mute"></i></div><div><p class="text-xs font-bold text-gray-500">Audio no disponible</p><p class="text-[10px] text-gray-400">Si lo necesitas, contacta a tu supervisor.</p></div></div>`;
             }
-
-            const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---";
-            const horaCall = d.HORA_LLAMADA || d.HORA || "--:--";
-            const rutPac = d.RUT_PACIENTE || "No registrado";
-            const notaVal = parseFloat(d.NOTA.replace('%',''));
-            const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
+            const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---"; const horaCall = d.HORA_LLAMADA || d.HORA || "--:--"; const rutPac = d.RUT_PACIENTE || "No registrado";
+            const notaVal = parseFloat(d.NOTA.replace('%','')); const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
 
             Swal.fire({
                 title: `<div class="flex items-center gap-2 text-left"><div class="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-contract"></i></div><div><span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalle Atención</span><span class="block text-sm text-slate-700 font-bold">Evaluación de Calidad</span></div></div>`,
-                html: `
-                    <div class="text-left mt-2">
-                        <div class="grid grid-cols-3 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div>
-                            <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div>
-                            <div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">Auditor</span><span class="block text-xs font-bold text-slate-700 truncate" title="${d.AUDITOR_REAL || '-'}"><i class="fas fa-user-check mr-1 text-indigo-400"></i> ${d.AUDITOR_REAL || '-'}</span></div>
-                        </div>
-                        ${audioSection}
-                        <div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div>
-                        <div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4><div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10">${d.OBS}</span></div></div>
-                        <div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div>
-                        <div class="mt-6 pt-4 border-t border-slate-100"><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div>
-                    </div>
-                `,
+                html: `<div class="text-left mt-2"><div class="grid grid-cols-3 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm"><div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">Auditor</span><span class="block text-xs font-bold text-slate-700 truncate" title="${d.AUDITOR_REAL || '-'}"><i class="fas fa-user-check mr-1 text-indigo-400"></i> ${d.AUDITOR_REAL || '-'}</span></div></div>${audioSection}<div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div><div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4><div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10">${d.OBS}</span></div></div><div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div><div class="mt-6 pt-4 border-t border-slate-100"><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div></div>`,
                 width: '550px', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-[2rem]' }
             });
         }
@@ -628,102 +543,179 @@
             }
         }
 
-        // --- SISTEMA DE PESTAÑAS (TRES TABS) ---
         function switchTab(tab) {
-             const t1 = document.getElementById('tabAuditorias');
-             const t2 = document.getElementById('tabEficiencia');
-             const t3 = document.getElementById('tabKpis');
-             
-             const b1 = document.getElementById('btnTab1');
-             const b2 = document.getElementById('btnTab2');
-             const b3 = document.getElementById('btnTab3');
-
+             const t1 = document.getElementById('tabAuditorias'); const t2 = document.getElementById('tabEficiencia'); const t3 = document.getElementById('tabCentroApoyo');
+             const b1 = document.getElementById('btnTab1'); const b2 = document.getElementById('btnTab2'); const b3 = document.getElementById('btnTab3');
              const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
              const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
 
-             t1.classList.add('hidden'); 
-             t2.classList.add('hidden'); 
-             t3.classList.add('hidden');
-             
-             b1.className = inactiveClass; 
-             b2.className = inactiveClass; 
-             b3.className = inactiveClass;
+             t1.classList.add('hidden'); t2.classList.add('hidden'); t3.classList.add('hidden');
+             b1.className = inactiveClass; b2.className = inactiveClass; b3.className = inactiveClass;
 
              if(tab === 1) { t1.classList.remove('hidden'); b1.className = activeClass; }
              if(tab === 2) { t2.classList.remove('hidden'); b2.className = activeClass; }
              if(tab === 3) { t3.classList.remove('hidden'); b3.className = activeClass; }
         }
 
-        // --- RENDER DE PESTAÑAS DE EFICIENCIA Y KPI ---
+        // --- RENDER DE OTRAS AUDITORIAS ---
         function renderEficiencia(codigo) {
-            const misVaciosRow = DATOS_VACIOS_GLOBAL.find(d => d.ID === codigo);
-            let maxVacios = 0;
-            let minVacios = 99999;
-            
-            DATOS_VACIOS_GLOBAL.forEach(d => {
-                const tot = parseInt(d.Total) || 0;
-                if(tot > maxVacios) maxVacios = tot;
-                if(tot < minVacios) minVacios = tot;
-            });
-            if(minVacios === 99999) minVacios = 0;
-
-            if(misVaciosRow) {
-                document.getElementById('efVacioTotal').innerText = misVaciosRow.Total || "0";
-                document.getElementById('efVacioMin').innerText = minVacios;
-                document.getElementById('efVacioMax').innerText = maxVacios;
-
-                const listEl = document.getElementById('listVaciosDias');
-                listEl.innerHTML = "";
-                const keys = Object.keys(misVaciosRow).filter(k => k !== 'ID' && k !== 'Agente' && k !== 'Total');
-                
-                if(keys.length === 0) {
-                    listEl.innerHTML = "<li class='text-center text-stone-300 text-xs italic'>Sin datos recientes.</li>";
-                } else {
-                    keys.slice(-7).forEach(k => {
-                       const val = parseInt(misVaciosRow[k]) || 0;
-                       const isBad = val > 0;
-                       listEl.innerHTML += `
-                       <li class="flex justify-between items-center text-xs font-bold bg-stone-50 p-2.5 rounded-xl">
-                           <span class="text-stone-500">${k}</span>
-                           <span class="${isBad ? 'text-rose-600 bg-rose-100' : 'text-stone-400 bg-stone-200'} px-2.5 py-1 rounded-lg min-w-[30px] text-center">${val}</span>
-                       </li>`;
-                    });
-                }
-            } else {
-                document.getElementById('efVacioTotal').innerText = "-";
-                document.getElementById('listVaciosDias').innerHTML = "<li class='text-center text-stone-300 text-xs italic py-4'>No hay registros operativos para este código.</li>";
-            }
-
             const miUtilidadRow = DATOS_UTILIDAD_GLOBAL.find(d => d.ID === codigo);
             if(miUtilidadRow) {
-                let pct = String(miUtilidadRow.Calidad);
-                if(!pct.includes('%')) pct += '%';
-                
-                document.getElementById('efUtilidadPct').innerText = pct;
-                document.getElementById('efUtilidadUtiles').innerText = miUtilidadRow.Utiles || 0;
-                document.getElementById('efUtilidadTotal').innerText = miUtilidadRow.Total || 0;
+                const total = parseInt(miUtilidadRow['Total En Rango']) || 0;
+                const opt = parseInt(miUtilidadRow['Óptimas']) || 0;
+                const poco = parseInt(miUtilidadRow['Poco Útiles']) || 0;
+                const vac = parseInt(miUtilidadRow['Vacías']) || 0;
+
+                const pctOpt = total > 0 ? ((opt/total)*100).toFixed(1) : 0;
+                const pctPoco = total > 0 ? ((poco/total)*100).toFixed(1) : 0;
+                const pctVac = total > 0 ? ((vac/total)*100).toFixed(1) : 0;
+
+                document.getElementById('efRango').innerText = total;
+
+                // Color según Metas Acordadas
+                const optColor = pctOpt >= 85 ? 'text-emerald-500' : 'text-amber-500';
+                const pocoColor = pctPoco <= 10 ? 'text-stone-500' : 'text-amber-500';
+                const vacColor = pctVac <= 5 ? 'text-stone-500' : 'text-rose-500';
+
+                document.getElementById('efOptimas').innerHTML = `${opt} <span class="block text-[10px] ${optColor}">${pctOpt}%</span>`;
+                document.getElementById('efPocoUtiles').innerHTML = `${poco} <span class="block text-[10px] ${pocoColor}">${pctPoco}%</span>`;
+                document.getElementById('efVacias').innerHTML = `${vac} <span class="block text-[10px] ${vacColor}">${pctVac}%</span>`;
             } else {
-                 document.getElementById('efUtilidadPct').innerText = "-";
-                 document.getElementById('efUtilidadUtiles').innerText = "-";
-                 document.getElementById('efUtilidadTotal').innerText = "-";
+                document.getElementById('efRango').innerText = "-"; document.getElementById('efOptimas').innerText = "-";
+                document.getElementById('efPocoUtiles').innerText = "-"; document.getElementById('efVacias').innerText = "-";
+            }
+
+            // Nueva tabla dinámica de Otras Auditorias
+            const contenedorOtras = document.getElementById('otrasAuditoriasContainer');
+            const misOtras = DATOS_OTRAS_GLOBAL.filter(d => d.ID === codigo);
+            contenedorOtras.innerHTML = "";
+            
+            if(misOtras.length === 0) {
+                contenedorOtras.innerHTML = "<p class='text-center text-stone-400 py-6 italic text-xs'>No hay registros de casos o llamadas auditadas recientemente.</p>";
+            } else {
+                // Ordenar más recientes primero
+                misOtras.sort((a,b) => new Date(b.Fecha) - new Date(a.Fecha)).forEach(o => {
+                    let tipoColor = 'bg-stone-100 text-stone-600';
+                    let tipoTexto = String(o.Tipo || '').toLowerCase();
+                    if(tipoTexto.includes('corta')) tipoColor = 'bg-sky-100 text-sky-600';
+                    if(tipoTexto.includes('larga')) tipoColor = 'bg-indigo-100 text-indigo-600';
+                    if(tipoTexto.includes('caso')) tipoColor = 'bg-amber-100 text-amber-600';
+
+                    contenedorOtras.innerHTML += `
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-100 mb-3 hover:shadow-sm transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[9px] font-bold ${tipoColor} px-2 py-0.5 rounded uppercase tracking-wider">${o.Tipo || 'Auditoría'}</span>
+                            <span class="text-[10px] text-stone-400 font-bold"><i class="far fa-calendar-alt"></i> ${o.Fecha || '-'}</span>
+                        </div>
+                        <p class="text-[10px] text-stone-500 mb-1"><strong>ID Llamada:</strong> ${o.ID_Llamada || 'N/A'}</p>
+                        <p class="text-xs text-stone-700 italic mb-3">"${o.Observacion || 'Sin observación'}"</p>
+                        <div class="bg-white p-2 rounded-lg border border-stone-200 text-[10px] text-stone-600"><strong class="text-indigo-400"><i class="fas fa-comment-dots"></i> Feedback:</strong> ${o.Feedback || '-'}</div>
+                    </div>`;
+                });
             }
         }
 
-        function renderKpis(codigo) {
-            const miKpi = DATOS_KPI_GLOBAL.find(d => d.ID === codigo);
-            if(miKpi) {
-                document.getElementById('kpiProductividad').innerText = miKpi.Productividad || "-";
-                document.getElementById('kpiAdherencia').innerText = miKpi.Adherencia || "-";
-                document.getElementById('kpiOcupacion').innerText = miKpi.Ocupación || "-";
-                document.getElementById('kpiTmo').innerText = miKpi.TMO || "-";
-                document.getElementById('kpiIdle').innerText = miKpi.IDLE || "-";
-            } else {
-                document.getElementById('kpiProductividad').innerText = "-";
-                document.getElementById('kpiAdherencia').innerText = "-";
-                document.getElementById('kpiOcupacion').innerText = "-";
-                document.getElementById('kpiTmo').innerText = "-";
-                document.getElementById('kpiIdle').innerText = "-";
+        // --- RENDER DE NOVEDADES GLOBALES ---
+        function renderNovedades() {
+            const container = document.getElementById('novedadesContainer');
+            container.innerHTML = "";
+            const novedades = DATOS_APOYO_GLOBAL.filter(d => String(d.Visible).toUpperCase() === 'SI' && String(d.Tipo).toUpperCase() === 'NOVEDAD');
+            
+            if (novedades.length === 0) return;
+
+            novedades.forEach(n => {
+                const esLlamativo = String(n.Llamativo).toUpperCase() === 'SI';
+                const bgColor = esLlamativo ? 'bg-orange-50 border-orange-200' : 'bg-indigo-50 border-indigo-100';
+                const iconColor = esLlamativo ? 'text-orange-500' : 'text-indigo-500';
+                const titleColor = esLlamativo ? 'text-orange-700' : 'text-indigo-700';
+                
+                let linkHtml = "";
+                if(n.URL && n.URL.length > 5) {
+                    linkHtml = `<a href="${n.URL}" target="_blank" class="mt-2 inline-block text-[10px] font-bold ${iconColor} hover:underline bg-white/50 px-2 py-1 rounded-lg border border-white"><i class="fas fa-external-link-alt"></i> Ver más detalles</a>`;
+                }
+
+                container.innerHTML += `
+                <div class="${bgColor} border p-4 rounded-2xl shadow-sm flex gap-4 items-start relative overflow-hidden fade-in">
+                    <div class="absolute -right-4 -top-4 text-7xl opacity-5 pointer-events-none ${iconColor}"><i class="fas fa-bullhorn"></i></div>
+                    <div class="${iconColor} text-xl mt-1 z-10"><i class="${esLlamativo ? 'fas fa-exclamation-circle animate-pulse' : 'fas fa-info-circle'}"></i></div>
+                    <div class="flex-1 z-10">
+                        <div class="flex justify-between items-center mb-1">
+                            <h4 class="font-black text-sm ${titleColor}">${n.Titulo}</h4>
+                            <span class="text-[9px] font-bold opacity-60 uppercase">${n.Fecha || ''}</span>
+                        </div>
+                        <p class="text-xs text-stone-600 leading-relaxed">${n.Descripcion}</p>
+                        ${linkHtml}
+                    </div>
+                </div>`;
+            });
+        }
+
+        // --- RENDER CENTRO DE APOYO Y PAUTA ---
+        function renderCentroApoyo() {
+            const containerHerramientas = document.getElementById('herramientasContainer');
+            const tools = DATOS_APOYO_GLOBAL.filter(d => String(d.Visible).toUpperCase() === 'SI' && String(d.Tipo).toUpperCase() !== 'NOVEDAD');
+            
+            if(tools.length > 0) {
+                containerHerramientas.innerHTML = "";
+                tools.forEach(t => {
+                    let linkAction = t.URL && t.URL.length > 5 ? `href="${t.URL}" target="_blank"` : `href="#" onclick="return false;"`;
+                    let isClickable = t.URL && t.URL.length > 5 ? 'hover:bg-stone-50 hover:border-indigo-200 cursor-pointer group' : 'opacity-70 cursor-default';
+                    
+                    containerHerramientas.innerHTML += `
+                    <a ${linkAction} class="block border border-stone-100 p-4 rounded-2xl transition ${isClickable}">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${t.Tipo}</span>
+                            <span class="text-[9px] text-stone-400 font-bold">${t.Fecha}</span>
+                        </div>
+                        <h5 class="text-sm font-black text-stone-700 mt-2 mb-1 group-hover:text-indigo-600 transition">${t.Titulo}</h5>
+                        <p class="text-[10px] text-stone-500 leading-relaxed">${t.Descripcion}</p>
+                    </a>`;
+                });
             }
+
+            const containerPauta = document.getElementById('pautaContainer');
+            if(DATOS_PAUTA_GLOBAL && DATOS_PAUTA_GLOBAL.length > 0) {
+                containerPauta.innerHTML = "";
+                let pecItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PEC');
+                let pencItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PENC');
+
+                const renderCategory = (items, colorCls, title) => {
+                    if(items.length === 0) return "";
+                    let html = `<h5 class="text-xs font-black ${colorCls} uppercase mt-4 mb-2 border-b pb-1">${title}</h5><div class="space-y-3">`;
+                    items.forEach(p => {
+                        html += `
+                        <div class="pauta-item bg-stone-50 p-3 rounded-xl border border-stone-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black text-stone-700 uppercase pauta-search-text">${p.Indicador}</span>
+                                <span class="text-[9px] bg-white border border-stone-200 text-stone-400 px-1.5 py-0.5 rounded font-bold">${p.Peso}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-emerald-50/50 border border-emerald-100 p-2 rounded-lg"><span class="block text-[8px] font-bold text-emerald-600 uppercase mb-1"><i class="fas fa-check"></i> Esperado</span><p class="text-[9px] text-stone-600 whitespace-pre-line leading-snug pauta-search-text">${p.Criterio_SI}</p></div>
+                                <div class="bg-rose-50/50 border border-rose-100 p-2 rounded-lg"><span class="block text-[8px] font-bold text-rose-600 uppercase mb-1"><i class="fas fa-times"></i> Penalizado</span><p class="text-[9px] text-stone-600 whitespace-pre-line leading-snug pauta-search-text">${p.Criterio_NO}</p></div>
+                            </div>
+                        </div>`;
+                    });
+                    return html + `</div>`;
+                };
+
+                containerPauta.innerHTML += renderCategory(pecItems, "text-rose-500", "Faltas Críticas (PEC)");
+                containerPauta.innerHTML += renderCategory(pencItems, "text-orange-500", "Oportunidades de Mejora (PENC)");
+            }
+        }
+
+        // --- BUSCADOR INTELIGENTE DE LA PAUTA ---
+        function filtrarPauta() {
+            const input = document.getElementById('buscarPauta').value.toLowerCase();
+            const items = document.querySelectorAll('.pauta-item');
+            items.forEach(item => {
+                // Busca dentro de los textos marcados específicamente
+                const textos = item.querySelectorAll('.pauta-search-text');
+                let match = false;
+                textos.forEach(t => { if(t.innerText.toLowerCase().includes(input)) match = true; });
+                
+                if(match) item.style.display = "";
+                else item.style.display = "none";
+            });
         }
     </script>
 </body>
