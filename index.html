@@ -64,30 +64,32 @@
             </div>
         </div>
 
-        <div id="loginContent" class="opacity-0 transition-opacity duration-1000">
-            <div class="text-center mb-10 mt-6">
-                <h1 class="text-3xl font-black text-stone-700 mb-2"><i class="fas fa-trophy text-yellow-400 mr-3"></i>Cuadro de Honor</h1>
-                <p class="text-stone-400 text-sm font-medium">Top 10 Semanal</p>
-            </div>
-            <div id="wallOfFame" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16"></div>
-
-            <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
-                <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-fingerprint"></i></div>
-                <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
-                <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código de ejecutivo para acceder.</p>
-                <div class="relative mb-6 group">
-                    <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
-                    <input type="text" id="codigoInput" placeholder="EJ: CC014" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
-                </div>
-                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">VER MIS RESULTADOS</button>
-            </div>
-
-            <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
-                <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
-                <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
-            </div>
+<div id="loginContent" class="opacity-0 transition-opacity duration-1000">
+    
+    <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden mt-10">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
+        <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-user-shield"></i></div>
+        <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
+        <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código y contraseña para acceder de forma segura.</p>
+        
+        <div class="relative mb-4 group">
+            <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+            <input type="text" id="codigoInput" placeholder="CÓDIGO (EJ: CC014)" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
         </div>
+
+        <div class="relative mb-6 group">
+            <i class="fas fa-lock absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+            <input type="password" id="passInput" placeholder="CONTRASEÑA" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none transition placeholder-indigo-100 bg-indigo-50/30">
+        </div>
+
+        <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">INGRESAR A MIS RESULTADOS</button>
+    </div>
+
+    <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+        <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+        <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+    </div>
+</div>
     </div>
 
     <div id="viewDashboard" class="hidden flex-1 max-w-7xl mx-auto w-full p-6 fade-in flex-col">
@@ -233,7 +235,7 @@
 
     <script>
         // ================= CONFIGURACIÓN =================
-        const API_URL = "https://script.google.com/macros/s/AKfycbzEnzOn8TVN8xAX7do3tk1N2g3bD0lKh9EF5eh6T_I2yHFiPdeKDrM4RTwjG8f2uIzDJQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxz5jI0ix7gpCwhfHWfPpKAJZme0DjTgxS65LJu9O4elIyFJdg9yk0CzxLMRdDIWH4/exec"; 
 
         const MESES = { "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril", "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto", "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre" };
 
@@ -263,6 +265,7 @@
         let DATOS_VACIOS_GLOBAL = [];
         let DATOS_UTILIDAD_GLOBAL = [];
         let DATOS_APOYO_GLOBAL = [];
+	let USUARIOS_GLOBAL = [];
         let DATOS_PAUTA_GLOBAL = [];
         let DATOS_OTRAS_GLOBAL = []; // NUEVO: Para Otras Auditorías
         let chartInstance = null;
@@ -305,32 +308,54 @@
             await cargarDatos();
         };
 
-        async function cargarDatos() {
-            let data = await intentarFetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
-            if (!data) data = await intentarFetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL + "?t=" + Date.now()));
-            if (!data) data = await intentarFetch("https://corsproxy.io/?" + encodeURIComponent(API_URL + "?t=" + Date.now()));
-
-            if (data && data.auditorias) {
-                DATOS_CACHE = data.auditorias;
-                DATOS_VACIOS_GLOBAL = data.vacios || [];
-                DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
-                DATOS_APOYO_GLOBAL = data.centro_apoyo || []; 
-                DATOS_PAUTA_GLOBAL = data.pauta || [];
-                DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; // Se carga la nueva hoja
-                terminarCarga();
-            } else if (Array.isArray(data)) {
-                DATOS_CACHE = data;
-                terminarCarga();
-            } else {
-                document.getElementById('loadingText').innerText = "Fallo de conexión total.";
-                document.getElementById('loadingText').classList.add('text-rose-500');
-            }
+async function cargarDatos() {
+    const loadingText = document.getElementById('loadingText');
+    try {
+        if (loadingText) loadingText.innerText = "Conectando de forma segura con la base de datos de Calidad...";
+        
+        // Conexión limpia y directa aprovechando el CORS nativo de Google Apps Script
+        const response = await fetch(API_URL + "?t=" + Date.now());
+        
+        if (!response.ok) {
+            throw new Error(`Error de respuesta del servidor: ${response.status} ${response.statusText}`);
         }
+        
+        const data = await response.json();
+        
+        // Si el script de Google devolvió un error interno controlado
+        if (data && data.status === "error") {
+            throw new Error(data.message);
+        }
+
+        if (data && data.auditorias) {
+            DATOS_CACHE = data.auditorias;
+            USUARIOS_GLOBAL = data.usuarios || [];
+            DATOS_VACIOS_GLOBAL = data.vacios || [];
+            DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
+            DATOS_APOYO_GLOBAL = data.centro_apoyo || []; 
+            DATOS_PAUTA_GLOBAL = data.pauta || [];
+            DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; 
+            terminarCarga();
+        } else {
+            throw new Error("El formato de datos estructurado no contiene las colecciones esperadas.");
+        }
+    } catch (error) {
+        console.error("Error detallado de conexión:", error);
+        if (loadingText) {
+            loadingText.innerHTML = `
+                <span class="text-rose-500 font-black block text-base mb-2">⚠️ ERROR DE CONEXIÓN</span>
+                <span class="text-stone-600 text-xs font-normal block max-w-md mx-auto bg-rose-50 p-3 rounded-xl border border-rose-100 mb-3">${error.message}</span>
+                <span class="text-[11px] text-stone-400 font-normal block leading-relaxed px-4">
+                    Asegúrate de que la <strong>API_URL</strong> sea la de la implementación (debe terminar en <code>/exec</code>) y que los accesos estén configurados para <strong>"Cualquier persona"</strong>.
+                </span>
+            `;
+        }
+    }
+}
 
         function terminarCarga() {
             clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); 
             cancelAnimationFrame(gameLoopId);
-            renderWallOfFame(DATOS_CACHE);
             const loader = document.getElementById('loadingScreen');
             const content = document.getElementById('loginContent');
             if(loader) {
@@ -343,52 +368,41 @@
             try { const resp = await fetch(url); if (!resp.ok) return null; const json = await resp.json(); return json; } catch (e) { return null; }
         }
 
-        function renderWallOfFame(data) {
-            const hoy = moment();
-            const semanaPasada = hoy.subtract(1, 'week').week(); 
-            const yearPasado = hoy.year();
-            const top = data.filter(d => {
-                const nota = parseFloat(d.NOTA.replace('%','')) || 0;
-                const fecha = moment(d.FECHA_LLAMADA || d.FECHA);
-                return nota >= 85 && fecha.week() === semanaPasada && fecha.year() === yearPasado;
-            }).sort((a,b) => parseFloat(b.NOTA) - parseFloat(a.NOTA)).slice(0, 10);
+       
 
-            const wall = document.getElementById('wallOfFame');
-            wall.innerHTML = "";
-            if(top.length === 0) { wall.innerHTML = "<div class='col-span-full text-center text-stone-400 italic py-10 text-xs'>Aún no hay medallas cerradas de la semana pasada.</div>"; return; }
+function login() {
+    const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+    const pass = document.getElementById('passInput') ? document.getElementById('passInput').value.trim() : '';
+    
+    if(!codigo || !pass) return Swal.fire("Atención", "Ingresa tu código y contraseña", "warning");
 
-            top.forEach(star => {
-                const nota = parseFloat(star.NOTA.replace('%',''));
-                let displayName = (star.NOMBRE || "Anónimo").trim().split(/\s+/)[0];
-                let st = "card-bronze", ic = "🥉";
-                if(nota === 100) { st = "card-gold transform hover:scale-105"; ic = "🏆"; }
-                else if(nota >= 90) { st = "card-silver"; ic = "🥈"; }
-                wall.innerHTML += `<div class="${st} p-4 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center h-32 transition duration-300 hover:-translate-y-1 relative overflow-hidden group"><div class="text-3xl mb-1 drop-shadow-sm group-hover:scale-110 transition">${ic}</div><h3 class="font-black text-xs truncate w-full mt-2 px-1 capitalize text-slate-700">${displayName.toLowerCase()}</h3><div class="text-xl font-black mt-0.5 tracking-tight">${star.NOTA}</div></div>`;
-            });
-        }
+    // LÓGICA DE SEGURIDAD (Validación contra Google Sheets)
+    const userConfig = USUARIOS_GLOBAL.find(u => String(u["Código"]).trim().toUpperCase() === codigo);
+    
+    if(!userConfig) return Swal.fire("Error", "El código ingresado no existe", "error");
+    if(String(userConfig["Contraseña"]).trim() !== pass) return Swal.fire("Acceso Denegado", "La contraseña es incorrecta", "error");
 
-        function login() {
-            const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
-            if(!codigo) return Swal.fire("Atención", "Ingresa código", "warning");
-            MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
-            if(MIS_DATOS.length === 0) return Swal.fire("Error", "Código no encontrado o sin evaluaciones", "error");
+    // Filtrar auditorías solo del usuario validado
+    MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
 
-            document.getElementById('viewLogin').classList.add('hidden');
-            document.getElementById('viewDashboard').classList.remove('hidden');
-            document.getElementById('userName').innerText = MIS_DATOS[0].NOMBRE;
-            document.getElementById('userServ').innerText = MIS_DATOS[0].SERVICIO || 'General';
-            document.getElementById('userCode').innerText = codigo;
+    document.getElementById('viewLogin').classList.add('hidden');
+    document.getElementById('viewDashboard').classList.remove('hidden');
+    
+    // Obtener nombre desde la Configuración de Usuarios (Más confiable)
+    document.getElementById('userName').innerText = userConfig.Nombre;
+    document.getElementById('userServ').innerText = userConfig.Servicio || 'General';
+    document.getElementById('userCode').innerText = codigo;
 
-            llenarFiltros();
-            aplicarFiltro();
-            
-            renderNovedades();
-            renderCentroApoyo();
-            renderEficiencia(codigo); 
+    llenarFiltros();
+    aplicarFiltro();
+    
+    renderNovedades();
+    renderCentroApoyo();
+    renderEficiencia(codigo); 
 
-            switchTab(1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    switchTab(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
         function llenarFiltros() {
             const sel = document.getElementById('filtroMes');
