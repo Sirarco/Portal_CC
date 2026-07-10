@@ -117,7 +117,7 @@
 
         <div class="flex flex-wrap md:flex-nowrap gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-xl mx-auto backdrop-blur-sm">
             <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]">🎯 Calidad Técnica</button>
-            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">⚡ Otras Auditorías</button>
+<button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📢 Historial de Bajadas</button>
             <button id="btnTab3" onclick="switchTab(3)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📚 Centro de Apoyo</button>
         </div>
 
@@ -139,67 +139,28 @@
             <div id="cardsContainer" class="space-y-3 mb-8"><p class="text-center text-stone-400 py-10 italic">Cargando historial...</p></div>
         </div>
 
-        <div id="tabEficiencia" class="fade-in hidden mb-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
-                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">📝</div>
-                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-500 p-1.5 rounded-lg"><i class="fas fa-comment-medical"></i></span>Calidad del campo de observaciones</h3>
-                    
-                    <div class="space-y-4 z-10 mb-auto">
-                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100">
-                            <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
-                                <strong>Análisis de Glosas:</strong> Evaluamos la utilidad real de lo que registras. Una gestión "Óptima" aporta valor y explica el motivo real (Mínimo 20 caracteres). Se excluyen llamadas IVR o abandonos.
-                            </p>
-                        </div>
-
-                        <div class="bg-white border-2 border-stone-100 rounded-2xl p-4">
-                            <p class="text-[9px] font-bold text-stone-400 uppercase mb-4 text-center">Tus Métricas vs Metas</p>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                                <div class="bg-indigo-50 p-3 rounded-xl flex flex-col justify-center border border-indigo-100/50">
-                                    <p class="text-[9px] uppercase font-bold text-indigo-400 mb-1">En Rango</p>
-                                    <p class="text-2xl font-black text-indigo-600" id="efRango">-</p>
-                                </div>
-                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Meta: Mayor a 85%">
-                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Óptimas</p>
-                                    <p class="text-2xl font-black text-stone-700" id="efOptimas">-</p>
-                                </div>
-                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Límite: Menor a 10%">
-                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Poco Útiles</p>
-                                    <p class="text-2xl font-black text-stone-700" id="efPocoUtiles">-</p>
-                                </div>
-                                <div class="bg-stone-50 p-3 rounded-xl flex flex-col justify-center border border-stone-200" title="Límite: Menor a 5%">
-                                    <p class="text-[9px] uppercase font-bold text-stone-500 mb-1">Vacías</p>
-                                    <p class="text-2xl font-black text-stone-700" id="efVacias">-</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 mt-2">
-                            <h4 class="text-[10px] font-bold text-emerald-600 mb-1"><i class="fas fa-check-double mr-1"></i> Ejemplo Óptimo</h4>
-                            <p class="text-[10px] italic text-stone-600">"Paciente solicita hora cardio, no hay agenda, se deriva a lista de espera"</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col relative overflow-hidden group">
-                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 group-hover:scale-110 transition pointer-events-none">🔍</div>
-                    <h3 class="text-xs font-bold text-stone-400 uppercase mb-6 flex items-center gap-2"><span class="bg-sky-100 text-sky-500 p-1.5 rounded-lg"><i class="fas fa-search-plus"></i></span>Registro de Casos y Llamadas</h3>
-                    
-                    <div class="z-10 bg-stone-50 p-3 rounded-xl border border-stone-100 mb-4">
-                        <p class="text-[10px] text-stone-500 leading-relaxed text-justify">
-                            En esta sección encontrarás auditorías complementarias sobre el manejo de Casos, Llamadas Cortas, Largas u otras gestiones especiales.
-                        </p>
-                    </div>
-
-                    <div id="otrasAuditoriasContainer" class="space-y-3 z-10 overflow-y-auto max-h-[350px] custom-scrollbar pr-2">
-                        <p class="text-center text-stone-300 text-xs italic py-6">Cargando registros...</p>
-                    </div>
-                </div>
-
+       <div id="tabHistorial" class="fade-in hidden mb-8">
+    <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-100 flex flex-col relative overflow-hidden">
+        <div class="absolute -right-6 -top-6 text-9xl opacity-5 pointer-events-none text-indigo-900"><i class="fas fa-bullhorn"></i></div>
+        
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4 z-10">
+            <div>
+                <h3 class="text-sm font-black text-stone-600 uppercase flex items-center gap-2"><i class="fas fa-history text-indigo-400"></i> Historial de Bajadas</h3>
+                <p class="text-[10px] text-stone-400 mt-1 font-bold">Registro histórico de comunicados importantes</p>
+            </div>
+            <div class="w-full md:w-1/2 relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-stone-300"></i>
+                <input type="text" id="buscarHistorial" onkeyup="filtrarHistorial()" placeholder="Buscar por palabra clave..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
             </div>
         </div>
 
+        <div id="historialLista" class="space-y-4 z-10 overflow-y-auto max-h-[600px] custom-scrollbar pr-2">
+            <p class="text-center text-stone-300 text-xs italic mt-4">Cargando historial...</p>
+        </div>
+    </div>
+</div>
+                        
+                        
         <div id="tabCentroApoyo" class="fade-in hidden mb-8">
             <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-toolbox text-indigo-400"></i> Herramientas y Capacitación</h3>
             
@@ -232,8 +193,7 @@
             <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
         </div>
     </div>
-
-    <script>
+<script>
         // ================= CONFIGURACIÓN =================
         const API_URL = "https://script.google.com/macros/s/AKfycbxz5jI0ix7gpCwhfHWfPpKAJZme0DjTgxS65LJu9O4elIyFJdg9yk0CzxLMRdDIWH4/exec"; 
 
@@ -262,12 +222,13 @@
 
         let DATOS_CACHE = [];
         let MIS_DATOS = [];
+        let DATOS_LECTURAS_GLOBAL = []; 
         let DATOS_VACIOS_GLOBAL = [];
         let DATOS_UTILIDAD_GLOBAL = [];
         let DATOS_APOYO_GLOBAL = [];
-	let USUARIOS_GLOBAL = [];
+        let USUARIOS_GLOBAL = [];
         let DATOS_PAUTA_GLOBAL = [];
-        let DATOS_OTRAS_GLOBAL = []; // NUEVO: Para Otras Auditorías
+        let DATOS_OTRAS_GLOBAL = []; 
         let chartInstance = null;
 
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
@@ -308,50 +269,44 @@
             await cargarDatos();
         };
 
-async function cargarDatos() {
-    const loadingText = document.getElementById('loadingText');
-    try {
-        if (loadingText) loadingText.innerText = "Conectando de forma segura con la base de datos de Calidad...";
-        
-        // Conexión limpia y directa aprovechando el CORS nativo de Google Apps Script
-        const response = await fetch(API_URL + "?t=" + Date.now());
-        
-        if (!response.ok) {
-            throw new Error(`Error de respuesta del servidor: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        // Si el script de Google devolvió un error interno controlado
-        if (data && data.status === "error") {
-            throw new Error(data.message);
-        }
+        async function cargarDatos() {
+            const loadingText = document.getElementById('loadingText');
+            try {
+                if (loadingText) loadingText.innerText = "Conectando de forma segura con la base de datos de Calidad...";
+                
+                const response = await fetch(API_URL + "?t=" + Date.now());
+                if (!response.ok) throw new Error(`Error de respuesta del servidor: ${response.status} ${response.statusText}`);
+                
+                const data = await response.json();
+                
+                if (data && data.status === "error") throw new Error(data.message);
 
-        if (data && data.auditorias) {
-            DATOS_CACHE = data.auditorias;
-            USUARIOS_GLOBAL = data.usuarios || [];
-            DATOS_VACIOS_GLOBAL = data.vacios || [];
-            DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
-            DATOS_APOYO_GLOBAL = data.centro_apoyo || []; 
-            DATOS_PAUTA_GLOBAL = data.pauta || [];
-            DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; 
-            terminarCarga();
-        } else {
-            throw new Error("El formato de datos estructurado no contiene las colecciones esperadas.");
+                if (data && data.auditorias) {
+                    DATOS_CACHE = data.auditorias;
+                    USUARIOS_GLOBAL = data.usuarios || [];
+                    DATOS_VACIOS_GLOBAL = data.vacios || [];
+                    DATOS_UTILIDAD_GLOBAL = data.utilidad || [];
+                    DATOS_APOYO_GLOBAL = data.centro_apoyo || []; 
+                    DATOS_LECTURAS_GLOBAL = data.lecturas || []; 
+                    DATOS_PAUTA_GLOBAL = data.pauta || [];
+                    DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; 
+                    terminarCarga();
+                } else {
+                    throw new Error("El formato de datos estructurado no contiene las colecciones esperadas.");
+                }
+            } catch (error) {
+                console.error("Error detallado de conexión:", error);
+                if (loadingText) {
+                    loadingText.innerHTML = `
+                        <span class="text-rose-500 font-black block text-base mb-2">⚠️ ERROR DE CONEXIÓN</span>
+                        <span class="text-stone-600 text-xs font-normal block max-w-md mx-auto bg-rose-50 p-3 rounded-xl border border-rose-100 mb-3">${error.message}</span>
+                        <span class="text-[11px] text-stone-400 font-normal block leading-relaxed px-4">
+                            Asegúrate de que la <strong>API_URL</strong> sea la de la implementación (debe terminar en <code>/exec</code>) y que los accesos estén configurados para <strong>"Cualquier persona"</strong>.
+                        </span>
+                    `;
+                }
+            }
         }
-    } catch (error) {
-        console.error("Error detallado de conexión:", error);
-        if (loadingText) {
-            loadingText.innerHTML = `
-                <span class="text-rose-500 font-black block text-base mb-2">⚠️ ERROR DE CONEXIÓN</span>
-                <span class="text-stone-600 text-xs font-normal block max-w-md mx-auto bg-rose-50 p-3 rounded-xl border border-rose-100 mb-3">${error.message}</span>
-                <span class="text-[11px] text-stone-400 font-normal block leading-relaxed px-4">
-                    Asegúrate de que la <strong>API_URL</strong> sea la de la implementación (debe terminar en <code>/exec</code>) y que los accesos estén configurados para <strong>"Cualquier persona"</strong>.
-                </span>
-            `;
-        }
-    }
-}
 
         function terminarCarga() {
             clearTimeout(rabbitTimer); clearTimeout(turtleTimer); clearTimeout(timeoutTimer); 
@@ -364,45 +319,36 @@ async function cargarDatos() {
             }
         }
 
-        async function intentarFetch(url) {
-            try { const resp = await fetch(url); if (!resp.ok) return null; const json = await resp.json(); return json; } catch (e) { return null; }
+        function login() {
+            const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+            const pass = document.getElementById('passInput') ? document.getElementById('passInput').value.trim() : '';
+            
+            if(!codigo || !pass) return Swal.fire("Atención", "Ingresa tu código y contraseña", "warning");
+
+            const userConfig = USUARIOS_GLOBAL.find(u => String(u["Código"]).trim().toUpperCase() === codigo);
+            
+            if(!userConfig) return Swal.fire("Error", "El código ingresado no existe", "error");
+            if(String(userConfig["Contraseña"]).trim() !== pass) return Swal.fire("Acceso Denegado", "La contraseña es incorrecta", "error");
+
+            MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
+
+            document.getElementById('viewLogin').classList.add('hidden');
+            document.getElementById('viewDashboard').classList.remove('hidden');
+            
+            document.getElementById('userName').innerText = userConfig.Nombre;
+            document.getElementById('userServ').innerText = userConfig.Servicio || 'General';
+            document.getElementById('userCode').innerText = codigo;
+
+            llenarFiltros();
+            aplicarFiltro();
+            
+            renderNovedades();
+            renderCentroApoyo();
+            renderHistorial(); // <--- Aquí llamamos al historial correctamente
+
+            switchTab(1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-       
-
-function login() {
-    const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
-    const pass = document.getElementById('passInput') ? document.getElementById('passInput').value.trim() : '';
-    
-    if(!codigo || !pass) return Swal.fire("Atención", "Ingresa tu código y contraseña", "warning");
-
-    // LÓGICA DE SEGURIDAD (Validación contra Google Sheets)
-    const userConfig = USUARIOS_GLOBAL.find(u => String(u["Código"]).trim().toUpperCase() === codigo);
-    
-    if(!userConfig) return Swal.fire("Error", "El código ingresado no existe", "error");
-    if(String(userConfig["Contraseña"]).trim() !== pass) return Swal.fire("Acceso Denegado", "La contraseña es incorrecta", "error");
-
-    // Filtrar auditorías solo del usuario validado
-    MIS_DATOS = DATOS_CACHE.filter(d => d.CODIGO === codigo);
-
-    document.getElementById('viewLogin').classList.add('hidden');
-    document.getElementById('viewDashboard').classList.remove('hidden');
-    
-    // Obtener nombre desde la Configuración de Usuarios (Más confiable)
-    document.getElementById('userName').innerText = userConfig.Nombre;
-    document.getElementById('userServ').innerText = userConfig.Servicio || 'General';
-    document.getElementById('userCode').innerText = codigo;
-
-    llenarFiltros();
-    aplicarFiltro();
-    
-    renderNovedades();
-    renderCentroApoyo();
-    renderEficiencia(codigo); 
-
-    switchTab(1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
         function llenarFiltros() {
             const sel = document.getElementById('filtroMes');
@@ -462,7 +408,6 @@ function login() {
             fillList('listPenc', pencC, 'text-orange-500 bg-orange-50');
         }
 
-        // --- BUGFIX: Se agrega la descripción debajo del indicador ---
         function fillList(id, obj, style) {
             const ul = document.getElementById(id); ul.innerHTML = "";
             const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -481,7 +426,6 @@ function login() {
                 let border="border-indigo-200", text="text-indigo-600", icon="📋";
                 if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
                 
-                // --- BUGFIX: Formato dd-mmmm-aaaa ---
                 let fRaw = d.FECHA_LLAMADA || d.FECHA || "";
                 let fechaFormat = fRaw;
                 if(fRaw.includes('-')) {
@@ -558,8 +502,12 @@ function login() {
         }
 
         function switchTab(tab) {
-             const t1 = document.getElementById('tabAuditorias'); const t2 = document.getElementById('tabEficiencia'); const t3 = document.getElementById('tabCentroApoyo');
-             const b1 = document.getElementById('btnTab1'); const b2 = document.getElementById('btnTab2'); const b3 = document.getElementById('btnTab3');
+             const t1 = document.getElementById('tabAuditorias'); 
+             const t2 = document.getElementById('tabHistorial'); 
+             const t3 = document.getElementById('tabCentroApoyo');
+             const b1 = document.getElementById('btnTab1'); 
+             const b2 = document.getElementById('btnTab2'); 
+             const b3 = document.getElementById('btnTab3');
              const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
              const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
 
@@ -571,103 +519,147 @@ function login() {
              if(tab === 3) { t3.classList.remove('hidden'); b3.className = activeClass; }
         }
 
-        // --- RENDER DE OTRAS AUDITORIAS ---
-        function renderEficiencia(codigo) {
-            const miUtilidadRow = DATOS_UTILIDAD_GLOBAL.find(d => d.ID === codigo);
-            if(miUtilidadRow) {
-                const total = parseInt(miUtilidadRow['Total En Rango']) || 0;
-                const opt = parseInt(miUtilidadRow['Óptimas']) || 0;
-                const poco = parseInt(miUtilidadRow['Poco Útiles']) || 0;
-                const vac = parseInt(miUtilidadRow['Vacías']) || 0;
-
-                const pctOpt = total > 0 ? ((opt/total)*100).toFixed(1) : 0;
-                const pctPoco = total > 0 ? ((poco/total)*100).toFixed(1) : 0;
-                const pctVac = total > 0 ? ((vac/total)*100).toFixed(1) : 0;
-
-                document.getElementById('efRango').innerText = total;
-
-                // Color según Metas Acordadas
-                const optColor = pctOpt >= 85 ? 'text-emerald-500' : 'text-amber-500';
-                const pocoColor = pctPoco <= 10 ? 'text-stone-500' : 'text-amber-500';
-                const vacColor = pctVac <= 5 ? 'text-stone-500' : 'text-rose-500';
-
-                document.getElementById('efOptimas').innerHTML = `${opt} <span class="block text-[10px] ${optColor}">${pctOpt}%</span>`;
-                document.getElementById('efPocoUtiles').innerHTML = `${poco} <span class="block text-[10px] ${pocoColor}">${pctPoco}%</span>`;
-                document.getElementById('efVacias').innerHTML = `${vac} <span class="block text-[10px] ${vacColor}">${pctVac}%</span>`;
-            } else {
-                document.getElementById('efRango').innerText = "-"; document.getElementById('efOptimas').innerText = "-";
-                document.getElementById('efPocoUtiles').innerText = "-"; document.getElementById('efVacias').innerText = "-";
-            }
-
-            // Nueva tabla dinámica de Otras Auditorias
-            const contenedorOtras = document.getElementById('otrasAuditoriasContainer');
-            const misOtras = DATOS_OTRAS_GLOBAL.filter(d => d.ID === codigo);
-            contenedorOtras.innerHTML = "";
-            
-            if(misOtras.length === 0) {
-                contenedorOtras.innerHTML = "<p class='text-center text-stone-400 py-6 italic text-xs'>No hay registros de casos o llamadas auditadas recientemente.</p>";
-            } else {
-                // Ordenar más recientes primero
-                misOtras.sort((a,b) => new Date(b.Fecha) - new Date(a.Fecha)).forEach(o => {
-                    let tipoColor = 'bg-stone-100 text-stone-600';
-                    let tipoTexto = String(o.Tipo || '').toLowerCase();
-                    if(tipoTexto.includes('corta')) tipoColor = 'bg-sky-100 text-sky-600';
-                    if(tipoTexto.includes('larga')) tipoColor = 'bg-indigo-100 text-indigo-600';
-                    if(tipoTexto.includes('caso')) tipoColor = 'bg-amber-100 text-amber-600';
-
-                    contenedorOtras.innerHTML += `
-                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-100 mb-3 hover:shadow-sm transition">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[9px] font-bold ${tipoColor} px-2 py-0.5 rounded uppercase tracking-wider">${o.Tipo || 'Auditoría'}</span>
-                            <span class="text-[10px] text-stone-400 font-bold"><i class="far fa-calendar-alt"></i> ${o.Fecha || '-'}</span>
-                        </div>
-                        <p class="text-[10px] text-stone-500 mb-1"><strong>ID Llamada:</strong> ${o.ID_Llamada || 'N/A'}</p>
-                        <p class="text-xs text-stone-700 italic mb-3">"${o.Observacion || 'Sin observación'}"</p>
-                        <div class="bg-white p-2 rounded-lg border border-stone-200 text-[10px] text-stone-600"><strong class="text-indigo-400"><i class="fas fa-comment-dots"></i> Feedback:</strong> ${o.Feedback || '-'}</div>
-                    </div>`;
-                });
-            }
-        }
-
-        // --- RENDER DE NOVEDADES GLOBALES ---
         function renderNovedades() {
             const container = document.getElementById('novedadesContainer');
             container.innerHTML = "";
-            const novedades = DATOS_APOYO_GLOBAL.filter(d => String(d.Visible).toUpperCase() === 'SI' && String(d.Tipo).toUpperCase() === 'NOVEDAD');
             
+            const novedades = DATOS_APOYO_GLOBAL.filter(d => String(d.Tipo).toUpperCase() === 'NOVEDAD' && String(d.Visible).toUpperCase() === 'SI' && String(d.Llamativo).toUpperCase() === 'SI');
             if (novedades.length === 0) return;
 
+            const miCodigo = document.getElementById('userCode').innerText;
+
+            container.innerHTML = `
+            <div class="bg-amber-100 border border-amber-200 p-3 rounded-xl mb-4 shadow-sm flex items-center gap-3 fade-in">
+                <div class="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-lg shrink-0"><i class="fas fa-exclamation"></i></div>
+                <p class="text-[11px] text-amber-800 font-bold leading-tight">¡Bajadas informativas! Márcalas como <span class="bg-amber-200 px-1.5 py-0.5 rounded text-amber-900 border border-amber-300">De acuerdo</span> para dejar registro que recepcionaste el mensaje.</p>
+            </div>`;
+
             novedades.forEach(n => {
-                const esLlamativo = String(n.Llamativo).toUpperCase() === 'SI';
-                const bgColor = esLlamativo ? 'bg-orange-50 border-orange-200' : 'bg-indigo-50 border-indigo-100';
-                const iconColor = esLlamativo ? 'text-orange-500' : 'text-indigo-500';
-                const titleColor = esLlamativo ? 'text-orange-700' : 'text-indigo-700';
-                
-                let linkHtml = "";
-                if(n.URL && n.URL.length > 5) {
-                    linkHtml = `<a href="${n.URL}" target="_blank" class="mt-2 inline-block text-[10px] font-bold ${iconColor} hover:underline bg-white/50 px-2 py-1 rounded-lg border border-white"><i class="fas fa-external-link-alt"></i> Ver más detalles</a>`;
-                }
+                let linkHtml = n.URL && n.URL.length > 5 ? `<a href="${n.URL}" target="_blank" class="mt-3 mr-2 inline-block text-[10px] font-bold text-orange-600 hover:underline bg-white/70 px-3 py-1.5 rounded-lg border border-orange-200"><i class="fas fa-external-link-alt"></i> Abrir enlace adjunto</a>` : "";
+
+                const yaLeido = DATOS_LECTURAS_GLOBAL.some(l => l.CODIGO === miCodigo && l.TITULO_INFO === n.Titulo);
+                let btnEntendido = yaLeido 
+                    ? `<div class="mt-3 inline-block text-emerald-600 bg-emerald-100 font-bold py-1.5 px-3 rounded-lg text-[10px] border border-emerald-200"><i class="fas fa-check-double mr-1"></i> Recepción Registrada</div>`
+                    : `<button onclick="marcarComoEntendido('${n.Titulo}', event)" class="mt-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-[10px] transition shadow-md hover:shadow-lg transform active:scale-95"><i class="fas fa-check-circle mr-1"></i> De acuerdo</button>`;
 
                 container.innerHTML += `
-                <div class="${bgColor} border p-4 rounded-2xl shadow-sm flex gap-4 items-start relative overflow-hidden fade-in">
-                    <div class="absolute -right-4 -top-4 text-7xl opacity-5 pointer-events-none ${iconColor}"><i class="fas fa-bullhorn"></i></div>
-                    <div class="${iconColor} text-xl mt-1 z-10"><i class="${esLlamativo ? 'fas fa-exclamation-circle animate-pulse' : 'fas fa-info-circle'}"></i></div>
+                <div class="bg-orange-50 border border-orange-200 p-5 rounded-2xl shadow-sm flex gap-4 items-start relative overflow-hidden fade-in mb-3">
+                    <div class="absolute -right-4 -top-4 text-8xl opacity-5 pointer-events-none text-orange-500"><i class="fas fa-bullhorn"></i></div>
+                    <div class="text-orange-500 text-2xl mt-1 z-10"><i class="fas fa-exclamation-circle animate-pulse"></i></div>
                     <div class="flex-1 z-10">
-                        <div class="flex justify-between items-center mb-1">
-                            <h4 class="font-black text-sm ${titleColor}">${n.Titulo}</h4>
-                            <span class="text-[9px] font-bold opacity-60 uppercase">${n.Fecha || ''}</span>
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-black text-sm text-orange-800">${n.Titulo}</h4>
+                            <span class="text-[9px] font-bold opacity-60 uppercase bg-orange-100 px-2 py-1 rounded text-orange-700">${n.Fecha || ''}</span>
                         </div>
-                        <p class="text-xs text-stone-600 leading-relaxed">${n.Descripcion}</p>
-                        ${linkHtml}
+                        <p class="text-[11px] text-stone-700 leading-relaxed whitespace-pre-line bg-white/60 p-3 rounded-xl border border-orange-100/50">${n.Descripcion}</p>
+                        <div class="flex flex-wrap items-center">
+                            ${linkHtml}
+                            ${btnEntendido}
+                        </div>
                     </div>
                 </div>`;
             });
         }
 
-        // --- RENDER CENTRO DE APOYO Y PAUTA ---
+        function renderHistorial() {
+            const container = document.getElementById('historialLista');
+            if(!container) return;
+            
+            let novedades = DATOS_APOYO_GLOBAL.filter(d => String(d.Tipo).toUpperCase() === 'NOVEDAD' && String(d.Visible).toUpperCase() === 'SI');
+            
+            novedades.sort((a,b) => {
+                let fA = a.Fecha ? a.Fecha.split('-').reverse().join('') : '0';
+                let fB = b.Fecha ? b.Fecha.split('-').reverse().join('') : '0';
+                return fB.localeCompare(fA);
+            });
+
+            if (novedades.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 bg-stone-50 rounded-2xl border border-stone-100"><i class="fas fa-folder-open text-3xl text-stone-300 mb-3 block"></i><p class="text-xs font-bold text-stone-400 uppercase">Historial vacío</p></div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            const miCodigo = document.getElementById('userCode').innerText;
+
+            novedades.forEach(n => {
+                const yaLeido = DATOS_LECTURAS_GLOBAL.some(l => l.CODIGO === miCodigo && l.TITULO_INFO === n.Titulo);
+                const statusBadge = yaLeido 
+                    ? `<span class="text-[9px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded border border-emerald-200 font-bold"><i class="fas fa-check-double"></i> Leído / Entendido</span>`
+                    : `<span class="text-[9px] bg-rose-50 text-rose-500 px-2 py-1 rounded border border-rose-100 font-bold animate-pulse"><i class="fas fa-exclamation-circle"></i> Pendiente</span>`;
+
+                let linkHtml = n.URL && n.URL.length > 5 ? `<a href="${n.URL}" target="_blank" class="mt-2 inline-block text-[10px] font-bold text-indigo-500 hover:underline"><i class="fas fa-paperclip"></i> Enlace adjunto</a>` : "";
+
+                container.innerHTML += `
+                <div class="historial-item bg-stone-50 p-4 rounded-xl border border-stone-100 hover:border-indigo-100 transition group">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] bg-stone-200 text-stone-600 px-2 py-0.5 rounded uppercase font-bold tracking-wider"><i class="far fa-calendar-alt"></i> ${n.Fecha}</span>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <h5 class="text-sm font-black text-stone-700 mb-2 group-hover:text-indigo-600 transition historial-texto">${n.Titulo}</h5>
+                    <p class="text-[11px] text-stone-500 leading-relaxed whitespace-pre-line historial-texto">${n.Descripcion}</p>
+                    ${linkHtml}
+                </div>`;
+            });
+        }
+
+        function filtrarHistorial() {
+            const input = document.getElementById('buscarHistorial').value.toLowerCase();
+            const items = document.querySelectorAll('.historial-item');
+            items.forEach(item => {
+                const textos = item.querySelectorAll('.historial-texto');
+                let match = false;
+                textos.forEach(t => { if(t.innerText.toLowerCase().includes(input)) match = true; });
+                item.style.display = match ? "" : "none";
+            });
+        }
+
+        function marcarComoEntendido(titulo, event) {
+            if(event) { event.preventDefault(); event.stopPropagation(); }
+            
+            Swal.fire({
+                title: '<span class="text-xl font-black text-stone-700">¿Estás seguro que se entendió?</span>',
+                html: '<p class="text-xs text-stone-500 leading-relaxed mt-2">Si tienes más dudas o este mensaje es muy extenso, <b>infórmalo a un supervisor</b> para que te dé un momento en capacitación.</p>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981', 
+                cancelButtonColor: '#f43f5e',  
+                confirmButtonText: '<i class="fas fa-check mr-1"></i> Sí, de acuerdo',
+                cancelButtonText: '<i class="fas fa-times mr-1"></i> No, tengo dudas',
+                reverseButtons: true, 
+                customClass: { popup: 'rounded-[2rem]' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const codigo = document.getElementById('userCode').innerText;
+                    const nombre = document.getElementById('userName').innerText;
+                    
+                    fetch(API_URL, { 
+                        method: 'POST', 
+                        mode: 'no-cors', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify({ tipo: "LECTURA", codigo: codigo, nombre: nombre, titulo: titulo }) 
+                    });
+                    
+                    DATOS_LECTURAS_GLOBAL.push({ CODIGO: codigo, TITULO_INFO: titulo });
+                    
+                    renderNovedades();
+                    renderHistorial();
+
+                    Swal.fire({
+                        title: '<span class="text-lg font-black text-indigo-600">¡Registrado!</span>',
+                        text: 'Ahora quedará guardado en tu Historial de bajadas de información.',
+                        icon: 'success',
+                        confirmButtonColor: '#6366f1',
+                        customClass: { popup: 'rounded-2xl' }
+                    });
+                }
+            });
+        }
+
         function renderCentroApoyo() {
             const containerHerramientas = document.getElementById('herramientasContainer');
-            const tools = DATOS_APOYO_GLOBAL.filter(d => String(d.Visible).toUpperCase() === 'SI' && String(d.Tipo).toUpperCase() !== 'NOVEDAD');
+            const tools = DATOS_APOYO_GLOBAL.filter(d => String(d.Tipo).toUpperCase() !== 'NOVEDAD' && String(d.Visible).toUpperCase() === 'SI');
             
             if(tools.length > 0) {
                 containerHerramientas.innerHTML = "";
@@ -676,13 +668,13 @@ function login() {
                     let isClickable = t.URL && t.URL.length > 5 ? 'hover:bg-stone-50 hover:border-indigo-200 cursor-pointer group' : 'opacity-70 cursor-default';
                     
                     containerHerramientas.innerHTML += `
-                    <a ${linkAction} class="block border border-stone-100 p-4 rounded-2xl transition ${isClickable}">
+                    <a ${linkAction} class="block border border-stone-100 p-4 rounded-2xl transition flex flex-col h-full ${isClickable} bg-white shadow-sm">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${t.Tipo}</span>
-                            <span class="text-[9px] text-stone-400 font-bold">${t.Fecha}</span>
+                            <span class="text-[9px] bg-indigo-50 text-indigo-500 px-2 py-0.5 rounded uppercase font-black tracking-wider">${t.Tipo}</span>
+                            <span class="text-[9px] text-stone-400 font-bold"><i class="far fa-calendar-alt"></i> ${t.Fecha}</span>
                         </div>
                         <h5 class="text-sm font-black text-stone-700 mt-2 mb-1 group-hover:text-indigo-600 transition">${t.Titulo}</h5>
-                        <p class="text-[10px] text-stone-500 leading-relaxed">${t.Descripcion}</p>
+                        <p class="text-[10px] text-stone-500 leading-relaxed mb-2 whitespace-pre-line">${t.Descripcion}</p>
                     </a>`;
                 });
             }
@@ -717,12 +709,10 @@ function login() {
             }
         }
 
-        // --- BUSCADOR INTELIGENTE DE LA PAUTA ---
         function filtrarPauta() {
             const input = document.getElementById('buscarPauta').value.toLowerCase();
             const items = document.querySelectorAll('.pauta-item');
             items.forEach(item => {
-                // Busca dentro de los textos marcados específicamente
                 const textos = item.querySelectorAll('.pauta-search-text');
                 let match = false;
                 textos.forEach(t => { if(t.innerText.toLowerCase().includes(input)) match = true; });
