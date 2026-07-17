@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Calidad</title>
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
+    
     <style>
         body { background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
         .fade-in { animation: fadeIn 0.8s ease-out; }
@@ -33,7 +33,6 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-
     <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm border-b border-stone-100">
         <span class="font-bold text-stone-400 tracking-widest text-xs uppercase">ESPEX</span>
         <div class="flex flex-col items-center">
@@ -46,6 +45,7 @@
         </div>
     </nav>
 
+    <!-- ===== SECCIÓN DE LOGIN ===== -->
     <div id="viewLogin" class="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col relative">
         <div id="loadingScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#fdfbf7]">
             <div id="fox" class="follower walk-anim">🦊</div>
@@ -57,43 +57,41 @@
                 <p class="text-[10px] text-stone-300 mt-4 max-w-md mx-auto">(Toca la pantalla o mueve el mouse)</p>
             </div>
             <div id="timeoutMsg" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-white p-8 rounded-3xl shadow-xl border border-rose-100 z-50">
-                <div class="text-4xl mb-4">😴</div>
+                <div class="text-4xl mb-4">💤</div>
                 <h3 class="text-xl font-bold text-rose-500 mb-2">El servidor se quedó dormido</h3>
                 <p class="text-xs text-stone-500 mb-6">Ha pasado mucho tiempo y los datos no llegan.<br>Por favor intenta nuevamente.</p>
                 <button onclick="location.reload()" class="bg-rose-500 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-200"><i class="fas fa-sync-alt mr-2"></i> Reintentar</button>
             </div>
         </div>
 
-<div id="loginContent" class="opacity-0 transition-opacity duration-1000">
-    
-    <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden mt-10">
-        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
-        <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-user-shield"></i></div>
-        <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
-        <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código y contraseña para acceder de forma segura.</p>
-        
-        <div class="relative mb-4 group">
-            <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
-            <input type="text" id="codigoInput" placeholder="CÓDIGO (EJ: CC014)" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
+        <div id="loginContent" class="opacity-0 transition-opacity duration-1000">
+            <div class="max-w-md mx-auto w-full bg-white p-10 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 text-center relative overflow-hidden mt-10">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-300 to-purple-300"></div>
+                <div class="mb-6 bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-indigo-400 text-3xl shadow-inner"><i class="fas fa-user-shield"></i></div>
+                <h2 class="text-2xl font-black text-stone-700 mb-2">Consulta Personal</h2>
+                <p class="text-xs text-stone-400 mb-8 px-4">Ingresa tu código y contraseña para acceder de forma segura.</p>
+                
+                <div class="relative mb-4 group">
+                    <i class="fas fa-hashtag absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+                    <input type="text" id="codigoInput" placeholder="CÓDIGO (EJ: CC014)" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none uppercase tracking-widest transition placeholder-indigo-100 bg-indigo-50/30">
+                </div>
+                <div class="relative mb-6 group">
+                    <i class="fas fa-lock absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
+                    <input type="password" id="passInput" placeholder="CONTRASEÑA" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none transition placeholder-indigo-100 bg-indigo-50/30">
+                </div>
+                <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">INGRESAR A MIS RESULTADOS</button>
+            </div>
+            
+            <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
+                <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
+                <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
+            </div>
         </div>
-
-        <div class="relative mb-6 group">
-            <i class="fas fa-lock absolute left-4 top-4 text-indigo-200 group-hover:text-indigo-400 transition"></i>
-            <input type="password" id="passInput" placeholder="CONTRASEÑA" class="w-full pl-10 pr-4 py-3.5 border-2 border-indigo-50 rounded-xl text-center font-black text-stone-600 focus:border-indigo-300 outline-none transition placeholder-indigo-100 bg-indigo-50/30">
-        </div>
-
-        <button onclick="login()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-indigo-200 transform active:scale-[0.98] tracking-wide text-sm">INGRESAR A MIS RESULTADOS</button>
     </div>
 
-    <div class="mt-auto pt-12 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
-        <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
-        <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
-    </div>
-</div>
-    </div>
-
+    <!-- ===== SECCIÓN DASHBOARD PRINCIPAL ===== -->
     <div id="viewDashboard" class="hidden flex-1 max-w-7xl mx-auto w-full p-6 fade-in flex-col">
-        
+        <!-- HEADER USUARIO -->
         <div class="flex flex-col md:flex-row justify-between items-end mb-4 bg-white p-8 rounded-[2rem] shadow-sm border border-stone-100 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><i class="fas fa-chart-pie text-9xl text-indigo-900"></i></div>
             <div class="z-10">
@@ -115,12 +113,15 @@
 
         <div id="novedadesContainer" class="mb-6 space-y-3 z-10"></div>
 
+        <!-- BARRA DE PESTAÑAS -->
         <div class="flex flex-wrap md:flex-nowrap gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-xl mx-auto backdrop-blur-sm">
             <button id="btnTab1" onclick="switchTab(1)" class="flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]">🎯 Calidad Técnica</button>
-<button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📢 Historial de Bajadas</button>
+            <button id="btnTab2" onclick="switchTab(2)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📢 Historial de Bajadas</button>
             <button id="btnTab3" onclick="switchTab(3)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">📚 Centro de Apoyo</button>
+            <button id="btnTab4" onclick="switchTab(4)" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]">🩺 Criterios</button>
         </div>
 
+        <!-- TABLA 1: CALIDAD TÉCNICA -->
         <div id="tabAuditorias" class="fade-in block">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p></div>
@@ -128,42 +129,38 @@
                 <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-amber-500 font-black uppercase tracking-wide">Mejor Nota</p><p class="text-3xl font-black text-amber-500 mt-2" id="kpiMax">-</p></div>
                 <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-rose-400 font-black uppercase tracking-wide">Nota Mínima</p><p class="text-3xl font-black text-rose-400 mt-2" id="kpiMin">-</p></div>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-orange-100 text-orange-500 p-1.5 rounded-lg"><i class="fas fa-lightbulb"></i></span>Oportunidades (PENC)</h3><ul id="listPenc" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center"><h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div></div>
             </div>
-
             <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
             <div id="cardsContainer" class="space-y-3 mb-8"><p class="text-center text-stone-400 py-10 italic">Cargando historial...</p></div>
         </div>
 
-       <div id="tabHistorial" class="fade-in hidden mb-8">
-    <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-100 flex flex-col relative overflow-hidden">
-        <div class="absolute -right-6 -top-6 text-9xl opacity-5 pointer-events-none text-indigo-900"><i class="fas fa-bullhorn"></i></div>
-        
-        <div class="flex justify-between items-center mb-6 flex-wrap gap-4 z-10">
-            <div>
-                <h3 class="text-sm font-black text-stone-600 uppercase flex items-center gap-2"><i class="fas fa-history text-indigo-400"></i> Historial de Bajadas</h3>
-                <p class="text-[10px] text-stone-400 mt-1 font-bold">Registro histórico de comunicados importantes</p>
-            </div>
-            <div class="w-full md:w-1/2 relative">
-                <i class="fas fa-search absolute left-4 top-3.5 text-stone-300"></i>
-                <input type="text" id="buscarHistorial" onkeyup="filtrarHistorial()" placeholder="Buscar por palabra clave..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
+        <!-- TABLA 2: HISTORIAL DE BAJADAS -->
+        <div id="tabHistorial" class="fade-in hidden mb-8">
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-100 flex flex-col relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 text-9xl opacity-5 pointer-events-none text-indigo-900"><i class="fas fa-bullhorn"></i></div>
+                <div class="flex justify-between items-center mb-6 flex-wrap gap-4 z-10">
+                    <div>
+                        <h3 class="text-sm font-black text-stone-600 uppercase flex items-center gap-2"><i class="fas fa-history text-indigo-400"></i> Historial de Bajadas</h3>
+                        <p class="text-[10px] text-stone-400 mt-1 font-bold">Registro histórico de comunicados importantes</p>
+                    </div>
+                    <div class="w-full md:w-1/2 relative">
+                        <i class="fas fa-search absolute left-4 top-3.5 text-stone-300"></i>
+                        <input type="text" id="buscarHistorial" onkeyup="filtrarHistorial()" placeholder="Buscar por palabra clave..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
+                    </div>
+                </div>
+                <div id="historialLista" class="space-y-4 z-10 overflow-y-auto max-h-[600px] custom-scrollbar pr-2">
+                    <p class="text-center text-stone-300 text-xs italic mt-4">Cargando historial...</p>
+                </div>
             </div>
         </div>
 
-        <div id="historialLista" class="space-y-4 z-10 overflow-y-auto max-h-[600px] custom-scrollbar pr-2">
-            <p class="text-center text-stone-300 text-xs italic mt-4">Cargando historial...</p>
-        </div>
-    </div>
-</div>
-                        
-                        
+        <!-- TABLA 3: CENTRO DE APOYO -->
         <div id="tabCentroApoyo" class="fade-in hidden mb-8">
             <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-toolbox text-indigo-400"></i> Herramientas y Capacitación</h3>
-            
             <div class="grid grid-cols-1 gap-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
                     <h4 class="text-xs font-bold text-stone-400 uppercase mb-4"><i class="fas fa-link mr-1"></i> Material Disponible</h4>
@@ -171,7 +168,6 @@
                         <p class="text-center text-stone-300 text-xs italic mt-4 col-span-full">No hay material cargado por ahora.</p>
                     </div>
                 </div>
-
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col">
                     <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                         <h4 class="text-xs font-bold text-stone-400 uppercase"><i class="fas fa-clipboard-check mr-1"></i> Resumen de Pauta (Criterios)</h4>
@@ -180,7 +176,6 @@
                             <input type="text" id="buscarPauta" onkeyup="filtrarPauta()" placeholder="Buscar criterio (ej. RUT, empatía)..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 text-[10px] focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition bg-stone-50">
                         </div>
                     </div>
-                    
                     <div id="pautaContainer" class="space-y-4 flex-1 overflow-y-auto max-h-[600px] custom-scrollbar pr-2">
                         <p class="text-center text-stone-300 text-xs italic mt-4">Cargando pauta...</p>
                     </div>
@@ -188,12 +183,58 @@
             </div>
         </div>
 
+        <!-- TABLA 4: CRITERIOS -->
+        <div id="tabCriterios" class="fade-in hidden mb-8">
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-100 flex flex-col relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 text-9xl opacity-5 pointer-events-none text-indigo-900"><i class="fas fa-stethoscope"></i></div>
+                <div class="mb-6 z-10">
+                    <h3 class="text-sm font-black text-stone-600 uppercase flex items-center gap-2"><i class="fas fa-clipboard-list text-indigo-400"></i> Criterios de Agendamiento</h3>
+                    <p class="text-[10px] text-stone-400 mt-1 font-bold">Búsqueda rápida de especialidades, excepciones y cupos.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 z-10">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-3.5 text-stone-300"></i>
+                        <input type="text" id="critGlobal" onkeyup="filtrarCriterios()" placeholder="Búsqueda Global (Ej: Holep)..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-user-md absolute left-4 top-3.5 text-stone-300"></i>
+                        <input type="text" id="critEsp" onkeyup="filtrarCriterios()" placeholder="Filtrar Especialidad..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-stethoscope absolute left-4 top-3.5 text-stone-300"></i>
+                        <input type="text" id="critMed" onkeyup="filtrarCriterios()" placeholder="Filtrar Médico..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-100 text-xs font-bold text-stone-600 focus:outline-none focus:border-indigo-300 bg-stone-50 transition shadow-inner">
+                    </div>
+                </div>
+                <div id="critStats" class="text-xs text-stone-500 mb-4 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 hidden z-10 transition-all"></div>
+                
+                <div class="overflow-auto z-10 custom-scrollbar border border-stone-100 rounded-xl max-h-[600px]">
+                    <table class="w-full text-left border-collapse" id="criteriosTable">
+                        <thead class="sticky top-0 z-20 bg-stone-100 shadow-md">
+                            <tr class="text-[10px] uppercase tracking-wider text-stone-500 border-b-2 border-stone-200">
+                                <th class="p-3 font-black bg-stone-100">Especialidad</th>
+                                <th class="p-3 font-black bg-stone-100">Médico</th>
+                                <th class="p-3 font-black bg-stone-100">Observaciones</th>
+                                <th class="p-3 font-black bg-indigo-50/80 text-indigo-700">Criterios</th>
+                                <th class="p-3 font-black bg-stone-100">Ingreso IC</th>
+                                <th class="p-3 font-black bg-stone-100">Cupos Control</th>
+                            </tr>
+                        </thead>
+                        <tbody id="criteriosTbody" class="bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER DASHBOARD -->
         <div class="mt-auto pt-8 pb-4 text-center opacity-40 hover:opacity-100 transition-opacity duration-500 cursor-default">
             <p class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Desarrollado por <span class="text-indigo-400">Marco Lara</span></p>
             <p class="text-[9px] text-stone-400 mt-0.5 font-bold">Iniciativa de Innovación • 2026</p>
         </div>
     </div>
-<script>
+
+    <!-- ===== JS PRINCIPAL ===== -->
+    <script>
         // ================= CONFIGURACIÓN =================
         const API_URL = "https://script.google.com/macros/s/AKfycbxz5jI0ix7gpCwhfHWfPpKAJZme0DjTgxS65LJu9O4elIyFJdg9yk0CzxLMRdDIWH4/exec"; 
 
@@ -205,14 +246,12 @@
             "COND_NORMAS": { nombre: "Normas de Conducta", desc: "Mantiene el respeto, no grita, no corta la llamada." },
             "OP_ABANDONO": { nombre: "Abandono", desc: "No deja al paciente en silencio por tiempos excesivos." },
             "SIST_REGISTRO": { nombre: "Registro en CRM", desc: "Deja la nota o glosa de la gestión obligatoriamente." },
-            
             "PROT_SCRIPT": { nombre: "Script Inicio/Cierre", desc: "Usa el saludo institucional y la despedida cordial." },
             "PROT_CORTESIA": { nombre: "Cortesía y Trato", desc: "Usa 'Usted', 'Por favor' y 'Gracias'." },
             "GEST_SONDEO": { nombre: "Sondeo", desc: "Realiza las preguntas para entender la solicitud." },
             "GEST_INFORMACION": { nombre: "Entrega Información", desc: "Información correcta, completa y veraz." },
             "GEST_TIEMPOS": { nombre: "Manejo Tiempos", desc: "Retoma el contacto cada 45 segundos." },
             "GEST_ASEGURAMIENTO": { nombre: "Aseguramiento", desc: "Pregunta '¿Le queda alguna otra duda?' al final." },
-            
             "HAB_PERSONALIZACION": { nombre: "Personalización", desc: "Llama al paciente por su nombre." },
             "HAB_LENGUAJE": { nombre: "Lenguaje", desc: "Modulación clara, sin muletillas." },
             "HAB_EMPATIA": { nombre: "Empatía", desc: "Demuestra interés y valida la emoción." },
@@ -220,6 +259,7 @@
         };
         const PAUTA_DEFS = {}; Object.values(INDICADORES_INFO).forEach(v => PAUTA_DEFS[v.nombre] = v.desc);
 
+        // Variables Globales
         let DATOS_CACHE = [];
         let MIS_DATOS = [];
         let DATOS_LECTURAS_GLOBAL = []; 
@@ -229,9 +269,27 @@
         let USUARIOS_GLOBAL = [];
         let DATOS_PAUTA_GLOBAL = [];
         let DATOS_OTRAS_GLOBAL = []; 
+        let DATOS_CRITERIOS_GLOBAL = [];
+        let criteriosRenderizados = false;
         let chartInstance = null;
 
+        // Escucha del Enter en inputs
+// Salto automático de Código a Contraseña con Enter
         document.getElementById("codigoInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { 
+                event.preventDefault(); 
+                document.getElementById("passInput").focus(); 
+            }
+        });
+
+        // Ingreso al portal con Enter en la Contraseña
+        document.getElementById("passInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { 
+                event.preventDefault(); 
+                login(); 
+            }
+        });
+        document.getElementById("passInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") { event.preventDefault(); login(); }
         });
 
@@ -269,6 +327,7 @@
             await cargarDatos();
         };
 
+        // --- CONEXIÓN A BASE DE DATOS ---
         async function cargarDatos() {
             const loadingText = document.getElementById('loadingText');
             try {
@@ -290,6 +349,7 @@
                     DATOS_LECTURAS_GLOBAL = data.lecturas || []; 
                     DATOS_PAUTA_GLOBAL = data.pauta || [];
                     DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; 
+                    DATOS_CRITERIOS_GLOBAL = data.criterios || [];
                     terminarCarga();
                 } else {
                     throw new Error("El formato de datos estructurado no contiene las colecciones esperadas.");
@@ -319,6 +379,7 @@
             }
         }
 
+        // --- SISTEMA DE LOGIN Y RENDERIZADO INICIAL ---
         function login() {
             const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
             const pass = document.getElementById('passInput') ? document.getElementById('passInput').value.trim() : '';
@@ -344,12 +405,44 @@
             
             renderNovedades();
             renderCentroApoyo();
-            renderHistorial(); // <--- Aquí llamamos al historial correctamente
+            renderHistorial(); 
 
             switchTab(1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function switchTab(tab) {
+             const tabs = ['tabAuditorias', 'tabHistorial', 'tabCentroApoyo', 'tabCriterios'];
+             const btns = ['btnTab1', 'btnTab2', 'btnTab3', 'btnTab4'];
+             
+             const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
+             const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
+
+             for(let i=0; i<4; i++) {
+                 document.getElementById(tabs[i]).classList.add('hidden');
+                 document.getElementById(btns[i]).className = inactiveClass;
+             }
+
+             document.getElementById(tabs[tab-1]).classList.remove('hidden');
+             document.getElementById(btns[tab-1]).className = activeClass;
+
+             // Lazy Loading Criterios
+             if(tab === 4 && !criteriosRenderizados) {
+                 const tbody = document.getElementById('criteriosTbody');
+                 if(tbody) {
+                     tbody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-indigo-400">
+                         <i class="fas fa-circle-notch fa-spin text-4xl mb-3"></i>
+                         <p class="font-bold text-sm">Procesando base de datos...</p>
+                     </td></tr>`;
+                 }
+                 setTimeout(() => {
+                     renderCriterios();
+                     criteriosRenderizados = true; 
+                 }, 100);
+             }
+        }
+
+        // --- FILTROS DE DASHBOARD PRINCIPAL ---
         function llenarFiltros() {
             const sel = document.getElementById('filtroMes');
             sel.innerHTML = '<option value="TODOS">📅 Histórico Completo</option>';
@@ -376,6 +469,7 @@
             renderKPIs(datos); renderTops(datos); renderChart(datos); renderList(datos);
         }
 
+        // --- RENDERIZADO CALIDAD TÉCNICA (TAB 1) ---
         function renderKPIs(data) {
             const notas = data.map(d => parseFloat(d.NOTA.replace('%',''))||0);
             const total = notas.length;
@@ -397,7 +491,6 @@
                             const info = INDICADORES_INFO[k];
                             const nombreReal = info ? info.nombre : k; 
                             const isPec = k.startsWith('SEG_') || k.startsWith('COND_') || k.startsWith('OP_') || k.startsWith('SIST_');
-                            
                             if(isPec) pecC[nombreReal] = (pecC[nombreReal]||0)+1; 
                             else pencC[nombreReal] = (pencC[nombreReal]||0)+1; 
                         } 
@@ -501,24 +594,7 @@
             }
         }
 
-        function switchTab(tab) {
-             const t1 = document.getElementById('tabAuditorias'); 
-             const t2 = document.getElementById('tabHistorial'); 
-             const t3 = document.getElementById('tabCentroApoyo');
-             const b1 = document.getElementById('btnTab1'); 
-             const b2 = document.getElementById('btnTab2'); 
-             const b3 = document.getElementById('btnTab3');
-             const activeClass = "flex-1 py-2.5 rounded-xl font-black text-xs transition bg-white shadow-sm text-indigo-600 border border-stone-100 min-w-[120px]";
-             const inactiveClass = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-stone-400 hover:text-stone-600 hover:bg-white/50 border border-transparent min-w-[120px]";
-
-             t1.classList.add('hidden'); t2.classList.add('hidden'); t3.classList.add('hidden');
-             b1.className = inactiveClass; b2.className = inactiveClass; b3.className = inactiveClass;
-
-             if(tab === 1) { t1.classList.remove('hidden'); b1.className = activeClass; }
-             if(tab === 2) { t2.classList.remove('hidden'); b2.className = activeClass; }
-             if(tab === 3) { t3.classList.remove('hidden'); b3.className = activeClass; }
-        }
-
+        // --- RENDERIZADO NOVEDADES, HISTORIAL Y APOYO ---
         function renderNovedades() {
             const container = document.getElementById('novedadesContainer');
             container.innerHTML = "";
@@ -584,8 +660,11 @@
             novedades.forEach(n => {
                 const yaLeido = DATOS_LECTURAS_GLOBAL.some(l => l.CODIGO === miCodigo && l.TITULO_INFO === n.Titulo);
                 const statusBadge = yaLeido 
-                    ? `<span class="text-[9px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded border border-emerald-200 font-bold"><i class="fas fa-check-double"></i> Leído / Entendido</span>`
-                    : `<span class="text-[9px] bg-rose-50 text-rose-500 px-2 py-1 rounded border border-rose-100 font-bold animate-pulse"><i class="fas fa-exclamation-circle"></i> Pendiente</span>`;
+                    ? `<span class="text-[9px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded border border-emerald-200 font-bold flex items-center gap-1"><i class="fas fa-check-double"></i> Leído / Entendido</span>`
+                    : `<div class="flex items-center gap-2">
+                        <span class="text-[9px] bg-rose-50 text-rose-500 px-2 py-1 rounded border border-rose-100 font-bold animate-pulse"><i class="fas fa-exclamation-circle"></i> Pendiente</span>
+                        <button onclick="marcarComoEntendido('${n.Titulo}', event)" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-2.5 rounded text-[9px] transition shadow-sm transform active:scale-95"><i class="fas fa-check mr-1"></i> De acuerdo</button>
+                    </div>`;
 
                 let linkHtml = n.URL && n.URL.length > 5 ? `<a href="${n.URL}" target="_blank" class="mt-2 inline-block text-[10px] font-bold text-indigo-500 hover:underline"><i class="fas fa-paperclip"></i> Enlace adjunto</a>` : "";
 
@@ -682,8 +761,8 @@
             const containerPauta = document.getElementById('pautaContainer');
             if(DATOS_PAUTA_GLOBAL && DATOS_PAUTA_GLOBAL.length > 0) {
                 containerPauta.innerHTML = "";
-                let pecItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PEC');
-                let pencItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PENC');
+                let pecItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PEC' || p['Categor a'] === 'PEC');
+                let pencItems = DATOS_PAUTA_GLOBAL.filter(p => p['Categoría'] === 'PENC' || p['Categor a'] === 'PENC');
 
                 const renderCategory = (items, colorCls, title) => {
                     if(items.length === 0) return "";
@@ -716,10 +795,151 @@
                 const textos = item.querySelectorAll('.pauta-search-text');
                 let match = false;
                 textos.forEach(t => { if(t.innerText.toLowerCase().includes(input)) match = true; });
-                
                 if(match) item.style.display = "";
                 else item.style.display = "none";
             });
+        }
+
+        // --- RENDERIZADO DE CRITERIOS (TAB 4) ---
+        function renderCriterios() {
+            const tbody = document.getElementById('criteriosTbody');
+            if(!tbody) return;
+            tbody.innerHTML = "";
+            
+            if (!DATOS_CRITERIOS_GLOBAL || DATOS_CRITERIOS_GLOBAL.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center bg-rose-50 border-b border-rose-100">
+                    <i class="fas fa-exclamation-triangle text-4xl text-rose-400 mb-3 block"></i>
+                    <span class="text-rose-600 font-black uppercase text-sm tracking-wider">Sin conexión a la hoja de Criterios</span>
+                    <p class="text-xs text-rose-500 mt-2 font-bold max-w-md mx-auto">El portal cargó, pero la pestaña "Criterios" vino vacía. Por favor, asegúrate de haber publicado una <b>"Nueva Versión"</b> en Google Apps Script.</p>
+                </td></tr>`;
+                return;
+            }
+
+            DATOS_CRITERIOS_GLOBAL.forEach((d, index) => {
+                let keyEsp = Object.keys(d).find(k => k.trim().toUpperCase() === 'ESPECIALIDAD') || 'ESPECIALIDAD';
+                let keyMed = Object.keys(d).find(k => k.trim().toUpperCase() === 'MEDICO') || 'MEDICO';
+                let keyObs = Object.keys(d).find(k => k.trim().toUpperCase() === 'OBSERVACIONES') || 'OBSERVACIONES';
+                let keyCrit = Object.keys(d).find(k => k.trim().toUpperCase() === 'CRITERIOS') || 'CRITERIOS';
+                let keyIC = Object.keys(d).find(k => k.includes('Ingreso IC')) || 'Criterios de Agendamiento - Ingreso IC';
+                let keyCtrl = Object.keys(d).find(k => k.includes('Cupos Control')) || 'Criterios de Agendamiento - Cupos Control';
+
+                let crit = formatearReglas(d[keyCrit]);
+                let ic = formatearReglas(d[keyIC]);
+                let ctrl = formatearReglas(d[keyCtrl]);
+                
+                tbody.innerHTML += `
+                <tr class="border-b border-stone-100 hover:bg-indigo-50/30 transition crit-row" data-index="${index}">
+                    <td class="p-3 text-[11px] font-black text-indigo-700 align-top crit-esp">${d[keyEsp] || ''}</td>
+                    <td class="p-3 text-[11px] font-bold text-stone-600 align-top crit-med">${d[keyMed] || ''}</td>
+                    <td class="p-3 text-[11px] text-stone-500 align-top whitespace-pre-line crit-obs">${d[keyObs] || ''}</td>
+                    <td class="p-3 text-[11px] text-stone-600 align-top whitespace-pre-line crit-crit bg-indigo-50/10">${crit}</td>
+                    <td class="p-3 text-[11px] text-stone-600 align-top whitespace-pre-line crit-ic bg-emerald-50/10">${ic}</td>
+                    <td class="p-3 text-[11px] text-stone-600 align-top whitespace-pre-line crit-ctrl bg-blue-50/10">${ctrl}</td>
+                </tr>`;
+            });
+        }
+
+        function formatearReglas(text) {
+            if(!text) return "";
+            let t = text;
+            t = t.replace(/\b(SI|NO|EXCEPCIONES)\b/gi, match => {
+                let upper = match.toUpperCase();
+                if(upper === 'SI') return `<span class="font-black text-emerald-600 bg-emerald-100 border border-emerald-200 px-1 rounded shadow-sm inline-block my-0.5">SI</span>`;
+                if(upper === 'NO') return `<span class="font-black text-rose-600 bg-rose-100 border border-rose-200 px-1 rounded shadow-sm inline-block my-0.5">NO</span>`;
+                if(upper === 'EXCEPCIONES') return `<span class="font-black text-amber-600 bg-amber-100 border border-amber-200 px-1 rounded shadow-sm inline-block my-0.5">Excepciones</span>`;
+                return match;
+            });
+            return t;
+        }
+
+        function filtrarCriterios() {
+            const globalTerm = document.getElementById('critGlobal').value.toLowerCase().trim();
+            const espTerm = document.getElementById('critEsp').value.toLowerCase().trim();
+            const medTerm = document.getElementById('critMed').value.toLowerCase().trim();
+            
+            const rows = document.querySelectorAll('.crit-row');
+            let visibleData = [];
+            
+            rows.forEach(row => {
+                const idx = row.getAttribute('data-index');
+                const data = DATOS_CRITERIOS_GLOBAL[idx];
+                
+                const espText = (data[Object.keys(data).find(k => k.trim().toUpperCase() === 'ESPECIALIDAD') || 'ESPECIALIDAD'] || '').toLowerCase();
+                const medText = (data[Object.keys(data).find(k => k.trim().toUpperCase() === 'MEDICO') || 'MEDICO'] || '').toLowerCase();
+                const obsText = (data[Object.keys(data).find(k => k.trim().toUpperCase() === 'OBSERVACIONES') || 'OBSERVACIONES'] || '').toLowerCase();
+                const critText = (data[Object.keys(data).find(k => k.trim().toUpperCase() === 'CRITERIOS') || 'CRITERIOS'] || '').toLowerCase();
+                const icText = (data[Object.keys(data).find(k => k.includes('Ingreso IC')) || 'Criterios de Agendamiento - Ingreso IC'] || '').toLowerCase();
+                const ctrlText = (data[Object.keys(data).find(k => k.includes('Cupos Control')) || 'Criterios de Agendamiento - Cupos Control'] || '').toLowerCase();
+                
+                const combined = `${espText} ${medText} ${obsText} ${critText} ${icText} ${ctrlText}`;
+                
+                let matchGlobal = globalTerm === '' || combined.includes(globalTerm);
+                let matchEsp = espTerm === '' || espText.includes(espTerm);
+                let matchMed = medTerm === '' || medText.includes(medTerm);
+                
+                if (matchGlobal && matchEsp && matchMed) {
+                    row.style.display = "";
+                    visibleData.push(data);
+                    resaltarBusqueda(row, data, [globalTerm, espTerm, medTerm].filter(t => t !== ''));
+                } else {
+                    row.style.display = "none";
+                }
+            });
+            
+            actualizarContadores(visibleData);
+        }
+
+        function resaltarBusqueda(row, data, terms) {
+            const keyEsp = Object.keys(data).find(k => k.trim().toUpperCase() === 'ESPECIALIDAD') || 'ESPECIALIDAD';
+            const keyMed = Object.keys(data).find(k => k.trim().toUpperCase() === 'MEDICO') || 'MEDICO';
+            const keyObs = Object.keys(data).find(k => k.trim().toUpperCase() === 'OBSERVACIONES') || 'OBSERVACIONES';
+            const keyCrit = Object.keys(data).find(k => k.trim().toUpperCase() === 'CRITERIOS') || 'CRITERIOS';
+            const keyIC = Object.keys(data).find(k => k.includes('Ingreso IC')) || 'Criterios de Agendamiento - Ingreso IC';
+            const keyCtrl = Object.keys(data).find(k => k.includes('Cupos Control')) || 'Criterios de Agendamiento - Cupos Control';
+
+            const esp = data[keyEsp] || '';
+            const med = data[keyMed] || '';
+            const obs = data[keyObs] || '';
+            const crit = formatearReglas(data[keyCrit]);
+            const ic = formatearReglas(data[keyIC]);
+            const ctrl = formatearReglas(data[keyCtrl]);
+            
+            row.querySelector('.crit-esp').innerHTML = aplicarResalteSeguro(esp, terms);
+            row.querySelector('.crit-med').innerHTML = aplicarResalteSeguro(med, terms);
+            row.querySelector('.crit-obs').innerHTML = aplicarResalteSeguro(obs, terms);
+            row.querySelector('.crit-crit').innerHTML = aplicarResalteSeguro(crit, terms);
+            row.querySelector('.crit-ic').innerHTML = aplicarResalteSeguro(ic, terms);
+            row.querySelector('.crit-ctrl').innerHTML = aplicarResalteSeguro(ctrl, terms);
+        }
+
+        function aplicarResalteSeguro(htmlString, terms) {
+            if (!terms.length || !htmlString) return htmlString;
+            let result = htmlString;
+            terms.forEach(term => {
+                const regex = new RegExp(`(?![^<]*>)(${term.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')})`, 'gi');
+                result = result.replace(regex, '<mark class="bg-amber-300 text-amber-900 rounded px-0.5 font-bold shadow-sm">$1</mark>');
+            });
+            return result;
+        }
+
+        function actualizarContadores(visibleData) {
+            const statsDiv = document.getElementById('critStats');
+            if(visibleData.length === DATOS_CRITERIOS_GLOBAL.length) {
+                statsDiv.classList.add('hidden');
+                return;
+            }
+            statsDiv.classList.remove('hidden');
+            let conteoEsp = {};
+            visibleData.forEach(d => {
+                let esp = d[Object.keys(d).find(k => k.trim().toUpperCase() === 'ESPECIALIDAD') || 'ESPECIALIDAD'] || 'Sin Especialidad';
+                conteoEsp[esp] = (conteoEsp[esp] || 0) + 1;
+            });
+            let desglose = Object.entries(conteoEsp).map(([esp, qty]) => `<span class="font-black text-indigo-700">${esp}:</span> ${qty}`).join(' <span class="text-indigo-200 mx-1">|</span> ');
+            statsDiv.innerHTML = `
+            <div class="flex flex-col gap-1.5">
+                <div class="text-sm"><span class="font-bold text-indigo-900"><i class="fas fa-filter"></i> Total registros encontrados:</span> <span class="bg-indigo-600 text-white px-2 py-0.5 rounded font-black ml-1">${visibleData.length}</span></div>
+                <div class="text-[10px] uppercase tracking-wider mt-1 leading-relaxed">${desglose}</div>
+            </div>`;
         }
     </script>
 </body>
