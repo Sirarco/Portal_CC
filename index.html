@@ -33,15 +33,27 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm border-b border-stone-100">
-        <span class="font-bold text-stone-400 tracking-widest text-xs uppercase">ESPEX</span>
-        <div class="flex flex-col items-center">
-            <span class="font-black text-2xl text-indigo-400 tracking-tighter">Portal de Calidad</span>
-            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Excelencia & Servicio</span>
+<nav id="mainNav" class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm border-b border-stone-100 transition-all duration-300">
+        <div class="flex-1">
+            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase hidden md:inline-block">ESPEX</span>
         </div>
-        <div class="text-right">
-            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">Hospital</span>
-            <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">de La Florida</span>
+        <div class="flex flex-col items-center flex-1">
+            <span class="font-black text-2xl text-indigo-400 tracking-tighter transition-all duration-300" id="navTitle">Portal de Calidad</span>
+            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest" id="navSubtitle">Excelencia & Servicio</span>
+        </div>
+        <div class="flex-1 flex justify-end items-center gap-3">
+            <div id="navUserInfo" class="hidden items-center gap-3">
+                <div class="text-right hidden md:block">
+                    <span class="font-bold text-stone-700 tracking-tight text-sm block" id="navUserName">-</span>
+                    <span class="text-[9px] bg-indigo-50 text-indigo-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider" id="navUserCode">-</span>
+                </div>
+                <button onclick="cambiarAvatar()" class="text-2xl hover:scale-110 transition transform select-none" title="Cambiar Avatar" id="navAvatar">🦊</button>
+                <button onclick="location.reload()" class="bg-rose-50 text-rose-400 p-2 rounded-xl hover:bg-rose-100 transition shadow-sm ml-2" title="Cerrar Sesión"><i class="fas fa-power-off"></i></button>
+            </div>
+            <div id="navHospital" class="text-right block">
+                <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">Hospital</span>
+                <span class="font-bold text-stone-400 tracking-widest text-xs uppercase block">de La Florida</span>
+            </div>
         </div>
     </nav>
 
@@ -102,13 +114,7 @@
                     <span class="text-[10px] bg-stone-100 text-stone-400 px-2 py-1 rounded-full font-bold uppercase" id="userCode">-</span>
                 </div>
             </div>
-            <div class="text-right mt-6 md:mt-0 flex gap-3 items-center z-10">
-                <div class="relative">
-                    <select id="filtroMes" onchange="aplicarFiltro()" class="appearance-none bg-stone-50 border border-stone-200 text-stone-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-xs outline-none cursor-pointer hover:bg-stone-100 transition"><option value="TODOS">📅 Histórico Completo</option></select>
-                    <i class="fas fa-chevron-down absolute right-3 top-3 text-stone-400 text-xs pointer-events-none"></i>
-                </div>
-                <button onclick="location.reload()" class="bg-rose-50 text-rose-400 p-2.5 rounded-xl hover:bg-rose-100 transition shadow-sm" title="Salir"><i class="fas fa-power-off"></i></button>
-            </div>
+
         </div>
 
         <div id="novedadesContainer" class="mb-6 space-y-3 z-10"></div>
@@ -122,7 +128,7 @@
         </div>
 
         <!-- TABLA 1: CALIDAD TÉCNICA -->
-        <div id="tabAuditorias" class="fade-in block">
+<div id="tabAuditorias" class="fade-in block">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-indigo-500 font-black uppercase tracking-wide">Nota Final (PEC)</p><p class="text-3xl font-black text-indigo-500 mt-2" id="kpiGeneral">-</p><p class="text-[9px] text-indigo-400/80 font-medium mt-1">Promedio Real</p></div>
                 <div class="bg-white p-5 rounded-2xl border border-stone-200 text-center relative group hover:shadow-md transition"><p class="text-[10px] text-stone-400 font-black uppercase tracking-wide">Evaluaciones</p><p class="text-3xl font-black text-stone-600 mt-2" id="kpiTotal">-</p></div>
@@ -134,7 +140,15 @@
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col"><h3 class="text-xs font-bold text-stone-400 uppercase mb-4 flex items-center gap-2"><span class="bg-rose-100 text-rose-500 p-1.5 rounded-lg"><i class="fas fa-exclamation-triangle"></i></span>Críticos (PEC)</h3><ul id="listPec" class="space-y-3 flex-1"><li class="text-center text-stone-300 text-xs italic mt-4">Sin datos</li></ul></div>
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-100 flex flex-col justify-center"><h3 class="text-xs font-bold text-stone-400 uppercase mb-2">Tu Evolución</h3><div class="relative h-40 w-full"><canvas id="chartEvolucion"></canvas></div></div>
             </div>
-            <h3 class="text-sm font-black text-stone-600 uppercase mb-4 pl-2 flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
+            <div class="flex justify-between items-center mb-4 pl-2 border-b border-stone-100 pb-2">
+                <h3 class="text-sm font-black text-stone-600 uppercase flex items-center gap-2"><i class="fas fa-history text-stone-300"></i> Historial Detallado</h3>
+                <div class="relative w-48 md:w-56">
+                    <select id="filtroMes" onchange="aplicarFiltro()" class="w-full appearance-none bg-stone-50 border border-stone-200 text-stone-600 py-2 pl-4 pr-8 rounded-xl font-bold text-xs outline-none cursor-pointer hover:bg-white transition shadow-sm">
+                        <option value="TODOS">📅 Histórico Completo</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-2.5 text-stone-400 text-xs pointer-events-none"></i>
+                </div>
+            </div>
             <div id="cardsContainer" class="space-y-3 mb-8"><p class="text-center text-stone-400 py-10 italic">Cargando historial...</p></div>
         </div>
 
@@ -272,6 +286,32 @@
         let DATOS_CRITERIOS_GLOBAL = [];
         let criteriosRenderizados = false;
         let chartInstance = null;
+        let DATOS_ACUSES_GLOBAL = [];
+
+        // AVATARES Y ANIMACIÓN NAV
+        const ANIMAL_AVATARES = ["🦊", "🐰", "🐢", "🐱", "🐶", "🐼", "🐨", "🦁", "🐯", "🐸", "🐙", "🐵", "🐧", "🦉", "🦄"];
+        
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            const title = document.getElementById('navTitle');
+            const sub = document.getElementById('navSubtitle');
+            if (window.scrollY > 20) {
+                nav.classList.replace('py-4', 'py-2');
+                title.classList.replace('text-2xl', 'text-xl');
+                sub.classList.add('hidden');
+            } else {
+                nav.classList.replace('py-2', 'py-4');
+                title.classList.replace('text-xl', 'text-2xl');
+                sub.classList.remove('hidden');
+            }
+        });
+        
+        function cambiarAvatar() {
+            const codigo = document.getElementById('userCode').innerText;
+            const randomAvatar = ANIMAL_AVATARES[Math.floor(Math.random() * ANIMAL_AVATARES.length)];
+            localStorage.setItem(`avatar_${codigo}`, randomAvatar);
+            document.getElementById('navAvatar').innerText = randomAvatar;
+        }
 
         // Escucha del Enter en inputs
 // Salto automático de Código a Contraseña con Enter
@@ -350,6 +390,7 @@
                     DATOS_PAUTA_GLOBAL = data.pauta || [];
                     DATOS_OTRAS_GLOBAL = data.otras_auditorias || []; 
                     DATOS_CRITERIOS_GLOBAL = data.criterios || [];
+		    DATOS_ACUSES_GLOBAL = data.acuses || []; // <--- NUEVA ASIGNACIÓN
                     terminarCarga();
                 } else {
                     throw new Error("El formato de datos estructurado no contiene las colecciones esperadas.");
@@ -396,9 +437,22 @@
             document.getElementById('viewLogin').classList.add('hidden');
             document.getElementById('viewDashboard').classList.remove('hidden');
             
-            document.getElementById('userName').innerText = userConfig.Nombre;
+document.getElementById('userName').innerText = userConfig.Nombre;
             document.getElementById('userServ').innerText = userConfig.Servicio || 'General';
             document.getElementById('userCode').innerText = codigo;
+
+            // Integración NAV Flotante y Avatar LocalStorage
+            document.getElementById('navUserName').innerText = userConfig.Nombre.split(' ')[0] + " " + (userConfig.Nombre.split(' ')[1] || '');
+            document.getElementById('navUserCode').innerText = codigo;
+            document.getElementById('navHospital').classList.add('hidden');
+            document.getElementById('navUserInfo').classList.replace('hidden', 'flex');
+            
+            let miAvatar = localStorage.getItem(`avatar_${codigo}`);
+            if(!miAvatar) {
+                miAvatar = ANIMAL_AVATARES[Math.floor(Math.random() * ANIMAL_AVATARES.length)];
+                localStorage.setItem(`avatar_${codigo}`, miAvatar);
+            }
+            document.getElementById('navAvatar').innerText = miAvatar;
 
             llenarFiltros();
             aplicarFiltro();
@@ -454,8 +508,15 @@
                 sel.add(new Option(`📅 ${mesNombre} ${year}`, m));
                 const semanasEnMes = new Set();
                 MIS_DATOS.filter(d => (d.FECHA_LLAMADA || d.FECHA).startsWith(m)).forEach(d => semanasEnMes.add(d.SEMANA));
-                Array.from(semanasEnMes).sort().forEach(s => sel.add(new Option(`↳ ${s}`, `${m}|${s}`)));
+Array.from(semanasEnMes).sort().forEach(s => sel.add(new Option(`↳ ${s}`, `${m}|${s}`)));
             });
+
+            // Forzar por defecto la selección de la última semana disponible
+            if (sel.options.length > 2) {
+                sel.selectedIndex = 2; // Index 0 es TODOS, Index 1 es el Mes general, Index 2 es la última semana.
+            } else if (sel.options.length > 1) {
+                sel.selectedIndex = 1;
+            }
         }
 
         function aplicarFiltro() {
@@ -516,6 +577,13 @@
             if(data.length === 0) { c.innerHTML = "<p class='text-center text-stone-400 py-10 bg-white rounded-3xl border border-stone-100'>No hay datos.</p>"; return; }
             data.forEach(d => {
                 const n = parseFloat(d.NOTA.replace('%',''));
+let requiereFeedback = (n < 85);
+if(d.DETALLE) {
+    for(let [k,v] of Object.entries(d.DETALLE)) {
+        if(v === 'NO' && ["SEG", "COND", "OP", "SIST"].some(pre => k.startsWith(pre))) requiereFeedback = true;
+    }
+                }
+let alertIcon = requiereFeedback ? `<span class="text-rose-500 animate-pulse ml-2" title="Requiere Retroalimentación"><i class="fas fa-exclamation-triangle"></i></span>` : '';
                 let border="border-indigo-200", text="text-indigo-600", icon="📋";
                 if(n===0){border="border-rose-400";text="text-rose-500";icon="⚠️";} else if(n>=85){border="border-emerald-400";text="text-emerald-600";icon="⭐";} else {border="border-amber-400";text="text-amber-600";icon="📉";}
                 
@@ -529,7 +597,7 @@
                 c.innerHTML += `<div onclick='verDetalle(${JSON.stringify(d).replace(/'/g,"&#39;")})' class="bg-white p-5 rounded-2xl shadow-sm border-l-4 ${border} hover:shadow-md hover:translate-x-1 transition cursor-pointer flex justify-between items-center group">
                     <div class="flex-1">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <span class="font-bold text-stone-700 text-sm">${fechaFormat}</span>
+                            <span class="font-bold text-stone-700 text-sm">${fechaFormat} ${alertIcon}</span>
                             <span class="text-[9px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">${d.SEMANA}</span>
                             <span class="text-[9px] bg-indigo-50 text-indigo-400 px-2 py-0.5 rounded uppercase font-bold tracking-wider" title="Auditor(a)"><i class="fas fa-user-check"></i> ${d.AUDITOR_REAL || 'Auditor'}</span>
                         </div>
@@ -575,15 +643,37 @@
             } else {
                 audioSection = `<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex items-center gap-3 opacity-75"><div class="bg-gray-200 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-volume-mute"></i></div><div><p class="text-xs font-bold text-gray-500">Audio no disponible</p><p class="text-[10px] text-gray-400">Si lo necesitas, contacta a tu supervisor.</p></div></div>`;
             }
-            const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---"; const horaCall = d.HORA_LLAMADA || d.HORA || "--:--"; const rutPac = d.RUT_PACIENTE || "No registrado";
-            const notaVal = parseFloat(d.NOTA.replace('%','')); const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
+const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---"; 
+        const horaCall = d.HORA_LLAMADA || d.HORA || "--:--"; 
+        
+        // 1. PRIMERO SE DECLARAN LAS VARIABLES DE LA NOTA
+        const rutPac = d.RUT_PACIENTE || "No registrado";
+        const notaVal = parseFloat(d.NOTA.replace('%','')); 
+        const notaColor = notaVal >= 85 ? 'text-emerald-500' : (notaVal === 0 ? 'text-rose-500' : 'text-amber-500');
+
+        // 2. LUEGO SE EVALÚAN LAS ALERTAS
+        let requiereFeedback = (notaVal < 85); 
+        if(d.DETALLE) {     
+            for(let [k,v] of Object.entries(d.DETALLE)) {         
+                if(v === 'NO' && ["SEG", "COND", "OP", "SIST"].some(pre => k.startsWith(pre))) requiereFeedback = true;     
+            } 
+        }
+
+        // 3. SE CONSTRUYE LA INTERFAZ
+        let bannerFeedback = requiereFeedback ? `<div class="bg-rose-50 border border-rose-200 p-3 rounded-xl mb-4 flex items-start gap-3"><div class="bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0"><i class="fas fa-exclamation-triangle"></i></div><p class="text-[11px] text-rose-700 font-bold leading-tight mt-1">ATENCIÓN: Esta evaluación requiere una retroalimentación obligatoria con tu supervisor.</p></div>` : ''; 
+        const miCodigo = document.getElementById('userCode').innerText; 
+        const yaTomado = DATOS_ACUSES_GLOBAL.some(a => a.CODIGO === miCodigo && a.FECHA_LLAMADA === (d.FECHA_LLAMADA || d.FECHA)); 
+        let btnAcuse = yaTomado 
+            ? `<div class="w-full py-3 rounded-xl border-2 border-emerald-100 bg-emerald-50 text-emerald-600 font-bold text-xs text-center flex items-center justify-center gap-2 mb-3"><i class="fas fa-check-double"></i> CONOCIMIENTO REGISTRADO</div>` 
+            : `<button onclick="tomarConocimiento('${d.CODIGO}', '${d.FECHA_LLAMADA || d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl bg-indigo-500 text-white font-bold text-xs hover:bg-indigo-600 transition shadow-md flex items-center justify-center gap-2 mb-3"><i class="fas fa-hand-pointer"></i> TOMAR CONOCIMIENTO</button>`;
 
             Swal.fire({
                 title: `<div class="flex items-center gap-2 text-left"><div class="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-contract"></i></div><div><span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalle Atención</span><span class="block text-sm text-slate-700 font-bold">Evaluación de Calidad</span></div></div>`,
-                html: `<div class="text-left mt-2"><div class="grid grid-cols-3 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm"><div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">Auditor</span><span class="block text-xs font-bold text-slate-700 truncate" title="${d.AUDITOR_REAL || '-'}"><i class="fas fa-user-check mr-1 text-indigo-400"></i> ${d.AUDITOR_REAL || '-'}</span></div></div>${audioSection}<div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div><div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4><div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10">${d.OBS}</span></div></div><div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div><div class="mt-6 pt-4 border-t border-slate-100"><button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div></div>`,
+                html: `<div class="text-left mt-2"><div class="grid grid-cols-3 gap-2 mb-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm"><div class="p-2"><span class="block text-[9px] font-bold text-slate-400 uppercase">Fecha y Hora</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-calendar-alt mr-1 text-indigo-400"></i> ${fechaCall} <span class="text-slate-400">|</span> ${horaCall}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">RUT Paciente</span><span class="block text-xs font-bold text-slate-700"><i class="far fa-id-card mr-1 text-indigo-400"></i> ${rutPac}</span></div><div class="p-2 border-l border-slate-50"><span class="block text-[9px] font-bold text-slate-400 uppercase">Auditor</span><span class="block text-xs font-bold text-slate-700 truncate" title="${d.AUDITOR_REAL || '-'}"><i class="fas fa-user-check mr-1 text-indigo-400"></i> ${d.AUDITOR_REAL || '-'}</span></div></div>${audioSection}<div class="text-center mb-6"><span class="text-5xl font-black ${notaColor} tracking-tighter">${d.NOTA}</span><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Nota Final</p></div><div class="mb-6"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1"><i class="fas fa-comment-dots mr-1"></i> Comentario General</h4>${bannerFeedback}
+<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed text-justify relative whitespace-pre-line"><i class="fas fa-quote-left absolute top-2 left-2 text-slate-200 text-2xl -z-0"></i><span class="relative z-10 block pt-4">${d.OBS}</span></div></div><div><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1 flex justify-between"><span><i class="fas fa-exclamation-circle mr-1"></i> Detalle de Indicadores</span><span class="text-[9px] font-normal normal-case text-indigo-400">(Pasa el mouse para ver ayuda)</span></h4><ul class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">${itemsHtml}</ul></div><div class="mt-6 pt-4 border-t border-slate-100">${btnAcuse}<button onclick="apelar('${d.CODIGO}', '${d.FECHA}', '${d.NOTA}')" class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-500 font-bold text-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition flex items-center justify-center gap-2 group"><i class="fas fa-gavel group-hover:rotate-12 transition"></i> SOLICITAR REVISIÓN (APELAR)</button></div></div>`,
                 width: '550px', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-[2rem]' }
             });
-        }
+        
 
         async function apelar(cod, fecha, nota) {
             const { value: text } = await Swal.fire({ title: 'Apelar Nota', input: 'textarea', inputLabel: 'Argumento técnico:', inputPlaceholder: 'Escribe aquí...', showCancelButton: true, confirmButtonText: 'Enviar', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-[2rem]' } });
@@ -592,7 +682,7 @@
                 fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tipo:"APELACION", codigo:cod, fecha:fecha, nota:nota, argumento:text}) })
                 .then(()=>{ Swal.fire({icon:'success', title:'Enviado', text:'Solicitud registrada', customClass:{popup:'rounded-2xl'}, confirmButtonColor:'#10b981'}); });
             }
-        }
+        }}
 
         // --- RENDERIZADO NOVEDADES, HISTORIAL Y APOYO ---
         function renderNovedades() {
@@ -735,6 +825,42 @@
                 }
             });
         }
+function tomarConocimiento(cod, fecha, nota) {
+    Swal.fire({
+        title: '<span class="text-xl font-black text-stone-700">¿Confirmar lectura?</span>',
+        html: '<p class="text-xs text-stone-500 leading-relaxed mt-2">Dejarás registro formal de que tomaste conocimiento de esta evaluación y su retroalimentación.</p>',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: '<i class="fas fa-check mr-1"></i> Sí, estoy enterado',
+        cancelButtonText: 'Cancelar',
+        customClass: { popup: 'rounded-[2rem]' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const nombre = document.getElementById('userName').innerText;
+            
+            // Envío silencioso al backend
+            fetch(API_URL, { 
+                method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ tipo: "CONOCIMIENTO", codigo: cod, nombre: nombre, fecha_llamada: fecha, nota: nota }) 
+            });
+            
+            // Actualización local para que no vuelva a pedirlo en esta sesión
+            DATOS_ACUSES_GLOBAL.push({ CODIGO: cod, FECHA_LLAMADA: fecha });
+            
+            Swal.fire({
+                title: '¡Registrado!',
+                text: 'Tu toma de conocimiento ha sido guardada en tu expediente.',
+                icon: 'success',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-2xl' }
+            }).then(() => {
+                Swal.close(); // Cierra el modal de detalle para refrescar la vista
+            });
+        }
+    });
+}
 
         function renderCentroApoyo() {
             const containerHerramientas = document.getElementById('herramientasContainer');
