@@ -462,7 +462,7 @@ document.getElementById('userName').innerText = userConfig.Nombre;
             renderHistorial(); 
 
             // Iniciar consulta silenciosa cada 30 minutos (1.800.000 ms)
-            setInterval(verificarActualizaciones, 60000);   // minutos de actualización de la página
+            setInterval(verificarActualizaciones, 900000);   // minutos de actualización de la página
 
             switchTab(1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
