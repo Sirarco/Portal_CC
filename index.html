@@ -30,6 +30,10 @@
         .walk-anim { animation: waddle 0.5s infinite alternate; }
         @keyframes waddle { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
         .indicator-tooltip { cursor: help; border-bottom: 1px dotted #94a3b8; }
+        /* MODO OSCURO DE ALTO RENDIMIENTO */
+        html.dark-mode { filter: invert(0.92) hue-rotate(180deg); background-color: #111; }
+        html.dark-mode img, html.dark-mode canvas, html.dark-mode .swal2-container { filter: invert(1) hue-rotate(180deg); }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -48,6 +52,7 @@
                     <span class="text-[9px] bg-indigo-50 text-indigo-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider" id="navUserCode">-</span>
                 </div>
                 <button onclick="cambiarAvatar()" class="text-2xl hover:scale-110 transition transform select-none" title="Cambiar Avatar" id="navAvatar">🦊</button>
+                <button onclick="toggleTheme()" class="text-xl text-stone-400 hover:text-indigo-400 transition transform select-none ml-2" title="Modo Oscuro" id="navTheme">🌙</button>
                 <button onclick="location.reload()" class="bg-rose-50 text-rose-400 p-2 rounded-xl hover:bg-rose-100 transition shadow-sm ml-2" title="Cerrar Sesión"><i class="fas fa-power-off"></i></button>
             </div>
             <div id="navHospital" class="text-right block">
@@ -117,7 +122,7 @@
 
         </div>
 
-        <div id="novedadesContainer" class="mb-6 space-y-3 z-10"></div>
+        <div id="novedadesContainer" class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 z-10"></div>
 
         <!-- BARRA DE PESTAÑAS -->
         <div class="flex flex-wrap md:flex-nowrap gap-2 mb-6 bg-stone-100/80 p-1.5 rounded-2xl w-full max-w-xl mx-auto backdrop-blur-sm">
@@ -462,7 +467,7 @@ document.getElementById('userName').innerText = userConfig.Nombre;
             renderHistorial(); 
 
             // Iniciar consulta silenciosa cada 30 minutos (1.800.000 ms)
-            setInterval(verificarActualizaciones, 900000);   // minutos de actualización de la página
+            setInterval(verificarActualizaciones, 900000);   // minutos*60*1000  --minutos de actualización de la página
 
             switchTab(1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -688,45 +693,74 @@ const fechaCall = d.FECHA_LLAMADA || d.FECHA || "---";
         }}
 
         // --- RENDERIZADO NOVEDADES, HISTORIAL Y APOYO ---
+        // --- FUNCIÓN DEL MODO OSCURO ---
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark-mode');
+            const btn = document.getElementById('navTheme');
+            btn.innerText = document.documentElement.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // --- RENDERIZADO NOVEDADES (INBOX ZERO + GRID) ---
         function renderNovedades() {
             const container = document.getElementById('novedadesContainer');
             container.innerHTML = "";
-            
-            const novedades = DATOS_APOYO_GLOBAL.filter(d => String(d.Tipo).toUpperCase() === 'NOVEDAD' && String(d.Visible).toUpperCase() === 'SI' && String(d.Llamativo).toUpperCase() === 'SI');
-            if (novedades.length === 0) return;
-
             const miCodigo = document.getElementById('userCode').innerText;
 
-            container.innerHTML = `
-            <div class="bg-amber-100 border border-amber-200 p-3 rounded-xl mb-4 shadow-sm flex items-center gap-3 fade-in">
+            // Filtramos Visibles, Llamativos y OMITIMOS los ya leídos (Inbox Zero)
+            const novedades = DATOS_APOYO_GLOBAL.filter(d => 
+                String(d.Tipo).toUpperCase() === 'NOVEDAD' && 
+                String(d.Visible).toUpperCase() === 'SI' && 
+                String(d.Llamativo).toUpperCase() === 'SI' &&
+                !DATOS_LECTURAS_GLOBAL.some(l => l.CODIGO === miCodigo && l.TITULO_INFO === d.Titulo)
+            );
+
+            if (novedades.length === 0) return;
+
+            // Aviso general arriba de la grilla (ocupa todo el ancho)
+            const headerHtml = `
+            <div class="col-span-full bg-amber-100 border border-amber-200 p-3 rounded-xl shadow-sm flex items-center gap-3 fade-in">
                 <div class="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-lg shrink-0"><i class="fas fa-exclamation"></i></div>
-                <p class="text-[11px] text-amber-800 font-bold leading-tight">¡Bajadas informativas! Márcalas como <span class="bg-amber-200 px-1.5 py-0.5 rounded text-amber-900 border border-amber-300">De acuerdo</span> para dejar registro que recepcionaste el mensaje.</p>
+                <p class="text-[11px] text-amber-800 font-bold leading-tight">¡Bajadas informativas pendientes! Márcalas como <span class="bg-amber-200 px-1.5 py-0.5 rounded text-amber-900 border border-amber-300">De acuerdo</span> para limpiar tu bandeja de inicio.</p>
             </div>`;
-
+            
+            let cardsHtml = "";
             novedades.forEach(n => {
-                let linkHtml = n.URL && n.URL.length > 5 ? `<a href="${n.URL}" target="_blank" class="mt-3 mr-2 inline-block text-[10px] font-bold text-orange-600 hover:underline bg-white/70 px-3 py-1.5 rounded-lg border border-orange-200"><i class="fas fa-external-link-alt"></i> Abrir enlace adjunto</a>` : "";
+                // Preparamos el texto para evitar que rompa el HTML en el botón
+                let safeDesc = n.Descripcion.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "<br>");
+                
+                let btnLeerMas = `<button onclick="leerAnuncioCompleto('${n.Titulo}', '${safeDesc}', '${n.URL || ''}')" class="text-indigo-500 hover:underline text-[10px] font-bold mt-2 inline-block"><i class="fas fa-book-open"></i> Leer completo</button>`;
+                
+                let btnEntendido = `<button onclick="marcarComoEntendido('${n.Titulo}', event)" class="mt-3 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-[10px] transition shadow-md hover:shadow-lg transform active:scale-95"><i class="fas fa-check-circle mr-1"></i> De acuerdo</button>`;
 
-                const yaLeido = DATOS_LECTURAS_GLOBAL.some(l => l.CODIGO === miCodigo && l.TITULO_INFO === n.Titulo);
-                let btnEntendido = yaLeido 
-                    ? `<div class="mt-3 inline-block text-emerald-600 bg-emerald-100 font-bold py-1.5 px-3 rounded-lg text-[10px] border border-emerald-200"><i class="fas fa-check-double mr-1"></i> Recepción Registrada</div>`
-                    : `<button onclick="marcarComoEntendido('${n.Titulo}', event)" class="mt-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-[10px] transition shadow-md hover:shadow-lg transform active:scale-95"><i class="fas fa-check-circle mr-1"></i> De acuerdo</button>`;
-
-                container.innerHTML += `
-                <div class="bg-orange-50 border border-orange-200 p-5 rounded-2xl shadow-sm flex gap-4 items-start relative overflow-hidden fade-in mb-3">
-                    <div class="absolute -right-4 -top-4 text-8xl opacity-5 pointer-events-none text-orange-500"><i class="fas fa-bullhorn"></i></div>
-                    <div class="text-orange-500 text-2xl mt-1 z-10"><i class="fas fa-exclamation-circle animate-pulse"></i></div>
-                    <div class="flex-1 z-10">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-black text-sm text-orange-800">${n.Titulo}</h4>
-                            <span class="text-[9px] font-bold opacity-60 uppercase bg-orange-100 px-2 py-1 rounded text-orange-700">${n.Fecha || ''}</span>
-                        </div>
-                        <p class="text-[11px] text-stone-700 leading-relaxed whitespace-pre-line bg-white/60 p-3 rounded-xl border border-orange-100/50">${n.Descripcion}</p>
-                        <div class="flex flex-wrap items-center">
-                            ${linkHtml}
-                            ${btnEntendido}
-                        </div>
+                cardsHtml += `
+                <div class="bg-orange-50 border border-orange-200 p-5 rounded-[1.5rem] shadow-sm flex flex-col relative overflow-hidden fade-in hover:border-orange-300 transition">
+                    <div class="absolute -right-4 -top-4 text-7xl opacity-5 pointer-events-none text-orange-500"><i class="fas fa-bullhorn"></i></div>
+                    <div class="flex justify-between items-start mb-3 z-10 gap-2">
+                        <h4 class="font-black text-xs text-orange-800 leading-tight">${n.Titulo}</h4>
+                        <span class="text-[8px] font-bold uppercase bg-orange-100 px-2 py-1 rounded text-orange-700 whitespace-nowrap">${n.Fecha || ''}</span>
+                    </div>
+                    <div class="text-[11px] text-stone-600 leading-relaxed bg-white/70 p-3 rounded-xl border border-orange-100/50 flex-1 z-10 flex flex-col justify-between">
+                        <p class="line-clamp-3">${n.Descripcion}</p>
+                        ${btnLeerMas}
+                    </div>
+                    <div class="z-10 mt-auto">
+                        ${btnEntendido}
                     </div>
                 </div>`;
+            });
+            
+            container.innerHTML = headerHtml + cardsHtml;
+        }
+
+        // --- POP-UP PARA LEER EL TEXTO COMPLETO ---
+        function leerAnuncioCompleto(titulo, descripcion, url) {
+            let link = (url && url.length > 5) ? `<a href="${url}" target="_blank" class="mt-4 flex items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 transition text-indigo-600 font-bold py-3 rounded-xl border border-indigo-100 text-xs"><i class="fas fa-external-link-alt"></i> Abrir Enlace Adjunto</a>` : "";
+            Swal.fire({
+                title: `<div class="text-left text-orange-600 mb-2"><i class="fas fa-bullhorn text-2xl"></i></div><span class="text-lg font-black text-stone-700 block text-left leading-tight">${titulo}</span>`,
+                html: `<div class="text-left text-xs text-stone-600 bg-stone-50 p-5 rounded-2xl border border-stone-100 mt-4 leading-relaxed max-h-[300px] overflow-y-auto custom-scrollbar">${descripcion}</div>${link}`,
+                showCloseButton: true,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-[2rem]' }
             });
         }
 
@@ -1091,10 +1125,16 @@ function tomarConocimiento(cod, fecha, nota) {
                 if (JSON.stringify(data.criterios) !== JSON.stringify(DATOS_CRITERIOS_GLOBAL)) modulos.push("🩺 Criterios");
 
                 // Si hay diferencias, armar y mostrar el Toast
+                // Si hay diferencias, armar y mostrar el Toast
                 if (modulos.length > 0) {
                     newDataCache = data;
                     document.getElementById('updateToastText').innerText = "Cambios en: " + modulos.join(", ");
                     document.getElementById('updateToast').classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+                    
+                    // --- NUEVA ALERTA EN LA PESTAÑA DEL NAVEGADOR ---
+                    document.title = "(1) ¡Nuevos Datos! - Portal Calidad";
+                    let iconLink = document.querySelector("link[rel~='icon']");
+                    if(iconLink) iconLink.href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔴</text></svg>";
                 }
             } catch (e) { console.log("Polling silencioso omitido", e); }
         }
@@ -1121,9 +1161,16 @@ function tomarConocimiento(cod, fecha, nota) {
             if (criteriosRenderizados) renderCriterios(); // Actualizar solo si la pestaña está iniciada
 
             // 3. Ocultar el Toast y avisar
+            // 3. Ocultar el Toast y avisar
             document.getElementById('updateToast').classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
             
+            // --- RESTAURAR PESTAÑA NORMAL ---
+            document.title = "Portal Calidad";
+            let iconLink = document.querySelector("link[rel~='icon']");
+            if(iconLink) iconLink.href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>";
+            
             Swal.fire({
+                //... tu código actual de Swal.fire
                 toast: true, position: 'bottom-end', icon: 'success', 
                 title: 'Tablero Sincronizado', showConfirmButton: false, timer: 2500, customClass: { popup: 'rounded-2xl' }
             });
